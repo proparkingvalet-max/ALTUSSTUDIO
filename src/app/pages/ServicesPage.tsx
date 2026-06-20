@@ -118,11 +118,30 @@ export function ServicesPage() {
                     </h2>
                   </div>
                   <p
-                    className="text-[#0A0F1E]/60 leading-relaxed mb-8"
+                    className="text-[#0A0F1E]/60 leading-relaxed mb-6"
                     style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                   >
                     {s.description}
                   </p>
+
+                  {/* Ideal For */}
+                  {(s as any).idealFor && (
+                    <div className="mb-8 flex items-start gap-3 px-4 py-3 bg-[#C9A84C]/8 border-l-4 border-[#C9A84C] rounded-r-lg">
+                      <span className="text-[#C9A84C] text-lg mt-0.5">💡</span>
+                      <div>
+                        <p className="text-[#0A0F1E] text-xs font-bold tracking-widest uppercase mb-1"
+                          style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                          Ιδανικό για:
+                        </p>
+                        <p className="text-[#0A0F1E]/65 text-sm leading-relaxed"
+                          style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}>
+                          {(s as any).idealFor}
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Features */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {s.features.map((f) => (
                       <div key={f} className="flex items-start gap-2">
