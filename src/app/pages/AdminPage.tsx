@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { getProjects, saveProjects, Project } from "@/app/utils/projects";
 import {
   LayoutDashboard,
   MessageSquare,
@@ -739,18 +740,342 @@ function MessagesView() {
 // ─── Projects View ─────────────────────────────────────────────────────────────
 
 function ProjectsView() {
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [filter, setFilter] = useState("Όλα");
+  const [editingProject, setEditingProject] = useState<Project | null>(null);
+
+  // Form states
+  const [formName, setFormName] = useState("");
+  const [formCategory, setFormCategory] = useState("Website");
+  const [formTags, setFormTags] = useState("");
+  const [formYear, setFormYear] = useState("");
+  const [formDescription, setFormDescription] = useState("");
+  const [formImg, setFormImg] = useState("");
+  const [formGallery, setFormGallery] = useState("");
+  const [formResults, setFormResults] = useState("");
+  const [formIsLive, setFormIsLive] = useState(false);
+
+  useEffect(() => {
+    setProjects(getProjects());
+  }, []);
+
+  const openEdit = (p: Project) => {
+    setEditingProject(p);
+    setFormName(p.name);
+    setFormCategory(p.category);
+    setFormTags(p.tags.join(", "));
+    setFormYear(p.year);
+    setFormDescription(p.description);
+    setFormImg(p.img);
+    setFormGallery(p.gallery.join(", "));
+    setFormResults(p.results);
+    setFormIsLive(p.isLive);
+  };
+
+  const openNew = () => {
+    setEditingProject({
+      id: "",
+      name: "",
+      category: "Website",
+      tags: [],
+      year: new Date().getFullYear().toString(),
+      description: "",
+      img: "",
+      results: "",
+      isLive: false,
+      gallery: []
+    });
+    setFormName("");
+    setFormCategory("Website");
+    setFormTags("");
+    setFormYear(new Date().getFullYear().toString());
+    setFormDescription("");
+    setFormImg("");
+    setFormGallery("");
+    setFormResults("");
+    setFormIsLive(false);
+  };
+
+  const handleSave = () => {
+    if (!formName.trim()) {
+      alert("Παρακαλώ εισάγετε όνομα έργου.");
+      return;
+    }
+
+    const tagsArray = formTags
+      .split(",")
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+    const galleryArray = formGallery
+      .split(",")
+      .map((g) => g.trim())
+      .filter((g) => g.length > 0);
+
+    const updatedProjects = [...projects];
+
+    if (editingProject && editingProject.id) {
+      // Edit mode
+      const idx = updatedProjects.findIndex((p) => p.id === editingProject.id);
+      if (idx !== -1) {
+        updatedProjects[idx] = {
+          ...editingProject,
+          name: formName,
+          category: formCategory,
+          tags: tagsArray,
+          year: formYear,
+          description: formDescription,
+          img: formImg,
+          gallery: galleryArray,
+          results: formResults,
+          isLive: formIsLive,
+        };
+      }
+    } else {
+      // Add mode
+      const newProj: Project = {
+        id: "project-" + Date.now(),
+        name: formName,
+        category: formCategory,
+        tags: tagsArray,
+        year: formYear,
+        description: formDescription,
+        img: formImg,
+        gallery: galleryArray,
+        results: formResults,
+        isLive: formIsLive,
+      };
+      updatedProjects.push(newProj);
+    }
+
+    setProjects(updatedProjects);
+    saveProjects(updatedProjects);
+    setEditingProject(null);
+  };
+
+  const handleDelete = (id: string) => {
+    if (confirm("Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το έργο;")) {
+      const updated = projects.filter((p) => p.id !== id);
+      setProjects(updated);
+      saveProjects(updated);
+    }
+  };
+
+  const filtered = projects.filter((p) => {
+    if (filter === "Όλα") return true;
+    if (filter === "Live") return p.isLive;
+    if (filter === "Draft") return !p.isLive;
+    return true;
+  });
+
+  if (editingProject) {
+    return (
+      <div>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>
+            {editingProject.id ? "Επεξεργασία Έργου" : "Νέο Έργο"}
+          </h1>
+          <button
+            onClick={() => setEditingProject(null)}
+            style={{
+              padding: "8px 16px",
+              background: "rgba(255,255,255,0.05)",
+              border: "1px solid rgba(255,255,255,0.08)",
+              borderRadius: 10,
+              color: "rgba(255,255,255,0.6)",
+              cursor: "pointer",
+              fontSize: 13
+            }}
+          >
+            Ακύρωση
+          </button>
+        </div>
+
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 32 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+            {/* Left Column */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Όνομα Έργου</label>
+                <input
+                  value={formName}
+                  onChange={(e) => setFormName(e.target.value)}
+                  placeholder="π.χ. PRO Parking Valet"
+                  style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Κατηγορία</label>
+                <select
+                  value={formCategory}
+                  onChange={(e) => setFormCategory(e.target.value)}
+                  style={{ width: "100%", padding: "12px 16px", background: "#0A0F1E", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                >
+                  <option value="Website">Website</option>
+                  <option value="E-Shop">E-Shop</option>
+                </select>
+              </div>
+
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Tags (διαχωρισμένα με κόμμα)</label>
+                <input
+                  value={formTags}
+                  onChange={(e) => setFormTags(e.target.value)}
+                  placeholder="React, Tailwind CSS, SEO"
+                  style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Έτος</label>
+                <input
+                  value={formYear}
+                  onChange={(e) => setFormYear(e.target.value)}
+                  placeholder="2025"
+                  style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Αποτέλεσμα / Metrics</label>
+                <input
+                  value={formResults}
+                  onChange={(e) => setFormResults(e.target.value)}
+                  placeholder="π.χ. Live Project ή +280% conversion rate"
+                  style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+            </div>
+
+            {/* Right Column */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Περιγραφή</label>
+                <textarea
+                  value={formDescription}
+                  onChange={(e) => setFormDescription(e.target.value)}
+                  placeholder="Σύντομη περιγραφή του έργου..."
+                  rows={4}
+                  style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", fontFamily: "inherit", boxSizing: "border-box", resize: "vertical" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>URL Κύριας Εικόνας</label>
+                <input
+                  value={formImg}
+                  onChange={(e) => setFormImg(e.target.value)}
+                  placeholder="Εισάγετε URL εικόνας ή τοπική διαδρομή"
+                  style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Gallery Εικόνες (URLs διαχωρισμένα με κόμμα)</label>
+                <input
+                  value={formGallery}
+                  onChange={(e) => setFormGallery(e.target.value)}
+                  placeholder="Image URL 1, Image URL 2..."
+                  style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
+                <input
+                  type="checkbox"
+                  id="formIsLive"
+                  checked={formIsLive}
+                  onChange={(e) => setFormIsLive(e.target.checked)}
+                  style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#C9A84C" }}
+                />
+                <label htmlFor="formIsLive" style={{ color: "#fff", fontSize: 14, cursor: "pointer", userSelect: "none" }}>
+                  Είναι Live Project (Εμφάνιση πράσινης ένδειξης)
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: "flex", gap: 12, marginTop: 32 }}>
+            <button
+              onClick={handleSave}
+              style={{
+                padding: "14px 28px",
+                background: "linear-gradient(135deg, #C9A84C, #a8893e)",
+                border: "none",
+                borderRadius: 12,
+                color: "#0A0F1E",
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: "pointer"
+              }}
+            >
+              Αποθήκευση Έργου
+            </button>
+            <button
+              onClick={() => setEditingProject(null)}
+              style={{
+                padding: "14px 28px",
+                background: "rgba(255,255,255,0.05)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 12,
+                color: "rgba(255,255,255,0.6)",
+                cursor: "pointer",
+                fontSize: 14
+              }}
+            >
+              Ακύρωση
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>
           Projects
         </h1>
-        <div style={{ display: "flex", gap: 8 }}>
-          {["Όλα", "Live", "Σε εξέλιξη", "Draft"].map((f) => (
-            <button key={f} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: f === "Όλα" ? "rgba(201,168,76,0.1)" : "transparent", color: f === "Όλα" ? "#C9A84C" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 13 }}>
-              {f}
-            </button>
-          ))}
+        <div style={{ display: "flex", gap: 12 }}>
+          {/* Add Project Button */}
+          <button
+            onClick={openNew}
+            style={{
+              padding: "8px 16px",
+              background: "linear-gradient(135deg, #C9A84C, #a8893e)",
+              border: "none",
+              borderRadius: 8,
+              color: "#0A0F1E",
+              fontWeight: 700,
+              cursor: "pointer",
+              fontSize: 13,
+              display: "flex",
+              alignItems: "center",
+              gap: 6
+            }}
+          >
+            <Plus size={15} /> Νέο Έργο
+          </button>
+          <div style={{ display: "flex", gap: 6, marginLeft: 16 }}>
+            {["Όλα", "Live", "Draft"].map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  border: `1px solid ${filter === f ? "#C9A84C" : "rgba(255,255,255,0.1)"}`,
+                  background: filter === f ? "rgba(201,168,76,0.1)" : "transparent",
+                  color: filter === f ? "#C9A84C" : "rgba(255,255,255,0.45)",
+                  cursor: "pointer",
+                  fontSize: 13
+                }}
+              >
+                {f}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
@@ -758,37 +1083,53 @@ function ProjectsView() {
         <table style={{ width: "100%", borderCollapse: "collapse" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-              {["Project", "Κατηγορία", "Πελάτης", "Ημ/νία", "Status", ""].map((h) => (
+              {["Project", "Κατηγορία", "Tags / Έτος", "Αποτέλεσμα", "Status", ""].map((h) => (
                 <th key={h} style={{ padding: "14px 20px", textAlign: "left", color: "rgba(255,255,255,0.35)", fontSize: 12, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase" }}>{h}</th>
               ))}
             </tr>
           </thead>
           <tbody>
-            {mockProjects.map((p) => (
+            {filtered.map((p) => (
               <tr key={p.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s" }}
                 onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; }}
                 onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
               >
                 <td style={{ padding: "16px 20px" }}>
                   <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(201,168,76,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Star size={16} color="#C9A84C" />
-                    </div>
-                    <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>{p.title}</span>
+                    <img src={p.img} alt={p.name} style={{ width: 44, height: 33, objectFit: "cover", borderRadius: 6, background: "rgba(255,255,255,0.05)" }} />
+                    <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>{p.name}</span>
                   </div>
                 </td>
                 <td style={{ padding: "16px 20px", color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{p.category}</td>
-                <td style={{ padding: "16px 20px", color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{p.client}</td>
-                <td style={{ padding: "16px 20px", color: "rgba(255,255,255,0.35)", fontSize: 13 }}>{p.date}</td>
+                <td style={{ padding: "16px 20px", color: "rgba(255,255,255,0.5)", fontSize: 13 }}>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 4, maxWidth: 200 }}>
+                    {p.tags.map(t => (
+                      <span key={t} style={{ fontSize: 10, background: "rgba(255,255,255,0.05)", padding: "2px 6px", borderRadius: 4, color: "rgba(255,255,255,0.4)" }}>{t}</span>
+                    ))}
+                  </div>
+                  <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>{p.year}</div>
+                </td>
+                <td style={{ padding: "16px 20px", color: "#C9A84C", fontSize: 13, fontWeight: 500 }}>{p.results}</td>
                 <td style={{ padding: "16px 20px" }}>
-                  <span style={{ fontSize: 12, color: statusColor[p.status], background: `${statusColor[p.status]}18`, padding: "4px 10px", borderRadius: 999 }}>
-                    {p.status === "live" ? "Live" : p.status === "in-progress" ? "Σε εξέλιξη" : "Draft"}
+                  <span style={{ fontSize: 12, color: p.isLive ? "#22c55e" : "#6b7280", background: p.isLive ? "#22c55e18" : "#6b728018", padding: "4px 10px", borderRadius: 999 }}>
+                    {p.isLive ? "Live" : "Draft"}
                   </span>
                 </td>
                 <td style={{ padding: "16px 20px" }}>
-                  <button style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
-                    <ExternalLink size={14} /> Άνοιγμα
-                  </button>
+                  <div style={{ display: "flex", gap: 12 }}>
+                    <button
+                      onClick={() => openEdit(p)}
+                      style={{ background: "transparent", border: "none", color: "#C9A84C", cursor: "pointer", fontSize: 13 }}
+                    >
+                      Επεξεργασία
+                    </button>
+                    <button
+                      onClick={() => handleDelete(p.id)}
+                      style={{ background: "transparent", border: "none", color: "#ef4444", cursor: "pointer", fontSize: 13 }}
+                    >
+                      Διαγραφή
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -876,7 +1217,7 @@ function SettingsView() {
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
           <h3 style={{ color: "#C9A84C", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Στοιχεία Επικοινωνίας</h3>
           {[
-            { label: "Viber / Τηλέφωνο", value: viber, onChange: setViber },
+            { label: "Τηλέφωνο Επικοινωνίας", value: viber, onChange: setViber },
             { label: "Email Επικοινωνίας", value: email, onChange: setEmail },
           ].map((f) => (
             <div key={f.label} style={{ marginBottom: 16 }}>

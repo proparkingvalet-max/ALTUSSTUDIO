@@ -2,7 +2,6 @@ import { Outlet, useLocation } from "react-router";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { CookieBanner } from "./CookieBanner";
-import { ViberButton } from "./ViberButton";
 import { useEffect, useState } from "react";
 import { LanguageProvider } from "@/app/context/LanguageContext";
 
@@ -45,7 +44,6 @@ export function Root() {
         </main>
         <Footer />
         <CookieBanner />
-        <ViberButton />
       </div>
     </LanguageProvider>
   );

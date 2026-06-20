@@ -318,7 +318,7 @@ export const translations = {
       },
       info: {
         email: "Email",
-        phone: "Τηλέφωνο / Viber",
+        phone: "Τηλέφωνο",
         hours: "Ώρες Λειτουργίας",
         hoursVal: "Δευ-Παρ: 09:00 - 18:00",
         response: "Απαντάμε εντός 24 ωρών.",
@@ -651,7 +651,7 @@ export const translations = {
       },
       info: {
         email: "Email",
-        phone: "Phone / Viber",
+        phone: "Phone",
         hours: "Working Hours",
         hoursVal: "Mon-Fri: 09:00 - 18:00",
         response: "We respond within 24 hours.",

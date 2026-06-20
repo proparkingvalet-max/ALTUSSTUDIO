@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { motion } from "motion/react";
 import { Globe, ShoppingCart, Zap, Palette, BarChart2, RefreshCw, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { QuoteEstimator } from "@/app/components/QuoteEstimator";
 
 const icons = [Globe, ShoppingCart, Zap];
 const addonIcons = [Palette, BarChart2, RefreshCw];
@@ -226,6 +227,9 @@ export function ServicesPage() {
           </div>
         </div>
       </section>
+
+      {/* Quote Estimator */}
+      <QuoteEstimator />
 
       {/* CTA */}
       <section className="py-24 bg-[#F5F5F0] text-center">

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
 import { Menu, X } from "lucide-react";
-import altusLogo from "@/assets/altus_logo.png";
+import altusLogo from "@/assets/new_logo.png";
 import { useLanguage } from "@/app/context/LanguageContext";
 
 export function Navbar() {
@@ -47,14 +47,8 @@ export function Navbar() {
     >
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between h-20">
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2.5 group">
-          <img src={altusLogo} alt="Altus Studio Logo" className="h-9 w-auto object-contain" />
-          <span
-            className={`${logoColor} text-xl tracking-[0.12em] uppercase transition-colors duration-300`}
-            style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.15em" }}
-          >
-            Altus Studio
-          </span>
+        <Link to="/" className="flex items-center group">
+          <img src={altusLogo} alt="Altus Studio Logo" className="h-10 md:h-11 w-auto object-contain" />
         </Link>
 
         {/* Desktop Links */}

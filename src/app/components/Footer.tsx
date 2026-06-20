@@ -1,6 +1,6 @@
 import { Link } from "react-router";
 import { Instagram, Linkedin, Facebook, Send } from "lucide-react";
-import altusLogo from "@/assets/altus_logo.png";
+import altusLogo from "@/assets/new_logo.png";
 import { useLanguage } from "@/app/context/LanguageContext";
 
 export function Footer() {
@@ -20,14 +20,8 @@ export function Footer() {
         <div className="py-16 grid grid-cols-1 md:grid-cols-3 gap-12 items-start">
           {/* Brand */}
           <div>
-            <div className="flex items-center gap-2.5 mb-6">
-              <img src={altusLogo} alt="Altus Studio Logo" className="h-9 w-auto object-contain" />
-              <span
-                className="text-[#F5F5F0] text-xl tracking-widest uppercase"
-                style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}
-              >
-                Altus Studio
-              </span>
+            <div className="flex items-center mb-6">
+              <img src={altusLogo} alt="Altus Studio Logo" className="h-10 w-auto object-contain" />
             </div>
             <p
               className="text-[#F5F5F0]/50 text-sm leading-relaxed max-w-xs"

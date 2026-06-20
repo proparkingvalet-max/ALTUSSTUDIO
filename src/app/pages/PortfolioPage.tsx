@@ -3,71 +3,37 @@ import { Link } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
-
-import eshopPreview from "@/assets/eshop_preview.png";
-import eshopProduct from "@/assets/eshop_product.png";
-import resortPreview from "@/assets/resort_preview.png";
-import resortBooking from "@/assets/resort_booking.png";
-
-// Real Pro Parking Valet assets & screenshots
-import ppHero from "@/assets/proparking/hero_section.png";
-import ppBooking from "@/assets/proparking/booking_section.png";
-import ppMarina from "@/assets/proparking/marina.jpg";
-
 import { LightboxModal } from "@/app/components/LightboxModal";
-
-const categories = ["Όλα", "Website", "E-Shop"];
-
-const projects = [
-  {
-    name: "PRO Parking Valet",
-    category: "Website",
-    tags: ["React", "Tailwind CSS", "Framer Motion", "SEO"],
-    year: "2025",
-    description: "Premium υπηρεσίες valet parking στην Αθήνα με σύστημα κρατήσεων και concierge.",
-    img: ppHero,
-    results: "Live Project",
-    isLive: true,
-    gallery: [ppHero, ppBooking, ppMarina],
-  },
-  {
-    name: "AURA Design",
-    category: "E-Shop",
-    tags: ["React", "Tailwind CSS", "E-Commerce", "Stripe"],
-    year: "2025",
-    description: "High-end ηλεκτρονικό κατάστημα για luxury έπιπλα και design αντικείμενα.",
-    img: eshopPreview,
-    results: "+280% conversion rate",
-    gallery: [eshopPreview, eshopProduct],
-  },
-  {
-    name: "Aetheria Suites",
-    category: "Website",
-    tags: ["React", "Tailwind CSS", "Booking Engine", "Speed Optimized"],
-    year: "2025",
-    description: "Premium ιστοσελίδα για ένα luxury boutique resort στη Σαντορίνη με ενσωματωμένο σύστημα κρατήσεων.",
-    img: resortPreview,
-    results: "Live Booking Platform",
-    gallery: [resortPreview, resortBooking],
-  },
-];
+import { getProjects, Project } from "@/app/utils/projects";
 
 export function PortfolioPage() {
   const { t } = useLanguage();
+  const [projectsList, setProjectsList] = useState<Project[]>([]);
 
   const allLabel = t("portfolio.filter.all");
   const categories = [allLabel, "Website", "E-Shop"];
 
   useEffect(() => {
     document.title = `Portfolio | Altus Studio`;
-  }, []);
+    setProjectsList(getProjects());
+
+    const handleStorage = () => {
+      setProjectsList(getProjects());
+    };
+    window.addEventListener("storage", handleStorage);
+    const interval = setInterval(handleStorage, 1000);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      clearInterval(interval);
+    };
+  }, [allLabel]);
 
   const [activeCategory, setActiveCategory] = useState(allLabel);
   const [selectedTag, setSelectedTag] = useState<string | null>(null);
   const [hovered, setHovered] = useState<number | null>(null);
-  const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
-  const filtered = projects.filter((p) => {
+  const filtered = projectsList.filter((p) => {
     const matchesCategory = activeCategory === allLabel || p.category === activeCategory;
     const matchesTag = !selectedTag || p.tags.includes(selectedTag);
     return matchesCategory && matchesTag;
@@ -304,6 +270,11 @@ export function PortfolioPage() {
         images={selectedProject?.gallery || []}
         projectName={selectedProject?.name || ""}
         projectCategory={selectedProject?.category || ""}
+        projectDescription={selectedProject?.description || ""}
+        projectResults={selectedProject?.results || ""}
+        projectYear={selectedProject?.year || ""}
+        projectTags={selectedProject?.tags || []}
+        projectIsLive={selectedProject?.isLive || false}
       />
     </div>
   );

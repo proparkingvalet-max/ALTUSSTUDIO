@@ -3,6 +3,7 @@ import { Link } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, Globe, ShoppingCart, Zap, Smartphone, TrendingUp, HeadphonesIcon, Quote } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { getProjects, Project } from "@/app/utils/projects";
 
 import eshopPreview from "@/assets/eshop_preview.png";
 import eshopProduct from "@/assets/eshop_product.png";
@@ -693,40 +694,24 @@ function AboutSection() {
 
 // ─── Portfolio Preview ─────────────────────────────────────────────────────────
 
-const projects = [
-  {
-    name: "PRO Parking Valet",
-    category: "Website · Valet Services",
-    bg: "from-[#0d1220] to-[#141929]",
-    accent: "#C9A84C",
-    img: ppHero,
-    isLive: true,
-    gallery: [ppHero, ppBooking, ppMarina],
-  },
-  {
-    name: "AURA Design",
-    category: "E-Shop · Minimal Furniture",
-    bg: "from-[#1a1008] to-[#2d1f0f]",
-    accent: "#C9A84C",
-    img: eshopPreview,
-    isLive: false,
-    gallery: [eshopPreview, eshopProduct],
-  },
-  {
-    name: "Aetheria Suites",
-    category: "Website · Luxury Hospitality",
-    bg: "from-[#0b161e] to-[#12222d]",
-    accent: "#C9A84C",
-    img: resortPreview,
-    isLive: false,
-    gallery: [resortPreview, resortBooking],
-  },
-];
-
 function PortfolioSection() {
   const { t } = useLanguage();
+  const [projectsList, setProjectsList] = useState<Project[]>([]);
   const [hovered, setHovered] = useState<number | null>(null);
-  const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
+  const [selectedProject, setSelectedProject] = useState<Project | null>(null);
+
+  useEffect(() => {
+    setProjectsList(getProjects());
+    const handleStorage = () => {
+      setProjectsList(getProjects());
+    };
+    window.addEventListener("storage", handleStorage);
+    const interval = setInterval(handleStorage, 1000);
+    return () => {
+      window.removeEventListener("storage", handleStorage);
+      clearInterval(interval);
+    };
+  }, []);
 
   return (
     <section className="py-32 bg-[#F5F5F0]">
@@ -761,9 +746,9 @@ function PortfolioSection() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          {projects.map((project, i) => (
+          {projectsList.map((project, i) => (
             <motion.div
-              key={project.name}
+              key={project.id || project.name}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -804,9 +789,9 @@ function PortfolioSection() {
                 >
                   <p
                     className="text-xs tracking-[0.25em] uppercase mb-2 font-medium"
-                    style={{ fontFamily: "'DM Sans', sans-serif", color: project.accent }}
+                    style={{ fontFamily: "'DM Sans', sans-serif", color: "#C9A84C" }}
                   >
-                    {project.category}
+                    {project.category} {project.tags && project.tags.length > 0 ? `· ${project.tags[0]}` : ""}
                   </p>
                 </div>
 
@@ -854,6 +839,11 @@ function PortfolioSection() {
         images={selectedProject?.gallery || []}
         projectName={selectedProject?.name || ""}
         projectCategory={selectedProject?.category || ""}
+        projectDescription={selectedProject?.description || ""}
+        projectResults={selectedProject?.results || ""}
+        projectYear={selectedProject?.year || ""}
+        projectTags={selectedProject?.tags || []}
+        projectIsLive={selectedProject?.isLive || false}
       />
     </section>
   );

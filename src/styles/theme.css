@@ -189,16 +189,24 @@
 
   html {
     scroll-behavior: smooth;
+    scrollbar-width: thin;
+    scrollbar-color: #C9A84C #0A0F1E;
   }
 
+  /* Premium Custom Gold Scrollbar */
   ::-webkit-scrollbar {
-    width: 6px;
+    width: 8px;
+    height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: transparent;
+    background: #0A0F1E;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(10,15,30,0.2);
-    border-radius: 3px;
+    background: #C9A84C;
+    border-radius: 4px;
+    border: 2px solid #0A0F1E;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: #D4B76A;
   }
 }
