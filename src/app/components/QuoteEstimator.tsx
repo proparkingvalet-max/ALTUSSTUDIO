@@ -245,7 +245,7 @@ export function QuoteEstimator() {
                             <>
                               <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Πλατφόρμα e-commerce με καλάθι & checkout" : "Full e-commerce cart & checkout funnel"}</li>
                               <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σύνδεση με τράπεζες (Stripe, Viva) & PayPal" : "Stripe, Viva Wallet, & PayPal payment integration"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σύνδεση με courier για αυτόματα vouchers" : "Courier shipping automation support"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Διαχείριση αποστολών & υπολογισμός μεταφορικών" : "Shipping management & delivery cost calculation"}</li>
                               <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Πλήρες διαχειριστικό panel προϊόντων" : "Admin dashboard for catalog & orders management"}</li>
                               <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σύνθετα φίλτρα & αναζήτηση προϊόντων" : "Advanced product filters & search tools"}</li>
                               <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "GDPR Συμμόρφωση & Cookies Banner" : "GDPR Compliance & cookies privacy banner setup"}</li>

@@ -1481,7 +1481,7 @@ const packageDeliverables: Record<string, { titleEl: string; titleEn: string; pr
     items: [
       "Πλατφόρμα e-commerce με καλάθι & checkout",
       "Σύνδεση με τράπεζες (Stripe, Viva) & PayPal",
-      "Σύνδεση με courier για αυτόματα vouchers",
+      "Διαχείριση αποστολών & υπολογισμός μεταφορικών",
       "Πλήρες διαχειριστικό panel προϊόντων & παραγγελιών",
       "Σύνθετα φίλτρα & αναζήτηση προϊόντων",
       "GDPR Συμμόρφωση & Cookies Banner"
