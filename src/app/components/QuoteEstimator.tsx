@@ -195,6 +195,65 @@ export function QuoteEstimator() {
                         );
                       })}
                     </div>
+
+                    {/* Dynamic Service Deliverables description */}
+                    {projectType && (
+                      <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="mt-8 p-6 bg-white/2 border border-white/5 rounded-lg text-left"
+                      >
+                        <div className="mb-6 border-b border-white/10 pb-4">
+                          <p className="text-xs text-[#F5F5F0]/80 leading-relaxed">
+                            {projectType === "landing" && (lang === "el" 
+                              ? "Μία στοχευμένη, μονοσέλιδη παρουσίαση σχεδιασμένη αποκλειστικά για να μετατρέπει τους επισκέπτες σε πελάτες (leads/πωλήσεις). Ιδανική για διαφημιστικές καμπάνιες Google/Social Media, προώθηση ενός συγκεκριμένου προϊόντος/υπηρεσίας και γρήγορο ξεκίνημα με χαμηλό κόστος." 
+                              : "A focused, single-page website designed specifically to convert visitors into customers (leads/sales). Ideal for Google/Social Media campaigns, promoting a single product or service, and launching quickly with a lower budget.")}
+                            {projectType === "website" && (lang === "el" 
+                              ? "Η ολοκληρωμένη ψηφιακή παρουσία της επιχείρησής σας στο διαδίκτυο. Περιλαμβάνει πολλές σελίδες (Αρχική, Υπηρεσίες, Portfolio, Επικοινωνία, κ.α.) με μοναδικό design (Figma mockups) που χτίζει αξιοπιστία, αναδεικνύει το brand σας και προσελκύει νέους συνεργάτες/πελάτες." 
+                              : "The complete digital presence for your business. It includes multiple pages (Home, Services, Portfolio, About, Contact) with a custom design (Figma mockups) that builds credibility, showcases your brand, and attracts new B2B or B2C clients.")}
+                            {projectType === "eshop" && (lang === "el" 
+                              ? "Ένα υπερσύγχρονο ηλεκτρονικό κατάστημα για να πουλάτε τα προϊόντα σας 24/7 σε όλο τον κόσμο. Περιλαμβάνει καλάθι αγορών, απόλυτα ασφαλείς πληρωμές με κάρτες (Stripe/Viva/PayPal), αυτόματο υπολογισμό μεταφορικών, διασύνδεση με courier και εύκολο panel διαχείρισης." 
+                              : "A state-of-the-art e-commerce store to sell your products 24/7 globally. Features shopping cart checkout, secure card processing (Stripe/Viva/PayPal), automated shipping calculations, courier system integration, and an easy-to-use admin management panel.")}
+                          </p>
+                        </div>
+                        
+                        <h4 className="text-[#C9A84C] text-[10px] font-bold tracking-wider mb-4 uppercase">
+                          {lang === "el" ? "Βασικά Χαρακτηριστικά & Παραδοτέα:" : "Core Features & Deliverables:"}
+                        </h4>
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-[#F5F5F0]/70">
+                          {projectType === "landing" && (
+                            <>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Μονοσέλιδη στοχευμένη δομή (Single Page)" : "Single Page conversion-focused layout"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Έως 6 σχεδιαστικές ενότητες (Sections)" : "Up to 6 visual sections"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Φόρμα επικοινωνίας & κουμπιά Call-to-Action" : "Contact form & Call-to-action buttons"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Πλήρης responsive προσαρμογή για κινητά" : "100% Responsive mobile optimization"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σύνδεση με Google Analytics" : "Google Analytics integration"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Βασική βελτιστοποίηση ταχύτητας" : "Basic speed performance optimization"}</li>
+                            </>
+                          )}
+                          {projectType === "website" && (
+                            <>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Ολοκληρωμένη πολυσελιδική δομή (5-8 σελίδες)" : "Complete multi-page structure (5-8 pages)"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σελίδες: Αρχική, Υπηρεσίες, Portfolio, Επικοινωνία" : "Pages: Home, Services, Portfolio, Contact, About"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Bespoke UI/UX σχεδίαση μακέτας στο Figma" : "Bespoke UI/UX custom Figma design mockups"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Responsive για κινητά & tablets" : "100% Mobile & tablet responsive layout"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Setup Google Search Console (SEO)" : "Google Search Console index setup"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Βελτιστοποίηση ταχύτητας (PageSpeed 90+)" : "Advanced speed optimization (PageSpeed 90+)"}</li>
+                            </>
+                          )}
+                          {projectType === "eshop" && (
+                            <>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Πλατφόρμα e-commerce με καλάθι & checkout" : "Full e-commerce cart & checkout funnel"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σύνδεση με τράπεζες (Stripe, Viva) & PayPal" : "Stripe, Viva Wallet, & PayPal payment integration"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σύνδεση με courier για αυτόματα vouchers" : "Courier shipping automation support"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Πλήρες διαχειριστικό panel προϊόντων" : "Admin dashboard for catalog & orders management"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σύνθετα φίλτρα & αναζήτηση προϊόντων" : "Advanced product filters & search tools"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "GDPR Συμμόρφωση & Cookies Banner" : "GDPR Compliance & cookies privacy banner setup"}</li>
+                            </>
+                          )}
+                        </ul>
+                      </motion.div>
+                    )}
                   </div>
                 )}
 
