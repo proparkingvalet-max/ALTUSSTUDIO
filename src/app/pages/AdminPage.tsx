@@ -1447,6 +1447,48 @@ const serviceOptions = [
   { name: "Συνεχής Υποστήριξη (μηνιαία)", price: 80 },
 ];
 
+const packageDeliverables: Record<string, { titleEl: string; titleEn: string; price: number; items: string[] }> = {
+  landing: {
+    titleEl: "Landing Page (Μονοσέλιδο)",
+    titleEn: "Landing Page",
+    price: 250,
+    items: [
+      "Μονοσέλιδη στοχευμένη δομή (Single Page)",
+      "Έως 6 σχεδιαστικές ενότητες (Sections)",
+      "Φόρμα επικοινωνίας & κουμπιά Call-to-Action",
+      "Πλήρης responsive προσαρμογή για κινητά",
+      "Σύνδεση με Google Analytics",
+      "Βασική βελτιστοποίηση ταχύτητας"
+    ]
+  },
+  website: {
+    titleEl: "Εταιρική Ιστοσελίδα (Corporate)",
+    titleEn: "Corporate Website",
+    price: 350,
+    items: [
+      "Ολοκληρωμένη πολυσελιδική δομή (5-8 σελίδες)",
+      "Σελίδες: Αρχική, Υπηρεσίες, Portfolio, Επικοινωνία, Σχετικά",
+      "Bespoke UI/UX σχεδίαση μακέτας στο Figma",
+      "Responsive για κινητά & tablets",
+      "Setup Google Search Console (SEO)",
+      "Βελτιστοποίηση ταχύτητας (PageSpeed 90+)"
+    ]
+  },
+  eshop: {
+    titleEl: "Ηλεκτρονικό Κατάστημα (E-Shop)",
+    titleEn: "E-Shop",
+    price: 790,
+    items: [
+      "Πλατφόρμα e-commerce με καλάθι & checkout",
+      "Σύνδεση με τράπεζες (Stripe, Viva) & PayPal",
+      "Σύνδεση με courier για αυτόματα vouchers",
+      "Πλήρες διαχειριστικό panel προϊόντων & παραγγελιών",
+      "Σύνθετα φίλτρα & αναζήτηση προϊόντων",
+      "GDPR Συμμόρφωση & Cookies Banner"
+    ]
+  }
+};
+
 const savedQuotes = [
   { id: "Q001", client: "Γιώργος Παπαδόπουλος", date: "2026-05-15", total: "€520", status: "accepted" },
   { id: "Q002", client: "Μαρία Κωνσταντίνου", date: "2026-06-01", total: "€890", status: "pending" },
@@ -1457,8 +1499,10 @@ function QuotesView() {
   const [tab, setTab] = useState<"list" | "new">("list");
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
+  const [clientPhone, setClientPhone] = useState("");
+  const [selectedPackage, setSelectedPackage] = useState<"landing" | "website" | "eshop" | null>(null);
   const [note, setNote] = useState("");
-  const [items, setItems] = useState<{ name: string; price: number; qty: number }[]>([]);
+  const [items, setItems] = useState<{ name: string; price: number; qty: number; pkgKey?: string }[]>([]);
   const [printed, setPrinted] = useState(false);
 
   const addService = (svc: { name: string; price: number }) => {
@@ -1498,12 +1542,37 @@ function QuotesView() {
           <div><div class="logo">ALTUS STUDIO</div><div class="date">Ημ/νία: ${new Date().toLocaleDateString("el-GR")}</div></div>
           <div style="text-align:right"><div style="font-size:28px;font-weight:700;color:#C9A84C">ΠΡΟΣΦΟΡΑ</div><div style="color:#999;font-size:14px">#Q${Date.now().toString().slice(-4)}</div></div>
         </div>
-        <div class="to"><div class="label">Προς</div><div style="font-size:18px;font-weight:600">${clientName}</div><div style="color:#888;font-size:14px">${clientEmail}</div></div>
+        <div class="to">
+          <div class="label">Προς</div>
+          <div style="font-size:18px;font-weight:600">${clientName}</div>
+          <div style="color:#555;font-size:13px;margin-top:2px;">Email: ${clientEmail}</div>
+          ${clientPhone ? `<div style="color:#555;font-size:13px;margin-top:2px;">Τηλ: ${clientPhone}</div>` : ""}
+        </div>
         <table>
-          <thead><tr><th>Υπηρεσία</th><th>Τιμή</th><th>Ποσότητα</th><th style="text-align:right">Σύνολο</th></tr></thead>
+          <thead><tr><th>Υπηρεσία</th><th style="text-align:right">Τιμή</th><th style="text-align:right">Σύνολο</th></tr></thead>
           <tbody>
-            ${items.map((i) => `<tr><td>${i.name}</td><td>€${i.price}</td><td>${i.qty}</td><td style="text-align:right">€${i.price * i.qty}</td></tr>`).join("")}
-            <tr class="total-row"><td colspan="3" style="text-align:right;padding-top:20px">ΣΥΝΟΛΟ</td><td style="text-align:right;padding-top:20px" class="gold">€${total}</td></tr>
+            ${items.map((i) => {
+              const pk = i.pkgKey || "";
+              const deliv = pk && packageDeliverables[pk]
+                ? `<div style="margin-top:10px;padding:10px 14px;background:#f8f8f5;border-left:3px solid #C9A84C;border-radius:4px;">
+                     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#C9A84C;margin-bottom:6px;">Αναλυτικά Περιλαμβάνει:</div>
+                     <ul style="margin:0;padding-left:16px;font-size:12px;color:#444;line-height:1.8;">
+                       ${packageDeliverables[pk].items.map(d => `<li>${d}</li>`).join("")}
+                     </ul>
+                   </div>`
+                : "";
+              return `
+                <tr>
+                  <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;">
+                    <div style="font-size:15px;font-weight:700;color:#0A0F1E;">${i.name}</div>
+                    ${deliv}
+                  </td>
+                  <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;white-space:nowrap;">€${i.price} × ${i.qty}</td>
+                  <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;font-weight:700;color:#0A0F1E;white-space:nowrap;">€${i.price * i.qty}</td>
+                </tr>
+              `;
+            }).join("")}
+            <tr><td colspan="2" style="padding:16px;text-align:right;font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:1px;">ΣΥΝΟΛΙΚΟ ΚΟΣΤΟΣ</td><td style="padding:16px;text-align:right;font-size:22px;font-weight:700;color:#C9A84C;">€${total}</td></tr>
           </tbody>
         </table>
         ${note ? `<div class="note"><strong>Σημείωση:</strong> ${note}</div>` : ""}
@@ -1574,6 +1643,7 @@ function QuotesView() {
               {[
                 { label: "Ονοματεπώνυμο", value: clientName, set: setClientName, placeholder: "π.χ. Γιώργος Παπαδόπουλος" },
                 { label: "Email", value: clientEmail, set: setClientEmail, placeholder: "email@example.com" },
+                { label: "Τηλέφωνο Επικοινωνίας", value: clientPhone, set: setClientPhone, placeholder: "69XXXXXXXX" },
               ].map((f) => (
                 <div key={f.label} style={{ marginBottom: 12 }}>
                   <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 5 }}>{f.label}</label>
@@ -1584,9 +1654,62 @@ function QuotesView() {
               ))}
             </div>
 
+            {/* Package Selector */}
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Πακέτο Υπηρεσίας</div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
+                {[
+                  { id: "landing", label: "Landing Page", name: "Landing Page", price: 250 },
+                  { id: "website", label: "Corporate Site", name: "Κατασκευή Ιστοσελίδας", price: 350 },
+                  { id: "eshop", label: "E-Shop", name: "Ανάπτυξη E-Shop", price: 790 }
+                ].map((pkg) => {
+                  const isActive = selectedPackage === pkg.id;
+                  return (
+                    <button
+                      key={pkg.id}
+                      onClick={() => {
+                        setSelectedPackage(pkg.id as any);
+                        setItems((prev) => {
+                          const baseNames = ["Landing Page", "Κατασκευή Ιστοσελίδας", "Ανάπτυξη E-Shop"];
+                          const filtered = prev.filter((i) => !baseNames.includes(i.name));
+                          return [...filtered, { name: pkg.name, price: pkg.price, qty: 1, pkgKey: pkg.id }];
+                        });
+                      }}
+                      style={{
+                        padding: "10px",
+                        background: isActive ? "rgba(201,168,76,0.15)" : "rgba(255,255,255,0.03)",
+                        border: `1px solid ${isActive ? "#C9A84C" : "rgba(255,255,255,0.1)"}`,
+                        borderRadius: 10,
+                        color: isActive ? "#C9A84C" : "rgba(255,255,255,0.6)",
+                        fontSize: 12,
+                        fontWeight: isActive ? 600 : 400,
+                        cursor: "pointer",
+                        transition: "all 0.15s"
+                      }}
+                    >
+                      {pkg.label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {selectedPackage && (
+                <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 10, padding: 14, textAlign: "left" }}>
+                  <div style={{ color: "#C9A84C", fontSize: 11, fontWeight: 600, textTransform: "uppercase", marginBottom: 10 }}>
+                    Παροχές Πακέτου:
+                  </div>
+                  <ul style={{ paddingLeft: 16, margin: 0, fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: "1.6" }}>
+                    {packageDeliverables[selectedPackage].items.map((item, idx) => (
+                      <li key={idx} style={{ marginBottom: 4 }}>{item}</li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+            </div>
+
             {/* Service picker */}
             <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-              <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Επίλεξε Υπηρεσίες</div>
+              <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Επίλεξε Επιπλέον Υπηρεσίες</div>
               {serviceOptions.map((svc) => {
                 const added = items.some((i) => i.name === svc.name);
                 return (
@@ -1614,6 +1737,11 @@ function QuotesView() {
               <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, marginTop: 4 }}>
                 Προς: <span style={{ color: clientName ? "#fff" : "rgba(255,255,255,0.3)" }}>{clientName || "[Ονοματεπώνυμο]"}</span>
               </div>
+              {(clientEmail || clientPhone) && (
+                <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 11, marginTop: 4 }}>
+                  {clientEmail && `Email: ${clientEmail}`} {clientPhone && ` · Τηλ: ${clientPhone}`}
+                </div>
+              )}
             </div>
 
             {/* Items */}
@@ -1621,21 +1749,39 @@ function QuotesView() {
               {items.length === 0 ? (
                 <div style={{ textAlign: "center", color: "rgba(255,255,255,0.2)", padding: "30px 0", fontSize: 14 }}>Επίλεξε υπηρεσίες από αριστερά →</div>
               ) : (
-                items.map((item) => (
-                  <div key={item.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
-                    <div>
-                      <div style={{ color: "#fff", fontSize: 14 }}>{item.name}</div>
-                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>€{item.price} × {item.qty}</div>
+                items.map((item) => {
+                  const pk = (item as any).pkgKey || "";
+                  const delivs = pk && packageDeliverables[pk] ? packageDeliverables[pk].items : null;
+                  return (
+                    <div key={item.name} style={{ padding: "12px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                        <div>
+                          <div style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>{item.name}</div>
+                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>€{item.price} × {item.qty}</div>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                          <button onClick={() => changeQty(item.name, -1)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.4)", display: "flex" }}><MinusCircle size={16} /></button>
+                          <span style={{ color: "#fff", fontSize: 13, fontWeight: 600, minWidth: 20, textAlign: "center" }}>{item.qty}</span>
+                          <button onClick={() => changeQty(item.name, 1)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.4)", display: "flex" }}><PlusCircle size={16} /></button>
+                          <button onClick={() => removeItem(item.name)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#ef4444", display: "flex", marginLeft: 4 }}><X size={15} /></button>
+                          <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: 14, minWidth: 50, textAlign: "right" }}>€{item.price * item.qty}</span>
+                        </div>
+                      </div>
+                      {delivs && (
+                        <div style={{ marginTop: 10, padding: "10px 12px", background: "rgba(201,168,76,0.05)", borderLeft: "2px solid rgba(201,168,76,0.4)", borderRadius: "0 6px 6px 0" }}>
+                          <div style={{ color: "#C9A84C", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 6 }}>Αναλυτικά Περιλαμβάνει:</div>
+                          <ul style={{ margin: 0, paddingLeft: 14, listStyle: "none" }}>
+                            {delivs.map((d, idx) => (
+                              <li key={idx} style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, lineHeight: "1.7", display: "flex", gap: 6, alignItems: "flex-start" }}>
+                                <span style={{ color: "#C9A84C", marginTop: 1 }}>✓</span> {d}
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
                     </div>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                      <button onClick={() => changeQty(item.name, -1)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.4)", display: "flex" }}><MinusCircle size={16} /></button>
-                      <span style={{ color: "#fff", fontSize: 13, fontWeight: 600, minWidth: 20, textAlign: "center" }}>{item.qty}</span>
-                      <button onClick={() => changeQty(item.name, 1)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.4)", display: "flex" }}><PlusCircle size={16} /></button>
-                      <button onClick={() => removeItem(item.name)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#ef4444", display: "flex", marginLeft: 4 }}><X size={15} /></button>
-                      <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: 14, minWidth: 50, textAlign: "right" }}>€{item.price * item.qty}</span>
-                    </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 
