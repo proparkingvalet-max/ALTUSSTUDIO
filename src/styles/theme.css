@@ -209,4 +209,15 @@
   ::-webkit-scrollbar-thumb:hover {
     background: #D4B76A;
   }
+
+  /* Endless marquee scrolling ticker animation */
+  @keyframes marquee {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+  .animate-marquee {
+    display: flex;
+    width: max-content;
+    animation: marquee 30s linear infinite;
+  }
 }

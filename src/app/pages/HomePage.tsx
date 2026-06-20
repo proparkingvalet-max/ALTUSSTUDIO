@@ -1086,6 +1086,50 @@ function CTASection() {
   );
 }
 
+// ─── Logo Wall Ticker ──────────────────────────────────────────────────────────
+
+function LogoWallSection() {
+  const logos = [
+    { name: "PRO PARKING", desc: "VALET SERVICES" },
+    { name: "AURA DESIGN", desc: "LUXURY FURNITURE" },
+    { name: "AETHERIA RESORT", desc: "HOSPITALITY" },
+    { name: "KIPARISSI", desc: "FINE DINING" },
+    { name: "VELVET CAFE", desc: "BOUTIQUE COFFEE" },
+    { name: "CLAIRES", desc: "BESPOKE FASHION" },
+    { name: "EVAS CANDLES", desc: "ARTISAN SCENTS" },
+  ];
+
+  const doubleLogos = [...logos, ...logos, ...logos];
+
+  return (
+    <section className="py-12 bg-[#0A0F1E] border-y border-white/5 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 mb-4 text-center">
+        <p className="text-[#C9A84C]/60 text-[9px] tracking-[0.25em] uppercase font-semibold">
+          TRUSTED BY ELITE BRANDS & BUSINESSES
+        </p>
+      </div>
+      <div className="relative w-full flex overflow-x-hidden">
+        {/* Gradients to hide edges */}
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#0A0F1E] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#0A0F1E] to-transparent z-10 pointer-events-none" />
+
+        <div className="animate-marquee flex items-center gap-16 py-4">
+          {doubleLogos.map((logo, idx) => (
+            <div key={idx} className="flex flex-col items-center justify-center min-w-[150px] opacity-35 hover:opacity-100 hover:scale-105 transition-all duration-300 select-none group">
+              <span className="text-[#F5F5F0] text-sm font-bold tracking-[0.15em] font-serif uppercase group-hover:text-[#C9A84C] transition-colors">
+                {logo.name}
+              </span>
+              <span className="text-white/40 text-[8px] tracking-widest mt-1 block">
+                {logo.desc}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function HomePage() {
@@ -1098,6 +1142,7 @@ export function HomePage() {
   return (
     <>
       <HeroSection t={t} />
+      <LogoWallSection />
       <ServicesSection />
       <WhyUsSection />
       <ProcessSection />
