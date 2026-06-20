@@ -754,6 +754,7 @@ function ProjectsView() {
   const [formGallery, setFormGallery] = useState("");
   const [formResults, setFormResults] = useState("");
   const [formIsLive, setFormIsLive] = useState(false);
+  const [formLiveUrl, setFormLiveUrl] = useState("");
 
   useEffect(() => {
     setProjects(getProjects());
@@ -770,6 +771,7 @@ function ProjectsView() {
     setFormGallery(p.gallery.join(", "));
     setFormResults(p.results);
     setFormIsLive(p.isLive);
+    setFormLiveUrl(p.liveUrl || "");
   };
 
   const openNew = () => {
@@ -783,7 +785,8 @@ function ProjectsView() {
       img: "",
       results: "",
       isLive: false,
-      gallery: []
+      gallery: [],
+      liveUrl: ""
     });
     setFormName("");
     setFormCategory("Website");
@@ -794,6 +797,7 @@ function ProjectsView() {
     setFormGallery("");
     setFormResults("");
     setFormIsLive(false);
+    setFormLiveUrl("");
   };
 
   const handleSave = () => {
@@ -828,6 +832,7 @@ function ProjectsView() {
           gallery: galleryArray,
           results: formResults,
           isLive: formIsLive,
+          liveUrl: formLiveUrl,
         };
       }
     } else {
@@ -843,6 +848,7 @@ function ProjectsView() {
         gallery: galleryArray,
         results: formResults,
         isLive: formIsLive,
+        liveUrl: formLiveUrl,
       };
       updatedProjects.push(newProj);
     }
@@ -992,6 +998,18 @@ function ProjectsView() {
                   Είναι Live Project (Εμφάνιση πράσινης ένδειξης)
                 </label>
               </div>
+
+              {formIsLive && (
+                <div style={{ marginTop: 8 }}>
+                  <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Live URL Ιστοσελίδας</label>
+                  <input
+                    value={formLiveUrl}
+                    onChange={(e) => setFormLiveUrl(e.target.value)}
+                    placeholder="π.χ. https://proparkingvalet.gr"
+                    style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                  />
+                </div>
+              )}
             </div>
           </div>
 

@@ -844,6 +844,7 @@ function PortfolioSection() {
         projectYear={selectedProject?.year || ""}
         projectTags={selectedProject?.tags || []}
         projectIsLive={selectedProject?.isLive || false}
+        projectLiveUrl={selectedProject?.liveUrl || ""}
       />
     </section>
   );

@@ -15,6 +15,7 @@ interface LightboxModalProps {
   projectYear?: string;
   projectTags?: string[];
   projectIsLive?: boolean;
+  projectLiveUrl?: string;
 }
 
 export function LightboxModal({
@@ -28,6 +29,7 @@ export function LightboxModal({
   projectYear = "",
   projectTags = [],
   projectIsLive = false,
+  projectLiveUrl = "",
 }: LightboxModalProps) {
   const { lang } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -266,11 +268,27 @@ export function LightboxModal({
               </div>
 
               {/* Call to Action at bottom */}
-              <div className="mt-8 pt-6 border-t border-white/5">
+              <div className="mt-8 pt-6 border-t border-white/5 flex flex-col sm:flex-row gap-3">
+                {projectIsLive && projectLiveUrl && (
+                  <a
+                    href={projectLiveUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#C9A84C] text-[#0A0F1E] text-xs tracking-wider uppercase font-semibold hover:bg-[#D4B76A] transition-colors duration-300 text-center"
+                    style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    {lang === "el" ? "Επισκεψη Ιστοσελιδας" : "Visit Live Website"}
+                    <Globe size={14} />
+                  </a>
+                )}
                 <Link
                   to="/contact"
                   onClick={onClose}
-                  className="w-full flex items-center justify-center gap-2 py-4 bg-[#C9A84C] text-[#0A0F1E] text-xs tracking-wider uppercase font-semibold hover:bg-[#D4B76A] transition-colors duration-300"
+                  className={`flex-1 flex items-center justify-center gap-2 py-4 ${
+                    projectIsLive && projectLiveUrl
+                      ? "bg-white/5 border border-white/10 text-[#F5F5F0] hover:bg-white/10 hover:text-white"
+                      : "bg-[#C9A84C] text-[#0A0F1E] hover:bg-[#D4B76A]"
+                  } text-xs tracking-wider uppercase font-semibold transition-colors duration-300`}
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {lang === "el" ? "Συζητηστε για το εργο σας" : "Let's build yours"}

@@ -275,6 +275,7 @@ export function PortfolioPage() {
         projectYear={selectedProject?.year || ""}
         projectTags={selectedProject?.tags || []}
         projectIsLive={selectedProject?.isLive || false}
+        projectLiveUrl={selectedProject?.liveUrl || ""}
       />
     </div>
   );

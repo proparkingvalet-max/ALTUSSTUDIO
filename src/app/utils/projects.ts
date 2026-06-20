@@ -17,6 +17,7 @@ export interface Project {
   results: string;
   isLive: boolean;
   gallery: string[];
+  liveUrl?: string;
 }
 
 export const defaultProjects: Project[] = [
@@ -31,6 +32,7 @@ export const defaultProjects: Project[] = [
     results: "Live Project",
     isLive: true,
     gallery: [ppHero, ppBooking, ppMarina],
+    liveUrl: "https://proparkingvalet.gr",
   },
   {
     id: "project-2",
@@ -43,6 +45,7 @@ export const defaultProjects: Project[] = [
     results: "+280% conversion rate",
     isLive: false,
     gallery: [eshopPreview, eshopProduct],
+    liveUrl: "",
   },
   {
     id: "project-3",
@@ -55,6 +58,7 @@ export const defaultProjects: Project[] = [
     results: "Live Booking Platform",
     isLive: false,
     gallery: [resortPreview, resortBooking],
+    liveUrl: "",
   },
 ];
 
@@ -73,18 +77,25 @@ export function getProjects(): Project[] {
         return defaultProjects;
       }
 
-      return parsed.map((p: any) => ({
-        id: p.id || "project-" + Math.random(),
-        name: p.name || p.title || "Unnamed Project",
-        category: p.category || "Website",
-        tags: Array.isArray(p.tags) ? p.tags : [],
-        year: p.year || "",
-        description: p.description || "",
-        img: p.img || "",
-        results: p.results || "",
-        isLive: !!p.isLive,
-        gallery: Array.isArray(p.gallery) ? p.gallery : []
-      }));
+      return parsed.map((p: any) => {
+        let liveUrl = p.liveUrl || "";
+        if (!liveUrl && (p.name === "PRO Parking Valet" || p.title === "PRO Parking Valet")) {
+          liveUrl = "https://proparkingvalet.gr";
+        }
+        return {
+          id: p.id || "project-" + Math.random(),
+          name: p.name || p.title || "Unnamed Project",
+          category: p.category || "Website",
+          tags: Array.isArray(p.tags) ? p.tags : [],
+          year: p.year || "",
+          description: p.description || "",
+          img: p.img || "",
+          results: p.results || "",
+          isLive: !!p.isLive,
+          gallery: Array.isArray(p.gallery) ? p.gallery : [],
+          liveUrl: liveUrl,
+        };
+      });
     }
     return defaultProjects;
   } catch (e) {
