@@ -1,0 +1,1332 @@
+import { useState, useEffect } from "react";
+import {
+  LayoutDashboard,
+  MessageSquare,
+  FolderOpen,
+  Settings,
+  LogOut,
+  Eye,
+  TrendingUp,
+  Users,
+  Mail,
+  CheckCircle,
+  Clock,
+  Trash2,
+  ExternalLink,
+  ChevronRight,
+  Shield,
+  AlertCircle,
+  Bell,
+  BarChart2,
+  Globe,
+  Star,
+  X,
+  Phone,
+  FileText,
+  Plus,
+  Printer,
+  UserCheck,
+  Building2,
+  Send,
+  MinusCircle,
+  PlusCircle,
+} from "lucide-react";
+
+const ADMIN_PASSWORD = "gate71337";
+
+// ─── Mock Data ────────────────────────────────────────────────────────────────
+
+const mockMessages = [
+  {
+    id: 1,
+    name: "Γιώργος Παπαδόπουλος",
+    email: "g.papadopoulos@gmail.com",
+    phone: "6945123456",
+    service: "Κατασκευή Ιστοσελίδας",
+    message: "Καλησπέρα, ενδιαφέρομαι για κατασκευή ιστοσελίδας για το εστιατόριό μου στην Αθήνα. Είναι δυνατόν να μου στείλετε μια προσφορά;",
+    date: "2026-06-11",
+    read: false,
+    status: "new",
+  },
+  {
+    id: 2,
+    name: "Μαρία Κωνσταντίνου",
+    email: "maria.k@hotmail.com",
+    phone: "6977654321",
+    service: "E-Shop",
+    message: "Θέλω να φτιάξω ηλεκτρονικό κατάστημα για ρούχα. Έχω περίπου 200 προϊόντα. Πόσο κοστίζει;",
+    date: "2026-06-10",
+    read: true,
+    status: "replied",
+  },
+  {
+    id: 3,
+    name: "Νίκος Αλεξίου",
+    email: "n.alexiou@business.gr",
+    phone: "2101234567",
+    service: "Landing Page",
+    message: "Χρειάζομαι μια σελίδα για μια νέα υπηρεσία που θα λανσάρω τον Σεπτέμβριο. Θέλω να είναι έτοιμη σε 3 εβδομάδες.",
+    date: "2026-06-09",
+    read: true,
+    status: "in-progress",
+  },
+  {
+    id: 4,
+    name: "Ελένη Σταύρου",
+    email: "estavrou@yahoo.com",
+    phone: "6932112233",
+    service: "Εταιρική Ταυτότητα",
+    message: "Καλημέρα! Ξεκινώ μια νέα επιχείρηση καλλυντικών και χρειάζομαι λογότυπο και εταιρική ταυτότητα. Μπορούμε να μιλήσουμε;",
+    date: "2026-06-08",
+    read: true,
+    status: "completed",
+  },
+];
+
+const mockProjects = [
+  { id: 1, title: "Εστιατόριο Κυπαρίσσι", category: "Ιστοσελίδα", client: "Γεώργιος Κ.", status: "live", url: "#", date: "2026-05-20" },
+  { id: 2, title: "FashionGR Store", category: "E-Shop", client: "Άννα Π.", status: "live", url: "#", date: "2026-04-15" },
+  { id: 3, title: "LawOffice Δημητρίου", category: "Ιστοσελίδα", client: "Στέφανος Δ.", status: "live", url: "#", date: "2026-03-10" },
+  { id: 4, title: "BeautyBox Campaign", category: "Landing Page", client: "Μαρία Σ.", status: "in-progress", url: "#", date: "2026-06-01" },
+  { id: 5, title: "TechStart Landing", category: "Landing Page", client: "Νίκος Α.", status: "draft", url: "#", date: "2026-06-10" },
+];
+
+const stats = [
+  { label: "Επισκέπτες (Μήνας)", value: "1.847", change: "+12%", icon: Eye, color: "#C9A84C" },
+  { label: "Νέα Μηνύματα", value: "4", change: "+2 σήμερα", icon: Mail, color: "#4CAF50" },
+  { label: "Ενεργά Projects", value: "2", change: "1 ολοκλ.", icon: FolderOpen, color: "#2196F3" },
+  { label: "Ολοκλ. Projects", value: "12", change: "+3 φέτος", icon: CheckCircle, color: "#9C27B0" },
+];
+
+// ─── Status helpers ────────────────────────────────────────────────────────────
+
+const statusLabel: Record<string, string> = {
+  new: "Νέο",
+  replied: "Απαντήθηκε",
+  "in-progress": "Σε εξέλιξη",
+  completed: "Ολοκληρώθηκε",
+};
+
+const statusColor: Record<string, string> = {
+  new: "#ef4444",
+  replied: "#3b82f6",
+  "in-progress": "#f59e0b",
+  completed: "#22c55e",
+  live: "#22c55e",
+  draft: "#6b7280",
+};
+
+// ─── Login Screen ─────────────────────────────────────────────────────────────
+
+function LoginScreen({ onLogin }: { onLogin: () => void }) {
+  const [pw, setPw] = useState("");
+  const [error, setError] = useState(false);
+  const [shake, setShake] = useState(false);
+
+  const handle = () => {
+    if (pw === ADMIN_PASSWORD) {
+      onLogin();
+    } else {
+      setError(true);
+      setShake(true);
+      setTimeout(() => setShake(false), 600);
+    }
+  };
+
+  return (
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(135deg, #0A0F1E 0%, #111827 50%, #0A0F1E 100%)",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontFamily: "'DM Sans', sans-serif",
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* Decorative orbs */}
+      <div style={{ position: "absolute", top: "10%", left: "5%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "10%", right: "5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
+
+      <div
+        style={{
+          background: "rgba(255,255,255,0.03)",
+          border: "1px solid rgba(201,168,76,0.2)",
+          borderRadius: 24,
+          padding: "56px 48px",
+          width: "100%",
+          maxWidth: 420,
+          backdropFilter: "blur(20px)",
+          boxShadow: "0 40px 80px rgba(0,0,0,0.5)",
+          animation: shake ? "shake 0.5s ease" : undefined,
+        }}
+      >
+        {/* Logo */}
+        <div style={{ textAlign: "center", marginBottom: 40 }}>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 12 }}>
+            <Shield size={28} color="#C9A84C" />
+            <span style={{ fontSize: 22, fontWeight: 700, color: "#C9A84C", fontFamily: "'Playfair Display', serif", letterSpacing: "0.05em" }}>
+              ALTUS STUDIO
+            </span>
+          </div>
+          <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, letterSpacing: "0.2em", textTransform: "uppercase" }}>
+            Admin Dashboard
+          </p>
+        </div>
+
+        {/* Input */}
+        <div style={{ marginBottom: 16 }}>
+          <label style={{ color: "rgba(255,255,255,0.5)", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", display: "block", marginBottom: 8 }}>
+            Κωδικός Πρόσβασης
+          </label>
+          <input
+            type="password"
+            value={pw}
+            onChange={(e) => { setPw(e.target.value); setError(false); }}
+            onKeyDown={(e) => e.key === "Enter" && handle()}
+            placeholder="••••••••••"
+            style={{
+              width: "100%",
+              padding: "14px 18px",
+              background: "rgba(255,255,255,0.05)",
+              border: error ? "1px solid #ef4444" : "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 12,
+              color: "#fff",
+              fontSize: 16,
+              outline: "none",
+              letterSpacing: "0.2em",
+              boxSizing: "border-box",
+              transition: "border 0.2s",
+            }}
+          />
+          {error && (
+            <div style={{ display: "flex", alignItems: "center", gap: 6, marginTop: 8, color: "#ef4444", fontSize: 13 }}>
+              <AlertCircle size={14} />
+              Λάθος κωδικός. Δοκιμάστε ξανά.
+            </div>
+          )}
+        </div>
+
+        <button
+          onClick={handle}
+          style={{
+            width: "100%",
+            padding: "14px",
+            background: "linear-gradient(135deg, #C9A84C, #a8893e)",
+            border: "none",
+            borderRadius: 12,
+            color: "#0A0F1E",
+            fontSize: 15,
+            fontWeight: 700,
+            cursor: "pointer",
+            letterSpacing: "0.05em",
+            transition: "opacity 0.2s, transform 0.1s",
+          }}
+          onMouseEnter={(e) => { (e.target as HTMLButtonElement).style.opacity = "0.9"; }}
+          onMouseLeave={(e) => { (e.target as HTMLButtonElement).style.opacity = "1"; }}
+        >
+          Είσοδος →
+        </button>
+      </div>
+
+      <style>{`
+        @keyframes shake {
+          0%,100%{transform:translateX(0)}
+          20%{transform:translateX(-8px)}
+          40%{transform:translateX(8px)}
+          60%{transform:translateX(-6px)}
+          80%{transform:translateX(6px)}
+        }
+      `}</style>
+    </div>
+  );
+}
+
+// ─── Sidebar ───────────────────────────────────────────────────────────────────
+
+const navItems = [
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "messages", label: "Μηνύματα", icon: MessageSquare, badge: 1 },
+  { id: "projects", label: "Projects", icon: FolderOpen },
+  { id: "clients", label: "Πελάτες (CRM)", icon: Users },
+  { id: "quotes", label: "Προσφορές", icon: FileText },
+  { id: "analytics", label: "Στατιστικά", icon: BarChart2 },
+  { id: "settings", label: "Ρυθμίσεις", icon: Settings },
+];
+
+function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (s: string) => void; onLogout: () => void }) {
+  return (
+    <aside
+      style={{
+        width: 240,
+        minHeight: "100vh",
+        background: "#0A0F1E",
+        borderRight: "1px solid rgba(201,168,76,0.15)",
+        display: "flex",
+        flexDirection: "column",
+        padding: "32px 0",
+        position: "sticky",
+        top: 0,
+        flexShrink: 0,
+      }}
+    >
+      {/* Logo */}
+      <div style={{ padding: "0 24px 32px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <div style={{ width: 36, height: 36, background: "rgba(201,168,76,0.15)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(201,168,76,0.3)" }}>
+            <Globe size={18} color="#C9A84C" />
+          </div>
+          <div>
+            <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 14, fontFamily: "'Playfair Display', serif", letterSpacing: "0.05em" }}>ALTUS</div>
+            <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, letterSpacing: "0.1em" }}>ADMIN PANEL</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Nav */}
+      <nav style={{ flex: 1, padding: "16px 12px" }}>
+        {navItems.map((item) => {
+          const Icon = item.icon;
+          const isActive = active === item.id;
+          return (
+            <button
+              key={item.id}
+              onClick={() => setActive(item.id)}
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+                padding: "11px 14px",
+                borderRadius: 10,
+                border: "none",
+                background: isActive ? "rgba(201,168,76,0.12)" : "transparent",
+                color: isActive ? "#C9A84C" : "rgba(255,255,255,0.45)",
+                cursor: "pointer",
+                textAlign: "left",
+                fontSize: 14,
+                fontWeight: isActive ? 600 : 400,
+                transition: "all 0.2s",
+                marginBottom: 2,
+                borderLeft: isActive ? "3px solid #C9A84C" : "3px solid transparent",
+              }}
+            >
+              <Icon size={17} />
+              <span style={{ flex: 1 }}>{item.label}</span>
+              {item.badge && (
+                <span style={{ background: "#ef4444", color: "#fff", borderRadius: 9999, fontSize: 10, padding: "2px 7px", fontWeight: 700 }}>
+                  {item.badge}
+                </span>
+              )}
+            </button>
+          );
+        })}
+      </nav>
+
+      {/* Logout */}
+      <div style={{ padding: "16px 12px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
+        <button
+          onClick={onLogout}
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "11px 14px",
+            borderRadius: 10,
+            border: "none",
+            background: "transparent",
+            color: "rgba(255,255,255,0.3)",
+            cursor: "pointer",
+            fontSize: 14,
+            transition: "all 0.2s",
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.color = "#ef4444"; (e.currentTarget as HTMLElement).style.background = "rgba(239,68,68,0.08)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.color = "rgba(255,255,255,0.3)"; (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+        >
+          <LogOut size={17} />
+          Αποσύνδεση
+        </button>
+      </div>
+    </aside>
+  );
+}
+
+// ─── Dashboard View ────────────────────────────────────────────────────────────
+
+function DashboardView() {
+  const recentMessages = mockMessages.slice(0, 3);
+
+  return (
+    <div>
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 6 }}>
+          Καλωσήρθες 👋
+        </h1>
+        <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 14 }}>
+          Εδώ είναι η σύνοψη της επιχείρησής σου σήμερα.
+        </p>
+      </div>
+
+      {/* Stats Grid */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+        {stats.map((s) => {
+          const Icon = s.icon;
+          return (
+            <div
+              key={s.label}
+              style={{
+                background: "rgba(255,255,255,0.03)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 16,
+                padding: "24px 20px",
+                transition: "border 0.2s",
+              }}
+              onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.border = `1px solid ${s.color}40`; }}
+              onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.border = "1px solid rgba(255,255,255,0.08)"; }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 16 }}>
+                <div style={{ width: 40, height: 40, borderRadius: 10, background: `${s.color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                  <Icon size={18} color={s.color} />
+                </div>
+                <span style={{ fontSize: 11, color: "#22c55e", background: "rgba(34,197,94,0.1)", padding: "3px 8px", borderRadius: 999 }}>
+                  {s.change}
+                </span>
+              </div>
+              <div style={{ fontSize: 30, fontWeight: 700, color: "#fff", marginBottom: 4 }}>{s.value}</div>
+              <div style={{ fontSize: 12, color: "rgba(255,255,255,0.4)" }}>{s.label}</div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Recent messages */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+            <h3 style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>Πρόσφατα Μηνύματα</h3>
+            <Mail size={16} color="#C9A84C" />
+          </div>
+          {recentMessages.map((msg) => (
+            <div
+              key={msg.id}
+              style={{
+                padding: "12px 0",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+                display: "flex",
+                gap: 12,
+                alignItems: "center",
+              }}
+            >
+              <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(201,168,76,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 14, color: "#C9A84C", fontWeight: 700 }}>
+                {msg.name[0]}
+              </div>
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{msg.name}</div>
+                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{msg.service}</div>
+              </div>
+              <span style={{ fontSize: 11, color: statusColor[msg.status] || "#fff", background: `${statusColor[msg.status]}18`, padding: "3px 8px", borderRadius: 999, whiteSpace: "nowrap" }}>
+                {statusLabel[msg.status]}
+              </span>
+            </div>
+          ))}
+        </div>
+
+        {/* Active Projects */}
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+            <h3 style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>Ενεργά Projects</h3>
+            <FolderOpen size={16} color="#C9A84C" />
+          </div>
+          {mockProjects.filter((p) => p.status !== "live").map((p) => (
+            <div
+              key={p.id}
+              style={{
+                padding: "12px 0",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+                display: "flex",
+                gap: 12,
+                alignItems: "center",
+              }}
+            >
+              <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(33,150,243,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                <Globe size={16} color="#2196F3" />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{p.title}</div>
+                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{p.client}</div>
+              </div>
+              <span style={{ fontSize: 11, color: statusColor[p.status], background: `${statusColor[p.status]}18`, padding: "3px 8px", borderRadius: 999 }}>
+                {p.status === "in-progress" ? "Σε εξέλιξη" : "Draft"}
+              </span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Messages View ─────────────────────────────────────────────────────────────
+
+function MessagesView() {
+  const [messages, setMessages] = useState(mockMessages);
+  const [selected, setSelected] = useState<typeof mockMessages[0] | null>(null);
+  const [reply, setReply] = useState("");
+  const [sent, setSent] = useState(false);
+
+  const markRead = (id: number) => {
+    setMessages((prev) => prev.map((m) => m.id === id ? { ...m, read: true } : m));
+  };
+
+  const deleteMsg = (id: number) => {
+    setMessages((prev) => prev.filter((m) => m.id !== id));
+    if (selected?.id === id) { setSelected(null); setReply(""); }
+  };
+
+  const markStatus = (id: number, status: string) => {
+    setMessages((prev) => prev.map((m) => m.id === id ? { ...m, status } : m));
+    if (selected?.id === id) setSelected((prev) => prev ? { ...prev, status } : prev);
+  };
+
+  const handleSelect = (msg: typeof mockMessages[0]) => {
+    setSelected(msg);
+    markRead(msg.id);
+    setSent(false);
+    // Pre-fill a polite opening
+    setReply(`Αγαπητέ/ή ${msg.name.split(" ")[0]},\n\nΕυχαριστούμε για το ενδιαφέρον σας.\n\n`);
+  };
+
+  const sendReply = () => {
+    if (!selected || !reply.trim()) return;
+    const subject = encodeURIComponent(`Re: Ενδιαφέρον για ${selected.service} – Altus Studio`);
+    const body = encodeURIComponent(reply);
+    window.open(`mailto:${selected.email}?subject=${subject}&body=${body}`);
+    setSent(true);
+    markStatus(selected.id, "replied");
+    setTimeout(() => setSent(false), 3000);
+  };
+
+  return (
+    <div>
+      <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 24 }}>
+        Μηνύματα
+      </h1>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: 20 }}>
+        {/* List */}
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden", maxHeight: "75vh", overflowY: "auto" }}>
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              onClick={() => handleSelect(msg)}
+              style={{
+                padding: "16px 20px",
+                borderBottom: "1px solid rgba(255,255,255,0.06)",
+                cursor: "pointer",
+                background: selected?.id === msg.id ? "rgba(201,168,76,0.08)" : msg.read ? "transparent" : "rgba(255,255,255,0.03)",
+                borderLeft: selected?.id === msg.id ? "3px solid #C9A84C" : "3px solid transparent",
+                transition: "all 0.15s",
+              }}
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                <span style={{ color: "#fff", fontSize: 14, fontWeight: msg.read ? 500 : 700 }}>{msg.name}</span>
+                <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{msg.date}</span>
+              </div>
+              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginBottom: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                {msg.message}
+              </div>
+              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                <span style={{ fontSize: 11, color: "#C9A84C", background: "rgba(201,168,76,0.1)", padding: "2px 8px", borderRadius: 999 }}>
+                  {msg.service}
+                </span>
+                <span style={{ fontSize: 11, color: statusColor[msg.status], background: `${statusColor[msg.status]}18`, padding: "2px 8px", borderRadius: 999 }}>
+                  {statusLabel[msg.status]}
+                </span>
+                {!msg.read && <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#3b82f6", display: "inline-block" }} />}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Detail + Compose */}
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+          {selected ? (
+            <>
+              {/* Header */}
+              <div style={{ padding: "24px 28px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                  <div>
+                    <h2 style={{ color: "#fff", fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{selected.name}</h2>
+                    <a href={`mailto:${selected.email}`} style={{ color: "#C9A84C", fontSize: 13, textDecoration: "none" }}>{selected.email}</a>
+                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, margin: "0 8px" }}>·</span>
+                    <a href={`tel:${selected.phone}`} style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, textDecoration: "none" }}>{selected.phone}</a>
+                  </div>
+                  <button onClick={() => deleteMsg(selected.id)} style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "7px 12px", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
+                    <Trash2 size={13} /> Διαγραφή
+                  </button>
+                </div>
+
+                {/* Status changer */}
+                <div style={{ display: "flex", gap: 6, marginTop: 14 }}>
+                  {Object.entries(statusLabel).map(([key, label]) => (
+                    <button
+                      key={key}
+                      onClick={() => markStatus(selected.id, key)}
+                      style={{
+                        padding: "4px 12px",
+                        borderRadius: 999,
+                        border: `1px solid ${selected.status === key ? statusColor[key] : "rgba(255,255,255,0.1)"}`,
+                        background: selected.status === key ? `${statusColor[key]}18` : "transparent",
+                        color: selected.status === key ? statusColor[key] : "rgba(255,255,255,0.35)",
+                        cursor: "pointer",
+                        fontSize: 12,
+                        transition: "all 0.15s",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Original message */}
+              <div style={{ padding: "20px 28px", borderBottom: "1px solid rgba(255,255,255,0.06)", background: "rgba(255,255,255,0.02)" }}>
+                <div style={{ fontSize: 11, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 8 }}>
+                  Υπηρεσία: {selected.service} · {selected.date}
+                </div>
+                <p style={{ color: "rgba(255,255,255,0.7)", fontSize: 14, lineHeight: 1.7, margin: 0 }}>{selected.message}</p>
+              </div>
+
+              {/* Compose reply */}
+              <div style={{ padding: "20px 28px", flex: 1, display: "flex", flexDirection: "column" }}>
+                <div style={{ fontSize: 12, color: "rgba(255,255,255,0.35)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 10 }}>
+                  ✏️ Σύνταξη Απάντησης
+                </div>
+                <textarea
+                  value={reply}
+                  onChange={(e) => setReply(e.target.value)}
+                  placeholder="Γράψε την απάντησή σου εδώ..."
+                  style={{
+                    flex: 1,
+                    minHeight: 160,
+                    width: "100%",
+                    padding: "14px 16px",
+                    background: "rgba(255,255,255,0.04)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 12,
+                    color: "#fff",
+                    fontSize: 14,
+                    lineHeight: 1.7,
+                    outline: "none",
+                    resize: "vertical",
+                    fontFamily: "'DM Sans', sans-serif",
+                    boxSizing: "border-box",
+                    marginBottom: 14,
+                  }}
+                />
+
+                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                  <button
+                    onClick={sendReply}
+                    disabled={!reply.trim()}
+                    style={{
+                      flex: 1,
+                      padding: "13px",
+                      background: sent
+                        ? "rgba(34,197,94,0.15)"
+                        : reply.trim()
+                          ? "linear-gradient(135deg, #C9A84C, #a8893e)"
+                          : "rgba(255,255,255,0.06)",
+                      border: sent ? "1px solid rgba(34,197,94,0.4)" : "none",
+                      borderRadius: 10,
+                      color: sent ? "#22c55e" : reply.trim() ? "#0A0F1E" : "rgba(255,255,255,0.2)",
+                      fontWeight: 700,
+                      fontSize: 14,
+                      cursor: reply.trim() ? "pointer" : "not-allowed",
+                      transition: "all 0.3s",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8,
+                    }}
+                  >
+                    {sent ? <><CheckCircle size={15} /> Αποστέλθηκε!</> : <><Mail size={15} /> Αποστολή Απάντησης</>}
+                  </button>
+                  <a
+                    href={`tel:${selected.phone}`}
+                    style={{
+                      padding: "13px 18px",
+                      background: "rgba(255,255,255,0.05)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: 10,
+                      color: "rgba(255,255,255,0.6)",
+                      fontSize: 13,
+                      textDecoration: "none",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: 6,
+                      whiteSpace: "nowrap",
+                    }}
+                  >
+                    📞 Κλήση
+                  </a>
+                </div>
+                {sent && (
+                  <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginTop: 8, textAlign: "center" }}>
+                    Το email app σου άνοιξε με έτοιμη την απάντηση. Πάτα «Αποστολή» εκεί για να σταλεί!
+                  </p>
+                )}
+              </div>
+            </>
+          ) : (
+            <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.2)", padding: 48, gap: 12 }}>
+              <Mail size={48} />
+              <p style={{ margin: 0 }}>Επίλεξε ένα μήνυμα για να απαντήσεις</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+
+// ─── Projects View ─────────────────────────────────────────────────────────────
+
+function ProjectsView() {
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>
+          Projects
+        </h1>
+        <div style={{ display: "flex", gap: 8 }}>
+          {["Όλα", "Live", "Σε εξέλιξη", "Draft"].map((f) => (
+            <button key={f} style={{ padding: "8px 16px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: f === "Όλα" ? "rgba(201,168,76,0.1)" : "transparent", color: f === "Όλα" ? "#C9A84C" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 13 }}>
+              {f}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <thead>
+            <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+              {["Project", "Κατηγορία", "Πελάτης", "Ημ/νία", "Status", ""].map((h) => (
+                <th key={h} style={{ padding: "14px 20px", textAlign: "left", color: "rgba(255,255,255,0.35)", fontSize: 12, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase" }}>{h}</th>
+              ))}
+            </tr>
+          </thead>
+          <tbody>
+            {mockProjects.map((p) => (
+              <tr key={p.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)", transition: "background 0.15s" }}
+                onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; }}
+                onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+              >
+                <td style={{ padding: "16px 20px" }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ width: 36, height: 36, borderRadius: 10, background: "rgba(201,168,76,0.1)", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Star size={16} color="#C9A84C" />
+                    </div>
+                    <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>{p.title}</span>
+                  </div>
+                </td>
+                <td style={{ padding: "16px 20px", color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{p.category}</td>
+                <td style={{ padding: "16px 20px", color: "rgba(255,255,255,0.5)", fontSize: 13 }}>{p.client}</td>
+                <td style={{ padding: "16px 20px", color: "rgba(255,255,255,0.35)", fontSize: 13 }}>{p.date}</td>
+                <td style={{ padding: "16px 20px" }}>
+                  <span style={{ fontSize: 12, color: statusColor[p.status], background: `${statusColor[p.status]}18`, padding: "4px 10px", borderRadius: 999 }}>
+                    {p.status === "live" ? "Live" : p.status === "in-progress" ? "Σε εξέλιξη" : "Draft"}
+                  </span>
+                </td>
+                <td style={{ padding: "16px 20px" }}>
+                  <button style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, fontSize: 13 }}>
+                    <ExternalLink size={14} /> Άνοιγμα
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  );
+}
+
+// ─── Analytics View ────────────────────────────────────────────────────────────
+
+function AnalyticsView() {
+  const months = ["Ιαν", "Φεβ", "Μαρ", "Απρ", "Μάι", "Ιούν"];
+  const visitors = [410, 580, 720, 890, 1100, 1847];
+  const max = Math.max(...visitors);
+
+  return (
+    <div>
+      <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 24 }}>
+        Στατιστικά
+      </h1>
+      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 32, marginBottom: 20 }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12 }}>
+          <div>
+            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>Επισκέπτες ανά μήνα</div>
+            <div style={{ color: "#fff", fontSize: 28, fontWeight: 700 }}>1.847 <span style={{ color: "#22c55e", fontSize: 14 }}>↑ +12%</span></div>
+          </div>
+          <div style={{ display: "flex", gap: 6 }}>
+            {["7Η", "30Η", "6Μ", "1Χ"].map((r) => (
+              <button key={r} style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: r === "6Μ" ? "rgba(201,168,76,0.1)" : "transparent", color: r === "6Μ" ? "#C9A84C" : "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 12 }}>{r}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* Simple bar chart */}
+        <div style={{ display: "flex", alignItems: "flex-end", gap: 12, height: 160, marginTop: 24 }}>
+          {months.map((m, i) => (
+            <div key={m} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
+              <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{visitors[i]}</div>
+              <div style={{ width: "100%", background: `linear-gradient(180deg, #C9A84C, #a8893e)`, height: `${(visitors[i] / max) * 120}px`, borderRadius: "4px 4px 0 0", opacity: i === months.length - 1 ? 1 : 0.4, transition: "opacity 0.2s" }} />
+              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{m}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
+        {[
+          { label: "Μέση διάρκεια επίσκεψης", value: "2:34", sub: "λεπτά" },
+          { label: "Bounce Rate", value: "38%", sub: "παραμένουν" },
+          { label: "Νέοι επισκέπτες", value: "74%", sub: "του μήνα" },
+        ].map((s) => (
+          <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 8 }}>{s.label}</div>
+            <div style={{ color: "#fff", fontSize: 28, fontWeight: 700 }}>{s.value}</div>
+            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{s.sub}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── Settings View ─────────────────────────────────────────────────────────────
+
+function SettingsView() {
+  const [viber, setViber] = useState("6970015447");
+  const [email, setEmail] = useState("info@altusstudio.gr");
+  const [saved, setSaved] = useState(false);
+
+  const save = () => {
+    setSaved(true);
+    setTimeout(() => setSaved(false), 2000);
+  };
+
+  return (
+    <div>
+      <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 24 }}>
+        Ρυθμίσεις
+      </h1>
+
+      <div style={{ display: "grid", gap: 20 }}>
+        {/* Contact Info */}
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
+          <h3 style={{ color: "#C9A84C", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Στοιχεία Επικοινωνίας</h3>
+          {[
+            { label: "Viber / Τηλέφωνο", value: viber, onChange: setViber },
+            { label: "Email Επικοινωνίας", value: email, onChange: setEmail },
+          ].map((f) => (
+            <div key={f.label} style={{ marginBottom: 16 }}>
+              <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6, letterSpacing: "0.1em" }}>{f.label}</label>
+              <input
+                value={f.value}
+                onChange={(e) => f.onChange(e.target.value)}
+                style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+              />
+            </div>
+          ))}
+        </div>
+
+        {/* Security */}
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
+          <h3 style={{ color: "#C9A84C", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Ασφάλεια</h3>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)", borderRadius: 10 }}>
+            <CheckCircle size={18} color="#22c55e" />
+            <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 14 }}>Ο λογαριασμός σας προστατεύεται με κωδικό.</span>
+          </div>
+        </div>
+
+        <button
+          onClick={save}
+          style={{
+            padding: "14px 32px",
+            background: saved ? "rgba(34,197,94,0.15)" : "linear-gradient(135deg, #C9A84C, #a8893e)",
+            border: saved ? "1px solid rgba(34,197,94,0.4)" : "none",
+            borderRadius: 12,
+            color: saved ? "#22c55e" : "#0A0F1E",
+            fontWeight: 700,
+            fontSize: 15,
+            cursor: "pointer",
+            alignSelf: "flex-start",
+            transition: "all 0.3s",
+            display: "flex",
+            alignItems: "center",
+            gap: 8,
+          }}
+        >
+          {saved ? <><CheckCircle size={16} /> Αποθηκεύτηκε!</> : "Αποθήκευση Αλλαγών"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── CRM View ─────────────────────────────────────────────────────────────────
+
+const mockClients = [
+  { id: 1, name: "Γιώργος Παπαδόπουλος", business: "Εστιατόριο Κυπαρίσσι", email: "g.papadopoulos@gmail.com", phone: "6945123456", projects: 1, totalValue: "€450", status: "active", since: "2026-05" },
+  { id: 2, name: "Άννα Πετράκη", business: "FashionGR Store", email: "anna@fashiongr.gr", phone: "6977001122", projects: 1, totalValue: "€890", status: "active", since: "2026-04" },
+  { id: 3, name: "Στέφανος Δημητρίου", business: "LawOffice Δημητρίου", email: "s.dimitriou@lawoffice.gr", phone: "2101234567", projects: 1, totalValue: "€520", status: "active", since: "2026-03" },
+  { id: 4, name: "Μαρία Σταύρου", business: "BeautyBox", email: "maria@beautybox.gr", phone: "6932112233", projects: 1, totalValue: "€350", status: "in-progress", since: "2026-06" },
+  { id: 5, name: "Νίκος Αλεξίου", business: "TechStart", email: "n.alexiou@business.gr", phone: "6966778899", projects: 1, totalValue: "€250", status: "lead", since: "2026-06" },
+];
+
+function CRMView() {
+  const [selected, setSelected] = useState<typeof mockClients[0] | null>(null);
+  const [filter, setFilter] = useState("all");
+
+  const clientStatus: Record<string, { label: string; color: string }> = {
+    active: { label: "Ενεργός", color: "#22c55e" },
+    "in-progress": { label: "Σε εξέλιξη", color: "#f59e0b" },
+    lead: { label: "Υποψήφιος", color: "#3b82f6" },
+  };
+
+  const filtered = filter === "all" ? mockClients : mockClients.filter((c) => c.status === filter);
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>Πελάτες</h1>
+          <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>{mockClients.length} πελάτες συνολικά</p>
+        </div>
+        <div style={{ display: "flex", gap: 8 }}>
+          {["all", "active", "in-progress", "lead"].map((f) => (
+            <button
+              key={f}
+              onClick={() => setFilter(f)}
+              style={{
+                padding: "8px 14px", borderRadius: 8,
+                border: `1px solid ${filter === f ? "#C9A84C" : "rgba(255,255,255,0.1)"}`,
+                background: filter === f ? "rgba(201,168,76,0.1)" : "transparent",
+                color: filter === f ? "#C9A84C" : "rgba(255,255,255,0.45)",
+                cursor: "pointer", fontSize: 13,
+              }}
+            >
+              {f === "all" ? "Όλοι" : clientStatus[f]?.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: 20 }}>
+        {/* Client list */}
+        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+          {filtered.map((c) => (
+            <div
+              key={c.id}
+              onClick={() => setSelected(c)}
+              style={{
+                background: selected?.id === c.id ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
+                border: `1px solid ${selected?.id === c.id ? "rgba(201,168,76,0.3)" : "rgba(255,255,255,0.08)"}`,
+                borderRadius: 14, padding: "16px 18px", cursor: "pointer", transition: "all 0.15s",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(201,168,76,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#C9A84C", fontWeight: 700, flexShrink: 0 }}>
+                  {c.name[0]}
+                </div>
+                <div style={{ flex: 1, minWidth: 0 }}>
+                  <div style={{ color: "#fff", fontWeight: 600, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</div>
+                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{c.business}</div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+                  <span style={{ fontSize: 13, fontWeight: 700, color: "#C9A84C" }}>{c.totalValue}</span>
+                  <span style={{ fontSize: 11, color: clientStatus[c.status]?.color, background: `${clientStatus[c.status]?.color}18`, padding: "2px 8px", borderRadius: 999 }}>{clientStatus[c.status]?.label}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Client detail */}
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden" }}>
+          {selected ? (
+            <>
+              {/* Profile header */}
+              <div style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.03))", padding: "28px 28px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                  <div style={{ width: 60, height: 60, borderRadius: "50%", background: "rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: "#C9A84C", fontWeight: 700, border: "2px solid rgba(201,168,76,0.3)" }}>
+                    {selected.name[0]}
+                  </div>
+                  <div>
+                    <h2 style={{ color: "#fff", fontSize: 20, fontWeight: 700, marginBottom: 2 }}>{selected.name}</h2>
+                    <div style={{ display: "flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.45)", fontSize: 13 }}>
+                      <Building2 size={13} /> {selected.business}
+                    </div>
+                  </div>
+                  <span style={{ marginLeft: "auto", fontSize: 12, color: clientStatus[selected.status]?.color, background: `${clientStatus[selected.status]?.color}18`, padding: "4px 12px", borderRadius: 999, border: `1px solid ${clientStatus[selected.status]?.color}40` }}>
+                    {clientStatus[selected.status]?.label}
+                  </span>
+                </div>
+              </div>
+
+              <div style={{ padding: 28 }}>
+                {/* Contact info */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+                  {[
+                    { icon: Mail, label: "Email", value: selected.email, href: `mailto:${selected.email}` },
+                    { icon: Phone, label: "Τηλέφωνο", value: selected.phone, href: `tel:${selected.phone}` },
+                    { icon: FolderOpen, label: "Projects", value: `${selected.projects} project${selected.projects !== 1 ? "s" : ""}`, href: null },
+                    { icon: Star, label: "Αξία", value: selected.totalValue, href: null },
+                  ].map((info) => (
+                    <div key={info.label} style={{ background: "rgba(255,255,255,0.04)", borderRadius: 10, padding: "12px 14px" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.35)", fontSize: 11, marginBottom: 6, letterSpacing: "0.1em", textTransform: "uppercase" }}>
+                        <info.icon size={12} /> {info.label}
+                      </div>
+                      {info.href ? (
+                        <a href={info.href} style={{ color: "#C9A84C", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>{info.value}</a>
+                      ) : (
+                        <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{info.value}</div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                {/* Quick actions */}
+                <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
+                  <a href={`mailto:${selected.email}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "linear-gradient(135deg, #C9A84C, #a8893e)", borderRadius: 10, color: "#0A0F1E", fontWeight: 700, fontSize: 13, textDecoration: "none" }}>
+                    <Mail size={14} /> Αποστολή Email
+                  </a>
+                  <a href={`tel:${selected.phone}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, textDecoration: "none" }}>
+                    <Phone size={14} /> Κλήση
+                  </a>
+                  <button style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "rgba(255,255,255,0.7)", fontSize: 13, cursor: "pointer" }}>
+                    <FileText size={14} /> Νέα Προσφορά
+                  </button>
+                </div>
+
+                <div style={{ marginTop: 20, padding: 16, background: "rgba(255,255,255,0.03)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)" }}>
+                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>Πελάτης από</div>
+                  <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 14 }}>{selected.since}</div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div style={{ height: "100%", minHeight: 400, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "rgba(255,255,255,0.2)", gap: 12 }}>
+              <UserCheck size={48} />
+              <p style={{ margin: 0 }}>Επίλεξε έναν πελάτη για λεπτομέρειες</p>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Quotes View ───────────────────────────────────────────────────────────────
+
+const serviceOptions = [
+  { name: "Κατασκευή Ιστοσελίδας", price: 350 },
+  { name: "Ανάπτυξη E-Shop", price: 790 },
+  { name: "Landing Page", price: 250 },
+  { name: "Εταιρική Ταυτότητα", price: 200 },
+  { name: "SEO & Στατιστικά", price: 150 },
+  { name: "Συνεχής Υποστήριξη (μηνιαία)", price: 80 },
+];
+
+const savedQuotes = [
+  { id: "Q001", client: "Γιώργος Παπαδόπουλος", date: "2026-05-15", total: "€520", status: "accepted" },
+  { id: "Q002", client: "Μαρία Κωνσταντίνου", date: "2026-06-01", total: "€890", status: "pending" },
+  { id: "Q003", client: "Νίκος Αλεξίου", date: "2026-06-10", total: "€250", status: "draft" },
+];
+
+function QuotesView() {
+  const [tab, setTab] = useState<"list" | "new">("list");
+  const [clientName, setClientName] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [note, setNote] = useState("");
+  const [items, setItems] = useState<{ name: string; price: number; qty: number }[]>([]);
+  const [printed, setPrinted] = useState(false);
+
+  const addService = (svc: { name: string; price: number }) => {
+    setItems((prev) => {
+      const exists = prev.find((i) => i.name === svc.name);
+      if (exists) return prev;
+      return [...prev, { ...svc, qty: 1 }];
+    });
+  };
+
+  const removeItem = (name: string) => setItems((prev) => prev.filter((i) => i.name !== name));
+  const changeQty = (name: string, delta: number) => {
+    setItems((prev) => prev.map((i) => i.name === name ? { ...i, qty: Math.max(1, i.qty + delta) } : i));
+  };
+
+  const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
+
+  const printQuote = () => {
+    if (!clientName) return;
+    const content = `
+      <html><head><style>
+        body { font-family: 'DM Sans', Arial, sans-serif; padding: 60px; color: #0A0F1E; }
+        h1 { font-size: 32px; margin-bottom: 4px; } h2 { font-size: 20px; color: #888; font-weight: 400; margin-bottom: 40px; }
+        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; }
+        .logo { font-size: 24px; font-weight: 700; letter-spacing: 2px; color: #C9A84C; }
+        .date { color: #888; font-size: 14px; margin-top: 4px; }
+        .to { margin-bottom: 40px; } .label { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 6px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+        th { text-align: left; padding: 12px 16px; background: #f8f8f5; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; }
+        td { padding: 14px 16px; border-bottom: 1px solid #eee; font-size: 15px; }
+        .total-row { font-weight: 700; font-size: 18px; color: #C9A84C; }
+        .note { background: #f8f8f5; padding: 20px; border-radius: 8px; font-size: 14px; color: #555; margin-top: 20px; }
+        .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #bbb; }
+        .gold { color: #C9A84C; }
+      </style></head><body>
+        <div class="header">
+          <div><div class="logo">ALTUS STUDIO</div><div class="date">Ημ/νία: ${new Date().toLocaleDateString("el-GR")}</div></div>
+          <div style="text-align:right"><div style="font-size:28px;font-weight:700;color:#C9A84C">ΠΡΟΣΦΟΡΑ</div><div style="color:#999;font-size:14px">#Q${Date.now().toString().slice(-4)}</div></div>
+        </div>
+        <div class="to"><div class="label">Προς</div><div style="font-size:18px;font-weight:600">${clientName}</div><div style="color:#888;font-size:14px">${clientEmail}</div></div>
+        <table>
+          <thead><tr><th>Υπηρεσία</th><th>Τιμή</th><th>Ποσότητα</th><th style="text-align:right">Σύνολο</th></tr></thead>
+          <tbody>
+            ${items.map((i) => `<tr><td>${i.name}</td><td>€${i.price}</td><td>${i.qty}</td><td style="text-align:right">€${i.price * i.qty}</td></tr>`).join("")}
+            <tr class="total-row"><td colspan="3" style="text-align:right;padding-top:20px">ΣΥΝΟΛΟ</td><td style="text-align:right;padding-top:20px" class="gold">€${total}</td></tr>
+          </tbody>
+        </table>
+        ${note ? `<div class="note"><strong>Σημείωση:</strong> ${note}</div>` : ""}
+        <div class="footer">Altus Studio · info@altusstudio.gr · 6970015447 · altusstudio.gr</div>
+      </body></html>
+    `;
+    const w = window.open("", "_blank");
+    if (w) { w.document.write(content); w.document.close(); w.print(); }
+    setPrinted(true);
+    setTimeout(() => setPrinted(false), 3000);
+  };
+
+  const quoteStatusColor: Record<string, string> = { accepted: "#22c55e", pending: "#f59e0b", draft: "#6b7280" };
+  const quoteStatusLabel: Record<string, string> = { accepted: "Εγκρίθηκε", pending: "Αναμονή", draft: "Draft" };
+
+  return (
+    <div>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>Προσφορές</h1>
+        <div style={{ display: "flex", gap: 8 }}>
+          <button onClick={() => setTab("list")} style={{ padding: "9px 18px", borderRadius: 10, border: `1px solid ${tab === "list" ? "#C9A84C" : "rgba(255,255,255,0.1)"}`, background: tab === "list" ? "rgba(201,168,76,0.1)" : "transparent", color: tab === "list" ? "#C9A84C" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 13 }}>Ιστορικό</button>
+          <button onClick={() => setTab("new")} style={{ padding: "9px 18px", borderRadius: 10, border: "1px solid #C9A84C", background: "rgba(201,168,76,0.15)", color: "#C9A84C", cursor: "pointer", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+            <Plus size={14} /> Νέα Προσφορά
+          </button>
+        </div>
+      </div>
+
+      {tab === "list" ? (
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                {["#", "Πελάτης", "Ημ/νία", "Σύνολο", "Status", ""].map((h) => (
+                  <th key={h} style={{ padding: "14px 20px", textAlign: "left", color: "rgba(255,255,255,0.35)", fontSize: 12, fontWeight: 500, letterSpacing: "0.1em", textTransform: "uppercase" }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {savedQuotes.map((q) => (
+                <tr key={q.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
+                  onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; }}
+                  onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
+                >
+                  <td style={{ padding: "14px 20px", color: "#C9A84C", fontWeight: 600, fontSize: 13 }}>{q.id}</td>
+                  <td style={{ padding: "14px 20px", color: "#fff", fontSize: 14, fontWeight: 500 }}>{q.client}</td>
+                  <td style={{ padding: "14px 20px", color: "rgba(255,255,255,0.4)", fontSize: 13 }}>{q.date}</td>
+                  <td style={{ padding: "14px 20px", color: "#fff", fontWeight: 700, fontSize: 15 }}>{q.total}</td>
+                  <td style={{ padding: "14px 20px" }}>
+                    <span style={{ fontSize: 12, color: quoteStatusColor[q.status], background: `${quoteStatusColor[q.status]}18`, padding: "4px 10px", borderRadius: 999 }}>{quoteStatusLabel[q.status]}</span>
+                  </td>
+                  <td style={{ padding: "14px 20px" }}>
+                    <button onClick={() => setTab("new")} style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 4 }}>
+                      <FileText size={14} /> Άνοιγμα
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      ) : (
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 20 }}>
+          {/* Left: services selector */}
+          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            {/* Client info */}
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Στοιχεία Πελάτη</div>
+              {[
+                { label: "Ονοματεπώνυμο", value: clientName, set: setClientName, placeholder: "π.χ. Γιώργος Παπαδόπουλος" },
+                { label: "Email", value: clientEmail, set: setClientEmail, placeholder: "email@example.com" },
+              ].map((f) => (
+                <div key={f.label} style={{ marginBottom: 12 }}>
+                  <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 5 }}>{f.label}</label>
+                  <input value={f.value} onChange={(e) => f.set(e.target.value)} placeholder={f.placeholder}
+                    style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Service picker */}
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
+              <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Επίλεξε Υπηρεσίες</div>
+              {serviceOptions.map((svc) => {
+                const added = items.some((i) => i.name === svc.name);
+                return (
+                  <div key={svc.name} onClick={() => addService(svc)}
+                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", borderRadius: 10, marginBottom: 6, cursor: "pointer", background: added ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${added ? "rgba(201,168,76,0.25)" : "rgba(255,255,255,0.06)"}`, transition: "all 0.15s" }}
+                  >
+                    <span style={{ color: added ? "#C9A84C" : "rgba(255,255,255,0.7)", fontSize: 14 }}>{svc.name}</span>
+                    <span style={{ color: added ? "#C9A84C" : "rgba(255,255,255,0.4)", fontSize: 13, fontWeight: 600 }}>€{svc.price}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Right: preview */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28, display: "flex", flexDirection: "column" }}>
+            <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Προεπισκόπηση Προσφοράς</div>
+
+            {/* Header preview */}
+            <div style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.08), transparent)", borderRadius: 12, padding: "16px 20px", marginBottom: 20, border: "1px solid rgba(201,168,76,0.15)" }}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 16, fontFamily: "'Playfair Display', serif" }}>ALTUS STUDIO</div>
+                <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{new Date().toLocaleDateString("el-GR")}</div>
+              </div>
+              <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, marginTop: 4 }}>
+                Προς: <span style={{ color: clientName ? "#fff" : "rgba(255,255,255,0.3)" }}>{clientName || "[Ονοματεπώνυμο]"}</span>
+              </div>
+            </div>
+
+            {/* Items */}
+            <div style={{ flex: 1, marginBottom: 20 }}>
+              {items.length === 0 ? (
+                <div style={{ textAlign: "center", color: "rgba(255,255,255,0.2)", padding: "30px 0", fontSize: 14 }}>Επίλεξε υπηρεσίες από αριστερά →</div>
+              ) : (
+                items.map((item) => (
+                  <div key={item.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 0", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+                    <div>
+                      <div style={{ color: "#fff", fontSize: 14 }}>{item.name}</div>
+                      <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>€{item.price} × {item.qty}</div>
+                    </div>
+                    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                      <button onClick={() => changeQty(item.name, -1)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.4)", display: "flex" }}><MinusCircle size={16} /></button>
+                      <span style={{ color: "#fff", fontSize: 13, fontWeight: 600, minWidth: 20, textAlign: "center" }}>{item.qty}</span>
+                      <button onClick={() => changeQty(item.name, 1)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.4)", display: "flex" }}><PlusCircle size={16} /></button>
+                      <button onClick={() => removeItem(item.name)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#ef4444", display: "flex", marginLeft: 4 }}><X size={15} /></button>
+                      <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: 14, minWidth: 50, textAlign: "right" }}>€{item.price * item.qty}</span>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Total */}
+            {items.length > 0 && (
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderTop: "2px solid rgba(201,168,76,0.3)", marginBottom: 16 }}>
+                <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, fontWeight: 600 }}>ΣΥΝΟΛΟ</span>
+                <span style={{ color: "#C9A84C", fontSize: 24, fontWeight: 700 }}>€{total}</span>
+              </div>
+            )}
+
+            {/* Note */}
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="Σημείωση (προαιρετικά)..."
+              style={{ width: "100%", minHeight: 70, padding: "10px 14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "rgba(255,255,255,0.7)", fontSize: 13, outline: "none", resize: "vertical", fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box", marginBottom: 14 }}
+            />
+
+            <button
+              onClick={printQuote}
+              disabled={!clientName || items.length === 0}
+              style={{ width: "100%", padding: "13px", background: printed ? "rgba(34,197,94,0.15)" : (clientName && items.length > 0 ? "linear-gradient(135deg, #C9A84C, #a8893e)" : "rgba(255,255,255,0.05)"), border: printed ? "1px solid rgba(34,197,94,0.4)" : "none", borderRadius: 12, color: printed ? "#22c55e" : (clientName && items.length > 0 ? "#0A0F1E" : "rgba(255,255,255,0.2)"), fontWeight: 700, fontSize: 15, cursor: clientName && items.length > 0 ? "pointer" : "not-allowed", transition: "all 0.3s", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
+            >
+              {printed ? <><CheckCircle size={16} /> Έτοιμο για εκτύπωση!</> : <><Printer size={16} /> Εκτύπωση / PDF</>}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Main Component ────────────────────────────────────────────────────────────
+
+export function AdminPage() {
+  const [loggedIn, setLoggedIn] = useState(false);
+  const [activeSection, setActiveSection] = useState("dashboard");
+
+  // Persist session
+  useEffect(() => {
+    const session = sessionStorage.getItem("altus_admin");
+    if (session === "true") setLoggedIn(true);
+  }, []);
+
+  const handleLogin = () => {
+    sessionStorage.setItem("altus_admin", "true");
+    setLoggedIn(true);
+  };
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("altus_admin");
+    setLoggedIn(false);
+  };
+
+  if (!loggedIn) return <LoginScreen onLogin={handleLogin} />;
+
+  const renderContent = () => {
+    switch (activeSection) {
+      case "dashboard": return <DashboardView />;
+      case "messages": return <MessagesView />;
+      case "projects": return <ProjectsView />;
+      case "clients": return <CRMView />;
+      case "quotes": return <QuotesView />;
+      case "analytics": return <AnalyticsView />;
+      case "settings": return <SettingsView />;
+      default: return <DashboardView />;
+    }
+  };
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        minHeight: "100vh",
+        background: "#0d1117",
+        fontFamily: "'DM Sans', sans-serif",
+      }}
+    >
+      <Sidebar active={activeSection} setActive={setActiveSection} onLogout={handleLogout} />
+
+      <main style={{ flex: 1, padding: "40px 48px", overflowY: "auto" }}>
+        {/* Top bar */}
+        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 32, gap: 12 }}>
+          <button style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "8px 12px", cursor: "pointer", color: "rgba(255,255,255,0.5)", display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+            <Bell size={15} /> Ειδοποιήσεις
+          </button>
+          <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "8px 14px" }}>
+            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#C9A84C", fontWeight: 700 }}>A</div>
+            <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>Admin</span>
+          </div>
+        </div>
+
+        {renderContent()}
+      </main>
+    </div>
+  );
+}
