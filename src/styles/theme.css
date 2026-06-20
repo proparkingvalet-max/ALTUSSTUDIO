@@ -221,3 +221,91 @@
     animation: marquee 30s linear infinite;
   }
 }
+
+/* Global Light Mode overrides for sections with hardcoded dark styles */
+html.light {
+  background-color: #F5F5F0;
+  color: #0A0F1E;
+}
+
+html.light .bg-\[\#0A0F1E\] {
+  background-color: #F5F5F0 !important;
+}
+
+html.light .bg-\[\#0C142B\] {
+  background-color: #FFFFFF !important;
+}
+
+html.light .text-\[\#F5F5F0\] {
+  color: #0A0F1E !important;
+}
+
+html.light .text-\[\#F5F5F0\]\/50 {
+  color: rgba(10, 15, 30, 0.5) !important;
+}
+
+html.light .text-\[\#F5F5F0\]\/60 {
+  color: rgba(10, 15, 30, 0.6) !important;
+}
+
+html.light .text-\[\#F5F5F0\]\/70 {
+  color: rgba(10, 15, 30, 0.7) !important;
+}
+
+html.light .text-\[\#F5F5F0\]\/80 {
+  color: rgba(10, 15, 30, 0.8) !important;
+}
+
+html.light .border-white\/5 {
+  border-color: rgba(10, 15, 30, 0.08) !important;
+}
+
+html.light .border-white\/10 {
+  border-color: rgba(10, 15, 30, 0.12) !important;
+}
+
+html.light .border-white\/15 {
+  border-color: rgba(10, 15, 30, 0.15) !important;
+}
+
+html.light .border-white\/20 {
+  border-color: rgba(10, 15, 30, 0.2) !important;
+}
+
+html.light .bg-white\/5 {
+  background-color: rgba(10, 15, 30, 0.05) !important;
+  color: #0A0F1E !important;
+}
+
+html.light .bg-white\/5:hover {
+  background-color: rgba(10, 15, 30, 0.08) !important;
+}
+
+html.light .hover\:bg-white\/10:hover {
+  background-color: rgba(10, 15, 30, 0.1) !important;
+}
+
+html.light .bg-white\/2 {
+  background-color: rgba(10, 15, 30, 0.02) !important;
+}
+
+html.light .hover\:bg-white\/5:hover {
+  background-color: rgba(10, 15, 30, 0.05) !important;
+}
+
+html.light .border-white\/25 {
+  border-color: rgba(10, 15, 30, 0.15) !important;
+}
+
+html.light .bg-black\/20 {
+  background-color: rgba(10, 15, 30, 0.03) !important;
+}
+
+html.light input, html.light select, html.light textarea {
+  color: #0A0F1E !important;
+}
+
+html.light .bg-white\/10 {
+  background-color: rgba(10, 15, 30, 0.08) !important;
+}
+

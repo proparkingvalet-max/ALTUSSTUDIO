@@ -5,6 +5,7 @@ import { CookieBanner } from "./CookieBanner";
 import { useEffect, useState } from "react";
 import { LanguageProvider } from "@/app/context/LanguageContext";
 import { AltusAssistant } from "./AltusAssistant";
+import { ThemeProvider } from "@/app/context/ThemeContext";
 
 export function Root() {
   const { pathname } = useLocation();
@@ -32,22 +33,24 @@ export function Root() {
   }, [pathname]);
 
   return (
-    <LanguageProvider>
-      <div className="min-h-screen bg-[#F5F5F0]">
-        {/* Global Scroll Progress Bar */}
-        <div
-          className="fixed top-0 left-0 h-[3px] bg-[#C9A84C] z-[9999] transition-all duration-75 ease-out"
-          style={{ width: `${scrollProgress}%` }}
-        />
-        <Navbar />
-        <main>
-          <Outlet />
-        </main>
-        <Footer />
-        <CookieBanner />
-        <AltusAssistant />
-      </div>
-    </LanguageProvider>
+    <ThemeProvider>
+      <LanguageProvider>
+        <div className="min-h-screen bg-[#F5F5F0]">
+          {/* Global Scroll Progress Bar */}
+          <div
+            className="fixed top-0 left-0 h-[3px] bg-[#C9A84C] z-[9999] transition-all duration-75 ease-out"
+            style={{ width: `${scrollProgress}%` }}
+          />
+          <Navbar />
+          <main>
+            <Outlet />
+          </main>
+          <Footer />
+          <CookieBanner />
+          <AltusAssistant />
+        </div>
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 

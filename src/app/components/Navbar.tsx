@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router";
-import { Menu, X } from "lucide-react";
+import { Menu, X, Sun, Moon } from "lucide-react";
 import altusLogo from "@/assets/new_logo.png";
+import logoDark from "@/assets/logo_dark.png";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { useTheme } from "@/app/context/ThemeContext";
 
 export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const location = useLocation();
   const { lang, setLang, t } = useLanguage();
+  const { theme, toggleTheme } = useTheme();
 
   const navLinks = [
     { label: t("nav.home"), to: "/" },
@@ -17,10 +20,12 @@ export function Navbar() {
     { label: t("nav.contact"), to: "/contact" },
   ];
 
-  const isDark =
+  const isDarkPage =
     location.pathname === "/" ||
     location.pathname === "/portfolio" ||
     location.pathname === "/contact";
+
+  const isVisualDark = theme === "dark" && isDarkPage;
 
   useEffect(() => {
     const handler = () => setScrolled(window.scrollY > 40);
@@ -34,12 +39,12 @@ export function Navbar() {
 
   const navBg = scrolled
     ? "bg-[#0A0F1E]/95 backdrop-blur-md shadow-lg shadow-black/20"
-    : isDark
+    : isVisualDark
     ? "bg-transparent"
     : "bg-[#F5F5F0]/95 backdrop-blur-md shadow-sm shadow-black/5";
 
-  const textColor = isDark || scrolled ? "text-[#F5F5F0]" : "text-[#0A0F1E]";
-  const logoColor = isDark || scrolled ? "text-[#F5F5F0]" : "text-[#0A0F1E]";
+  const textColor = isVisualDark || scrolled ? "text-[#F5F5F0]" : "text-[#0A0F1E]";
+  const activeLogo = theme === "light" && !scrolled ? logoDark : altusLogo;
 
   return (
     <nav
@@ -48,7 +53,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6 lg:px-12 flex items-center justify-between h-20">
         {/* Logo */}
         <Link to="/" className="flex items-center group">
-          <img src={altusLogo} alt="Altus Studio Logo" className="h-10 md:h-11 w-auto object-contain" />
+          <img src={activeLogo} alt="Altus Studio Logo" className="h-10 md:h-11 w-auto object-contain" />
         </Link>
 
         {/* Desktop Links */}
@@ -71,8 +76,8 @@ export function Navbar() {
 
           {/* Language Toggle */}
           <div
-            className="flex items-center gap-0 rounded-full border border-white/20 overflow-hidden"
-            style={{ borderColor: isDark || scrolled ? "rgba(255,255,255,0.15)" : "rgba(10,15,30,0.15)" }}
+            className="flex items-center gap-0 rounded-full border overflow-hidden"
+            style={{ borderColor: isVisualDark || scrolled ? "rgba(255,255,255,0.15)" : "rgba(10,15,30,0.15)" }}
           >
             {(["el", "en"] as const).map((l) => (
               <button
@@ -87,7 +92,7 @@ export function Navbar() {
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
                   background: lang === l ? "#C9A84C" : "transparent",
-                  color: lang === l ? "#0A0F1E" : (isDark || scrolled ? "rgba(255,255,255,0.5)" : "rgba(10,15,30,0.4)"),
+                  color: lang === l ? "#0A0F1E" : (isVisualDark || scrolled ? "rgba(255,255,255,0.5)" : "rgba(10,15,30,0.4)"),
                   border: "none",
                   cursor: "pointer",
                 }}
@@ -96,6 +101,19 @@ export function Navbar() {
               </button>
             ))}
           </div>
+
+          {/* Theme Toggle (Desktop) */}
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-full border transition-all duration-300 cursor-pointer ${
+              isVisualDark || scrolled
+                ? "border-white/10 text-[#F5F5F0] hover:bg-white/5"
+                : "border-black/10 text-[#0A0F1E] hover:bg-black/5"
+            }`}
+            title={theme === "dark" ? "Light Mode" : "Dark Mode"}
+          >
+            {theme === "dark" ? <Sun size={15} /> : <Moon size={15} />}
+          </button>
 
           <Link
             to="/contact"
@@ -106,9 +124,9 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Mobile: lang toggle + hamburger */}
+        {/* Mobile: lang toggle + theme toggle + hamburger */}
         <div className="md:hidden flex items-center gap-3">
-          <div className="flex items-center rounded-full overflow-hidden border" style={{ borderColor: isDark || scrolled ? "rgba(255,255,255,0.15)" : "rgba(10,15,30,0.15)" }}>
+          <div className="flex items-center rounded-full overflow-hidden border" style={{ borderColor: isVisualDark || scrolled ? "rgba(255,255,255,0.15)" : "rgba(10,15,30,0.15)" }}>
             {(["el", "en"] as const).map((l) => (
               <button
                 key={l}
@@ -118,7 +136,7 @@ export function Navbar() {
                   fontSize: 10,
                   fontWeight: lang === l ? 700 : 400,
                   background: lang === l ? "#C9A84C" : "transparent",
-                  color: lang === l ? "#0A0F1E" : (isDark || scrolled ? "rgba(255,255,255,0.5)" : "rgba(10,15,30,0.4)"),
+                  color: lang === l ? "#0A0F1E" : (isVisualDark || scrolled ? "rgba(255,255,255,0.5)" : "rgba(10,15,30,0.4)"),
                   border: "none",
                   cursor: "pointer",
                   textTransform: "uppercase",
@@ -130,6 +148,19 @@ export function Navbar() {
               </button>
             ))}
           </div>
+
+          {/* Theme Toggle (Mobile) */}
+          <button
+            onClick={toggleTheme}
+            className={`p-2 rounded-full border transition-all duration-300 cursor-pointer ${
+              isVisualDark || scrolled
+                ? "border-white/10 text-[#F5F5F0] hover:bg-white/5"
+                : "border-black/10 text-[#0A0F1E] hover:bg-black/5"
+            }`}
+            title={theme === "dark" ? "Light Mode" : "Dark Mode"}
+          >
+            {theme === "dark" ? <Sun size={13} /> : <Moon size={13} />}
+          </button>
           <button
             className={`${textColor} transition-colors`}
             onClick={() => setMenuOpen(!menuOpen)}
