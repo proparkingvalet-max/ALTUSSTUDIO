@@ -5,7 +5,7 @@ type Lang = "el" | "en";
 interface LanguageContextType {
   lang: Lang;
   setLang: (l: Lang) => void;
-  t: (key: string) => string;
+  t: (key: string) => any;
 }
 
 const LanguageContext = createContext<LanguageContextType | null>(null);
@@ -31,7 +31,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       if (val && typeof val === "object") val = val[k];
       else return key;
     }
-    return typeof val === "string" ? val : key;
+    return val !== undefined ? val : key;
   };
 
   return (

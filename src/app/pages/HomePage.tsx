@@ -18,7 +18,7 @@ import { LightboxModal } from "@/app/components/LightboxModal";
 
 // ─── Hero ─────────────────────────────────────────────────────────────────────
 
-function HeroSection({ t }: { t: (k: string) => string }) {
+function HeroSection({ t }: { t: (k: string) => any }) {
   return (
     <section className="relative min-h-screen bg-[#0A0F1E] flex items-center overflow-hidden">
       {/* Geometric background */}
@@ -115,11 +115,11 @@ function HeroSection({ t }: { t: (k: string) => string }) {
             transition={{ duration: 1, delay: 0.8 }}
             className="mt-20 flex gap-12 border-t border-white/10 pt-10"
           >
-            {[
+            {(t("home.hero.stats") as { value: string; label: string }[] || [
               { value: "80+", label: "Projects" },
               { value: "5yr", label: "Εμπειρία" },
               { value: "98%", label: "Ικανοποίηση" },
-            ].map((stat) => (
+            ]).map((stat) => (
               <div key={stat.label}>
                 <p
                   className="text-[#C9A84C]"
@@ -182,7 +182,7 @@ function HeroSection({ t }: { t: (k: string) => string }) {
             {/* Floating accent card */}
             <div className="absolute -bottom-6 -left-6 bg-[#C9A84C] p-4 text-[#0A0F1E]">
               <p className="text-xs tracking-widest uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                Τελευταίο Project
+                {t("home.hero.latestProject")}
               </p>
               <p style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1rem" }}>
                 proparkingvalet.gr
@@ -232,6 +232,10 @@ const services = [
 ];
 
 function ServicesSection() {
+  const { t } = useLanguage();
+  const icons = [Globe, ShoppingCart, Zap];
+  const translatedCards = (t("home.services.cards") as { title: string; description: string; tag: string }[]) || [];
+
   return (
     <section className="py-32 bg-[#F5F5F0]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
@@ -244,25 +248,25 @@ function ServicesSection() {
                 className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Υπηρεσίες
+                {t("home.services.label")}
               </span>
             </div>
             <h2
               className="text-[#0A0F1E] leading-tight"
               style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 700 }}
             >
-              Τι
+              {t("home.services.heading1")}
               <br />
-              <em style={{ fontStyle: "italic" }}>Χτίζουμε</em>
+              <em style={{ fontStyle: "italic" }}>{t("home.services.heading2")}</em>
               <br />
-              Μαζί
+              {t("home.services.heading3")}
             </h2>
           </div>
 
           {/* Cards */}
           <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-3 gap-px bg-[#0A0F1E]/10">
-            {services.map((service, i) => {
-              const Icon = service.icon;
+            {translatedCards.map((service, i) => {
+              const Icon = icons[i] || Globe;
               return (
                 <motion.div
                   key={service.title}
@@ -298,7 +302,7 @@ function ServicesSection() {
                   </p>
                   <div className="mt-8 flex items-center gap-2 text-[#C9A84C] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <span className="text-xs tracking-wider uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                      Μάθετε Περισσότερα
+                      {t("home.about.cta")}
                     </span>
                     <ArrowUpRight size={14} />
                   </div>
@@ -346,6 +350,10 @@ const values = [
 ];
 
 function WhyUsSection() {
+  const { t } = useLanguage();
+  const icons = [Zap, Smartphone, TrendingUp, HeadphonesIcon];
+  const translatedItems = (t("home.whyUs.items") as { stat: string; unit: string; title: string; description: string }[]) || [];
+
   return (
     <section className="py-32 bg-[#0A0F1E] relative overflow-hidden">
       {/* Subtle grid */}
@@ -368,7 +376,7 @@ function WhyUsSection() {
               className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Γιατί Altus
+              {t("home.whyUs.label")}
             </span>
             <div className="w-8 h-px bg-[#C9A84C]" />
           </div>
@@ -376,14 +384,14 @@ function WhyUsSection() {
             className="text-[#F5F5F0]"
             style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
           >
-            Η Διαφορά που{" "}
-            <em style={{ fontStyle: "italic", color: "#C9A84C" }}>Νιώθεις</em>
+            {t("home.whyUs.heading1")}{" "}
+            <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.whyUs.heading2")}</em>
           </h2>
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-px bg-white/5">
-          {values.map((v, i) => {
-            const Icon = v.icon;
+          {translatedItems.map((v, i) => {
+            const Icon = icons[i] || Zap;
             return (
               <motion.div
                 key={v.title}
@@ -459,6 +467,9 @@ const steps = [
 ];
 
 function ProcessSection() {
+  const { t } = useLanguage();
+  const translatedSteps = (t("home.process.steps") as { num: string; title: string; subtitle: string; desc: string }[]) || [];
+
   return (
     <section className="py-32 bg-[#F5F5F0] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
@@ -470,7 +481,7 @@ function ProcessSection() {
               className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Η Διαδικασία
+              {t("home.process.label")}
             </span>
             <div className="w-8 h-px bg-[#C9A84C]" />
           </div>
@@ -478,7 +489,7 @@ function ProcessSection() {
             className="text-[#0A0F1E]"
             style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
           >
-            Πώς <em style={{ fontStyle: "italic", color: "#C9A84C" }}>Δουλεύουμε</em> μαζί σας
+            {t("home.process.heading")}
           </h2>
         </div>
 
@@ -487,9 +498,9 @@ function ProcessSection() {
           {/* Connector Line */}
           <div className="absolute top-1/2 left-0 right-0 h-px bg-[#0A0F1E]/10 -translate-y-1/2 z-0" />
 
-          {steps.map((s, i) => (
+          {translatedSteps.map((s, i) => (
             <motion.div
-              key={s.number}
+              key={s.num}
               initial={{ opacity: 0, y: 25 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
@@ -502,7 +513,7 @@ function ProcessSection() {
                   className="text-[#0A0F1E] group-hover:text-[#C9A84C] font-semibold text-lg transition-colors duration-500"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  {s.number}
+                  {s.num}
                 </span>
               </div>
 
@@ -534,9 +545,9 @@ function ProcessSection() {
           {/* Connector Line (Vertical) */}
           <div className="absolute top-4 bottom-4 left-4 w-px bg-[#0A0F1E]/10" />
 
-          {steps.map((s, i) => (
+          {translatedSteps.map((s, i) => (
             <motion.div
-              key={s.number}
+              key={s.num}
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
@@ -549,7 +560,7 @@ function ProcessSection() {
                   className="text-[#0A0F1E] group-hover:text-[#C9A84C] text-xs font-bold"
                   style={{ fontFamily: "'Playfair Display', serif" }}
                 >
-                  {s.number}
+                  {s.num}
                 </span>
               </div>
 
@@ -585,6 +596,8 @@ function ProcessSection() {
 // ─── About Section ────────────────────────────────────────────────────────────
 
 function AboutSection() {
+  const { t } = useLanguage();
+
   return (
     <section className="py-32 bg-[#0A0F1E] relative overflow-hidden border-t border-white/5">
       {/* Abstract gold dust background effect */}
@@ -614,7 +627,7 @@ function AboutSection() {
                 className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Η Φιλοσοφία μας
+                {t("home.about.label")}
               </span>
             </div>
             <h2
@@ -625,11 +638,11 @@ function AboutSection() {
                 fontWeight: 700,
               }}
             >
-              Σχεδιάζουμε με{" "}
+              {t("home.about.heading1")}{" "}
               <br />
-              <em style={{ fontStyle: "italic", color: "#C9A84C" }}>Πρόθεση</em>,
+              <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.about.heading2")}</em>,
               <br />
-              χτίζουμε με ακρίβεια.
+              {t("home.about.heading3")}
             </h2>
           </motion.div>
         </div>
@@ -647,13 +660,13 @@ function AboutSection() {
               className="text-[#F5F5F0]/85 text-base md:text-lg leading-relaxed font-light"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Στην Altus Studio, πιστεύουμε ότι μια ιστοσελίδα δεν πρέπει απλά να υπάρχει, αλλά να αποτελεί ένα ισχυρό εργαλείο ανάπτυξης για την επιχείρησή σας.
+              {t("home.about.p1")}
             </p>
             <p
               className="text-[#F5F5F0]/50 text-sm leading-relaxed"
               style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
             >
-              Συνδυάζουμε την αισθητική υπεροχή με την κορυφαία τεχνική κατάρτιση. Δεν χρησιμοποιούμε έτοιμα templates, αλλά δημιουργούμε λύσεις 100% custom, προσαρμοσμένες στις δικές σας ανάγκες. Κάθε γραμμή κώδικα και κάθε pixel σχεδιάζεται με σκοπό την ταχύτητα, την ασφάλεια και τη μετατροπή των επισκεπτών σε πελάτες.
+              {t("home.about.p2")}
             </p>
             {/* Signature style */}
             <div className="pt-6 flex items-center gap-4">
@@ -664,10 +677,10 @@ function AboutSection() {
               </div>
               <div>
                 <p className="text-[#F5F5F0] text-sm font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>
-                  Altus Studio Team
+                  {t("home.about.team")}
                 </p>
                 <p className="text-[#C9A84C] text-[10px] tracking-widest uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                  Athens, Greece
+                  {t("home.about.location")}
                 </p>
               </div>
             </div>
@@ -711,6 +724,7 @@ const projects = [
 ];
 
 function PortfolioSection() {
+  const { t } = useLanguage();
   const [hovered, setHovered] = useState<number | null>(null);
   const [selectedProject, setSelectedProject] = useState<typeof projects[0] | null>(null);
 
@@ -725,15 +739,15 @@ function PortfolioSection() {
                 className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
-                Portfolio
+                {t("home.portfolio.label")}
               </span>
             </div>
             <h2
               className="text-[#0A0F1E]"
               style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
             >
-              Επιλεγμένα{" "}
-              <em style={{ fontStyle: "italic" }}>Έργα</em>
+              {t("home.portfolio.heading1")}{" "}
+              <em style={{ fontStyle: "italic" }}>{t("home.portfolio.heading2")}</em>
             </h2>
           </div>
           <Link
@@ -741,7 +755,7 @@ function PortfolioSection() {
             className="group flex items-center gap-2 text-[#0A0F1E] text-sm tracking-wider uppercase border-b border-[#0A0F1E]/30 pb-0.5 hover:border-[#C9A84C] hover:text-[#C9A84C] transition-all duration-300"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Δείτε Όλα
+            {t("home.portfolio.viewAll")}
             <ArrowUpRight size={14} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>
         </div>
@@ -811,7 +825,7 @@ function PortfolioSection() {
                   }`}
                 >
                   <span className="text-xs tracking-wider uppercase font-semibold" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                    Δείτε Project
+                    {t("home.portfolio.viewProject")}
                   </span>
                   <ArrowUpRight size={14} className="transition-transform group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
                 </div>
@@ -827,7 +841,7 @@ function PortfolioSection() {
             className="inline-flex items-center gap-3 px-10 py-5 border border-[#0A0F1E]/20 text-[#0A0F1E] text-sm tracking-wider uppercase hover:bg-[#0A0F1E] hover:text-[#F5F5F0] hover:border-[#0A0F1E] transition-all duration-500 group"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.12em" }}
           >
-            Δείτε Όλα τα Έργα
+            {t("home.portfolio.viewAllProjects")}
             <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>
         </div>
@@ -869,6 +883,9 @@ const testimonials = [
 ];
 
 function TestimonialsSection() {
+  const { t } = useLanguage();
+  const translatedTestimonials = (t("home.testimonials.items") as { quote: string; name: string; role: string }[]) || [];
+
   return (
     <section className="py-32 bg-[#0A0F1E]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
@@ -879,7 +896,7 @@ function TestimonialsSection() {
               className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Μαρτυρίες
+              {t("home.testimonials.label")}
             </span>
             <div className="w-8 h-px bg-[#C9A84C]" />
           </div>
@@ -887,13 +904,13 @@ function TestimonialsSection() {
             className="text-[#F5F5F0]"
             style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
           >
-            Τι Λένε οι{" "}
-            <em style={{ fontStyle: "italic", color: "#C9A84C" }}>Πελάτες</em> μας
+            {t("home.testimonials.heading1")}{" "}
+            <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.testimonials.heading2")}</em> {t("home.testimonials.heading3")}
           </h2>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {testimonials.map((t, i) => (
+          {translatedTestimonials.map((t, i) => (
             <motion.div
               key={t.name}
               initial={{ opacity: 0, y: 20 }}
@@ -937,39 +954,10 @@ function TestimonialsSection() {
 
 // ─── FAQ Section ──────────────────────────────────────────────────────────────
 
-const faqs = [
-  {
-    q: "Πόσο χρόνο χρειάζεται για την κατασκευή μιας ιστοσελίδας;",
-    a: "Ο χρόνος παράδοσης εξαρτάται από τις ανάγκες του project. Ενδεικτικά, μια custom ιστοσελίδα απαιτεί 20-35 ημέρες, ένα e-shop 25-45 ημέρες, ενώ μια landing page παραδίδεται σε 20-25 ημέρες.",
-  },
-  {
-    q: "Γιατί να επενδύσω σε custom σχεδιασμό και όχι σε μια έτοιμη λύση των 300-400€;",
-    a: "Οι λύσεις των 350€ αφορούν συνήθως έτοιμα templates (WordPress) που εγκαθίστανται μαζικά, με αποτέλεσμα χαμηλή ταχύτητα, έλλειψη μοναδικότητας και περιορισμούς στο SEO. Στην Altus Studio σχεδιάζουμε custom κώδικα και UI/UX αποκλειστικά για την επιχείρησή σας, προσφέροντας ταχύτητα φόρτωσης < 2s, κορυφαία ασφάλεια και υψηλό conversion rate που μετατρέπει τους επισκέπτες σε πελάτες.",
-  },
-  {
-    q: "Χρησιμοποιείτε έτοιμα templates ή WordPress;",
-    a: "Όχι, σχεδιάζουμε και αναπτύσσουμε τα πάντα από το μηδέν (custom UI/UX σχεδιασμός) σύμφωνα με το δικό σας brand. Αυτό μας επιτρέπει να προσφέρουμε ασύγκριτη ταχύτητα φόρτωσης, μέγιστη ασφάλεια και ελευθερία στο σχεδιασμό.",
-  },
-  {
-    q: "Θα είναι η ιστοσελίδα μου φιλική προς τα κινητά και το Google (SEO);",
-    a: "Φυσικά. Κάθε project μας σχεδιάζεται με mobile-first προσέγγιση, εξασφαλίζοντας τέλεια εμφάνιση σε όλες τις συσκευές. Επιπλέον, υλοποιούμε όλες τις βασικές βελτιστοποιήσεις SEO (on-page SEO, ταχύτητα, meta-tags) για να εμφανίζεστε ψηλά στα αποτελέσματα αναζήτησης.",
-  },
-  {
-    q: "Τι υποστήριξη παρέχετε μετά την ολοκλήρωση του project;",
-    a: "Δεν εξαφανιζόμαστε μετά την παράδοση! Προσφέρουμε μηνιαία πακέτα υποστήριξης (Ongoing Maintenance) που περιλαμβάνουν φιλοξενία, backups, αναβαθμίσεις ασφαλείας, καθώς και μικρές αλλαγές στο περιεχόμενο της ιστοσελίδας σας.",
-  },
-  {
-    q: "Πώς ξεκινάμε τη συνεργασία μας;",
-    a: "Το πρώτο βήμα είναι να επικοινωνήσετε μαζί μας. Θα προγραμματίσουμε μια δωρεάν 30λεπτη συνάντηση (discovery call) για να συζητήσουμε τους στόχους της επιχείρησής σας και να σας στείλουμε μια αναλυτική οικονομική προσφορά.",
-  },
-  {
-    q: "Αναλαμβάνετε τη διαφήμιση της ιστοσελίδας μου (Google Ads, Social Media Marketing);",
-    a: "Η Altus Studio εξειδικεύεται αποκλειστικά στον σχεδιασμό, την ανάπτυξη και το τεχνικό SEO ιστοσελίδων & e-shop. Παραδίδουμε κάθε project 100% έτοιμο και βελτιστοποιημένο για διαφημιστικές καμπάνιες. Για τη διαχείριση της διαφήμισης (PPC, Google Ads), συνεργαζόμαστε με έμπειρους PPC Specialists, αναλαμβάνοντας όλη τη συνεννόηση, ώστε να έχετε μια ολοκληρωμένη και αποδοτική παρουσία χωρίς να χάνετε χρόνο.",
-  },
-];
-
 function FAQSection() {
+  const { t } = useLanguage();
   const [openIndex, setOpenIndex] = useState<number | null>(null);
+  const translatedFaqs = (t("home.faq.items") as { q: string; a: string }[]) || [];
 
   return (
     <section className="py-32 bg-[#0A0F1E] relative overflow-hidden border-t border-white/5">
@@ -982,7 +970,7 @@ function FAQSection() {
               className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              Faq
+              {t("home.faq.label")}
             </span>
             <div className="w-8 h-px bg-[#C9A84C]" />
           </div>
@@ -990,13 +978,13 @@ function FAQSection() {
             className="text-[#F5F5F0]"
             style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
           >
-            Συχνές <em style={{ fontStyle: "italic", color: "#C9A84C" }}>Ερωτήσεις</em>
+            {t("home.faq.heading1")} <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.faq.heading2")}</em>
           </h2>
         </div>
 
         {/* Accordion Layout */}
         <div className="space-y-4">
-          {faqs.map((faq, i) => {
+          {translatedFaqs.map((faq, i) => {
             const isOpen = openIndex === i;
             return (
               <div
@@ -1047,6 +1035,8 @@ function FAQSection() {
 // ─── CTA Banner ────────────────────────────────────────────────────────────────
 
 function CTASection() {
+  const { t } = useLanguage();
+
   return (
     <section className="py-32 bg-[#F5F5F0] relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
@@ -1069,7 +1059,7 @@ function CTASection() {
             className="text-[#C9A84C] text-xs tracking-[0.35em] uppercase mb-6"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            Ξεκινήστε Σήμερα
+            {t("home.cta.label")}
           </p>
           <h2
             className="text-[#0A0F1E] mb-8"
@@ -1080,23 +1070,23 @@ function CTASection() {
               lineHeight: 1.1,
             }}
           >
-            Έτοιμοι να Αναβαθμίσετε
+            {t("home.cta.heading1")}
             <br />
-            την Online{" "}
-            <em style={{ fontStyle: "italic", color: "#C9A84C" }}>Παρουσία</em> σας;
+            {t("home.cta.heading2")}{" "}
+            <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.cta.heading3")}</em>{t("home.cta.heading4")}
           </h2>
           <p
             className="text-[#0A0F1E]/55 max-w-xl mx-auto mb-12"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "1.05rem" }}
           >
-            Ας μιλήσουμε για το project σας. Δωρεάν συνάντηση 30 λεπτών για να κατανοήσουμε τις ανάγκες σας.
+            {t("home.cta.sub")}
           </p>
           <Link
             to="/contact"
             className="inline-flex items-center gap-3 px-10 py-5 bg-[#0A0F1E] text-[#F5F5F0] text-sm tracking-wider uppercase hover:bg-[#141929] transition-colors duration-300 group"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.12em" }}
           >
-            Ξεκινήστε ένα Project
+            {t("home.cta.btn")}
             <ArrowUpRight size={16} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
           </Link>
         </motion.div>

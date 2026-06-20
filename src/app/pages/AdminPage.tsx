@@ -357,7 +357,27 @@ function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (
 // ─── Dashboard View ────────────────────────────────────────────────────────────
 
 function DashboardView() {
-  const recentMessages = mockMessages.slice(0, 3);
+  const [messages, setMessages] = useState<any[]>([]);
+
+  useEffect(() => {
+    const raw = localStorage.getItem("altus_messages");
+    if (raw) {
+      setMessages(JSON.parse(raw));
+    } else {
+      setMessages(mockMessages);
+      localStorage.setItem("altus_messages", JSON.stringify(mockMessages));
+    }
+  }, []);
+
+  const recentMessages = messages.slice(0, 3);
+  const newMessagesCount = messages.filter((m) => m.status === "new").length;
+
+  const dynamicStats = [
+    { label: "Επισκέπτες (Μήνας)", value: "1.847", change: "+12%", icon: Eye, color: "#C9A84C" },
+    { label: "Νέα Μηνύματα", value: newMessagesCount.toString(), change: `+${newMessagesCount} συνολικά`, icon: Mail, color: "#4CAF50" },
+    { label: "Ενεργά Projects", value: "2", change: "1 ολοκλ.", icon: FolderOpen, color: "#2196F3" },
+    { label: "Ολοκλ. Projects", value: "12", change: "+3 φέτος", icon: CheckCircle, color: "#9C27B0" },
+  ];
 
   return (
     <div>
@@ -372,7 +392,7 @@ function DashboardView() {
 
       {/* Stats Grid */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
-        {stats.map((s) => {
+        {dynamicStats.map((s) => {
           const Icon = s.icon;
           return (
             <div
@@ -472,23 +492,45 @@ function DashboardView() {
 // ─── Messages View ─────────────────────────────────────────────────────────────
 
 function MessagesView() {
-  const [messages, setMessages] = useState(mockMessages);
-  const [selected, setSelected] = useState<typeof mockMessages[0] | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [selected, setSelected] = useState<any | null>(null);
   const [reply, setReply] = useState("");
   const [sent, setSent] = useState(false);
 
+  useEffect(() => {
+    const raw = localStorage.getItem("altus_messages");
+    if (raw) {
+      setMessages(JSON.parse(raw));
+    } else {
+      setMessages(mockMessages);
+      localStorage.setItem("altus_messages", JSON.stringify(mockMessages));
+    }
+  }, []);
+
+  const saveMessages = (updated: any[]) => {
+    setMessages(updated);
+    try {
+      localStorage.setItem("altus_messages", JSON.stringify(updated));
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
   const markRead = (id: number) => {
-    setMessages((prev) => prev.map((m) => m.id === id ? { ...m, read: true } : m));
+    const updated = messages.map((m) => m.id === id ? { ...m, read: true } : m);
+    saveMessages(updated);
   };
 
   const deleteMsg = (id: number) => {
-    setMessages((prev) => prev.filter((m) => m.id !== id));
+    const updated = messages.filter((m) => m.id !== id);
+    saveMessages(updated);
     if (selected?.id === id) { setSelected(null); setReply(""); }
   };
 
   const markStatus = (id: number, status: string) => {
-    setMessages((prev) => prev.map((m) => m.id === id ? { ...m, status } : m));
-    if (selected?.id === id) setSelected((prev) => prev ? { ...prev, status } : prev);
+    const updated = messages.map((m) => m.id === id ? { ...m, status } : m);
+    saveMessages(updated);
+    if (selected?.id === id) setSelected((prev: any) => prev ? { ...prev, status } : prev);
   };
 
   const handleSelect = (msg: typeof mockMessages[0]) => {

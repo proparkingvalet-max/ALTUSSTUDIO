@@ -18,7 +18,33 @@ export function ContactPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setFormState("sending");
-    setTimeout(() => setFormState("sent"), 1800);
+    
+    setTimeout(() => {
+      try {
+        const existingMessagesRaw = localStorage.getItem("altus_messages");
+        const existingMessages = existingMessagesRaw ? JSON.parse(existingMessagesRaw) : [];
+        
+        const newMessage = {
+          id: Date.now(),
+          name: form.name,
+          email: form.email,
+          phone: form.phone,
+          service: form.service || "Κατασκευή Ιστοσελίδας",
+          message: form.message,
+          date: new Date().toISOString().split("T")[0],
+          read: false,
+          status: "new"
+        };
+        
+        const updatedMessages = [newMessage, ...existingMessages];
+        localStorage.setItem("altus_messages", JSON.stringify(updatedMessages));
+      } catch (err) {
+        console.error("Failed to save message to localStorage:", err);
+      }
+      
+      setFormState("sent");
+      setForm({ name: "", email: "", phone: "", service: "", message: "" });
+    }, 1200);
   };
 
   const services = [
