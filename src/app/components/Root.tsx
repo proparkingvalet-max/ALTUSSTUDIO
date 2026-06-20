@@ -4,6 +4,7 @@ import { Footer } from "./Footer";
 import { CookieBanner } from "./CookieBanner";
 import { useEffect, useState } from "react";
 import { LanguageProvider } from "@/app/context/LanguageContext";
+import { AltusAssistant } from "./AltusAssistant";
 
 export function Root() {
   const { pathname } = useLocation();
@@ -44,6 +45,7 @@ export function Root() {
         </main>
         <Footer />
         <CookieBanner />
+        <AltusAssistant />
       </div>
     </LanguageProvider>
   );
