@@ -1,10 +1,13 @@
 import { Link } from "react-router";
 import { Instagram, Linkedin, Facebook, Send } from "lucide-react";
 import altusLogo from "@/assets/new_logo.png";
+import logoDark from "@/assets/logo_dark.png";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { useTheme } from "@/app/context/ThemeContext";
 
 export function Footer() {
   const { t } = useLanguage();
+  const { theme } = useTheme();
 
   const navLinks = [
     { label: t("nav.home"), to: "/" },
@@ -12,6 +15,8 @@ export function Footer() {
     { label: "Portfolio", to: "/portfolio" },
     { label: t("nav.contact"), to: "/contact" },
   ];
+
+  const activeLogo = theme === "light" ? logoDark : altusLogo;
 
   return (
     <footer className="bg-[#0A0F1E] border-t border-white/8">
@@ -21,7 +26,7 @@ export function Footer() {
           {/* Brand */}
           <div>
             <div className="flex items-center mb-6">
-              <img src={altusLogo} alt="Altus Studio Logo" className="h-10 w-auto object-contain" />
+              <img src={activeLogo} alt="Altus Studio Logo" className="h-10 w-auto object-contain" />
             </div>
             <p
               className="text-[#F5F5F0]/50 text-sm leading-relaxed max-w-xs"
