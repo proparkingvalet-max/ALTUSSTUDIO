@@ -142,3 +142,31 @@ ON CONFLICT (key) DO NOTHING;
 INSERT INTO settings (key, value)
 VALUES ('contact_info', '{"phone": "6970015447", "email": "info@altus-studio.gr"}'::jsonb)
 ON CONFLICT (key) DO NOTHING;
+
+
+-- 5. Create Page Views Table (Real visitor tracking)
+CREATE TABLE IF NOT EXISTS page_views (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    path TEXT NOT NULL DEFAULT '/',
+    date DATE NOT NULL DEFAULT CURRENT_DATE,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for page_views
+ALTER TABLE page_views ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Allow public page_views insert" ON page_views;
+DROP POLICY IF EXISTS "Allow page_views select" ON page_views;
+
+-- Anyone can record a page view (Insert)
+CREATE POLICY "Allow public page_views insert"
+ON page_views FOR INSERT
+TO anon
+WITH CHECK (true);
+
+-- Admin can read all page views (Select)
+CREATE POLICY "Allow page_views select"
+ON page_views FOR SELECT
+TO anon
+USING (true);

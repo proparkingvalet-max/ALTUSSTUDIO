@@ -341,6 +341,8 @@ function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (
 function DashboardView() {
   const [messages, setMessages] = useState<any[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
+  const [pageViewsMonth, setPageViewsMonth] = useState<number | null>(null);
+  const [pageViewsToday, setPageViewsToday] = useState<number>(0);
 
   useEffect(() => {
     // Fetch messages from Supabase if configured
@@ -400,6 +402,22 @@ function DashboardView() {
     } else {
       setProjects(getProjects());
     }
+    // Fetch real page view counts from Supabase
+    if (isSupabaseConfigured && supabase) {
+      const thisMonth = new Date().toISOString().substring(0, 7); // "YYYY-MM"
+      const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+
+      supabase
+        .from("page_views")
+        .select("date")
+        .gte("date", `${thisMonth}-01`)
+        .then(({ data }) => {
+          if (data) {
+            setPageViewsMonth(data.length);
+            setPageViewsToday(data.filter((r: any) => r.date === today).length);
+          }
+        });
+    }
   }, []);
 
   const recentMessages = messages.slice(0, 3);
@@ -410,8 +428,13 @@ function DashboardView() {
   const totalProjects = projects.length;
 
   const dynamicStats = [
+    {
+      label: "Επισκέπτες Μήνα",
+      value: pageViewsMonth === null ? "—" : pageViewsMonth.toLocaleString("el-GR"),
+      change: pageViewsToday > 0 ? `+${pageViewsToday} σήμερα` : "Σήμερα: 0",
+      icon: Eye, color: "#C9A84C"
+    },
     { label: "Νέα Μηνύματα", value: newMessagesCount.toString(), change: newMessagesCount > 0 ? `${newMessagesCount} αδιάβαστα` : "Κανένα νέο", icon: Mail, color: "#4CAF50" },
-    { label: "Σύνολο Μηνυμάτων", value: messages.length.toString(), change: `${messages.length} συνολικά`, icon: Eye, color: "#C9A84C" },
     { label: "Ενεργά Projects", value: activeProjects.toString(), change: `${liveProjects} live`, icon: FolderOpen, color: "#2196F3" },
     { label: "Ολοκλ. Projects", value: totalProjects.toString(), change: `${liveProjects} live`, icon: CheckCircle, color: "#9C27B0" },
   ];
@@ -1799,11 +1822,7 @@ const packageDeliverables: Record<string, { titleEl: string; titleEn: string; pr
   }
 };
 
-const savedQuotes = [
-  { id: "Q001", client: "Γιώργος Παπαδόπουλος", date: "2026-05-15", total: "€520", status: "accepted" },
-  { id: "Q002", client: "Μαρία Κωνσταντίνου", date: "2026-06-01", total: "€890", status: "pending" },
-  { id: "Q003", client: "Νίκος Αλεξίου", date: "2026-06-10", total: "€250", status: "draft" },
-];
+const savedQuotes: any[] = [];
 
 function QuotesView() {
   const [tab, setTab] = useState<"list" | "new">("list");
@@ -1912,6 +1931,13 @@ function QuotesView() {
 
       {tab === "list" ? (
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden" }}>
+          {savedQuotes.length === 0 ? (
+            <div style={{ padding: "60px 20px", textAlign: "center", color: "rgba(255,255,255,0.25)" }}>
+              <FileText size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
+              <p style={{ margin: 0, fontSize: 15 }}>Δεν υπάρχουν ακόμα προσφορές</p>
+              <p style={{ margin: "6px 0 0", fontSize: 13 }}>Πατήστε «Νέα Προσφορά» για να δημιουργήσετε την πρώτη</p>
+            </div>
+          ) : (
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
@@ -1942,6 +1968,7 @@ function QuotesView() {
               ))}
             </tbody>
           </table>
+          )}
         </div>
       ) : (
         <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 20 }}>

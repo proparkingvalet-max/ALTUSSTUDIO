@@ -89,6 +89,20 @@ export function Root() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname]);
 
+  // 3. Track real page views in Supabase (skip admin routes & admin sessions)
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) return;
+    if (isAdmin) return; // Don't count admin previews
+    if (pathname.startsWith("/admin")) return; // Don't count admin page
+
+    supabase
+      .from("page_views")
+      .insert({ path: pathname, date: new Date().toISOString().split("T")[0] })
+      .then(({ error }) => {
+        if (error) console.warn("Page view tracking error:", error.message);
+      });
+  }, [pathname, isAdmin]);
+
   useEffect(() => {
     const handleScroll = () => {
       const totalHeight = document.documentElement.scrollHeight - window.innerHeight;
