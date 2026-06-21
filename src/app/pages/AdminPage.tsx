@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getProjects, saveProjects, Project } from "@/app/utils/projects";
 import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
 import {
@@ -38,60 +38,9 @@ const ADMIN_PASSWORD = "gate71337";
 
 // ─── Mock Data ────────────────────────────────────────────────────────────────
 
-const mockMessages = [
-  {
-    id: 1,
-    name: "Γιώργος Παπαδόπουλος",
-    email: "g.papadopoulos@gmail.com",
-    phone: "6945123456",
-    service: "Κατασκευή Ιστοσελίδας",
-    message: "Καλησπέρα, ενδιαφέρομαι για κατασκευή ιστοσελίδας για το εστιατόριό μου στην Αθήνα. Είναι δυνατόν να μου στείλετε μια προσφορά;",
-    date: "2026-06-11",
-    read: false,
-    status: "new",
-  },
-  {
-    id: 2,
-    name: "Μαρία Κωνσταντίνου",
-    email: "maria.k@hotmail.com",
-    phone: "6977654321",
-    service: "E-Shop",
-    message: "Θέλω να φτιάξω ηλεκτρονικό κατάστημα για ρούχα. Έχω περίπου 200 προϊόντα. Πόσο κοστίζει;",
-    date: "2026-06-10",
-    read: true,
-    status: "replied",
-  },
-  {
-    id: 3,
-    name: "Νίκος Αλεξίου",
-    email: "n.alexiou@business.gr",
-    phone: "2101234567",
-    service: "Landing Page",
-    message: "Χρειάζομαι μια σελίδα για μια νέα υπηρεσία που θα λανσάρω τον Σεπτέμβριο. Θέλω να είναι έτοιμη σε 3 εβδομάδες.",
-    date: "2026-06-09",
-    read: true,
-    status: "in-progress",
-  },
-  {
-    id: 4,
-    name: "Ελένη Σταύρου",
-    email: "estavrou@yahoo.com",
-    phone: "6932112233",
-    service: "Εταιρική Ταυτότητα",
-    message: "Καλημέρα! Ξεκινώ μια νέα επιχείρηση καλλυντικών και χρειάζομαι λογότυπο και εταιρική ταυτότητα. Μπορούμε να μιλήσουμε;",
-    date: "2026-06-08",
-    read: true,
-    status: "completed",
-  },
-];
+const mockMessages: any[] = [];
 
-const mockProjects = [
-  { id: 1, title: "Εστιατόριο Κυπαρίσσι", category: "Ιστοσελίδα", client: "Γεώργιος Κ.", status: "live", url: "#", date: "2026-05-20" },
-  { id: 2, title: "FashionGR Store", category: "E-Shop", client: "Άννα Π.", status: "live", url: "#", date: "2026-04-15" },
-  { id: 3, title: "LawOffice Δημητρίου", category: "Ιστοσελίδα", client: "Στέφανος Δ.", status: "live", url: "#", date: "2026-03-10" },
-  { id: 4, title: "BeautyBox Campaign", category: "Landing Page", client: "Μαρία Σ.", status: "in-progress", url: "#", date: "2026-06-01" },
-  { id: 5, title: "TechStart Landing", category: "Landing Page", client: "Νίκος Α.", status: "draft", url: "#", date: "2026-06-10" },
-];
+const mockProjects: any[] = [];
 
 const stats = [
   { label: "Επισκέπτες (Μήνας)", value: "1.847", change: "+12%", icon: Eye, color: "#C9A84C" },
@@ -330,7 +279,7 @@ function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (
       {/* View Site Link */}
       <div style={{ padding: "0 12px 10px" }}>
         <a
-          href="/"
+          href="/?preview=true"
           target="_blank"
           rel="noopener noreferrer"
           style={{
@@ -1451,7 +1400,6 @@ function SettingsView() {
   };
 
   const save = () => {
-    setSaved(true);
     if (isSupabaseConfigured && supabase) {
       supabase
         .from("settings")
@@ -1459,16 +1407,20 @@ function SettingsView() {
         .then(({ error }) => {
           if (error) {
             console.error("Failed to save contact info to Supabase:", error);
+            alert("Αποτυχία αποθήκευσης στη βάση δεδομένων Supabase. Παρακαλώ ελέγξτε τη σύνδεση ή τα RLS policies. Σφάλμα: " + (error.message || JSON.stringify(error)));
           } else {
             localStorage.setItem("altus_contact_info", JSON.stringify({ phone: viber, email }));
             window.dispatchEvent(new Event("storage"));
+            setSaved(true);
+            setTimeout(() => setSaved(false), 2000);
           }
         });
     } else {
       localStorage.setItem("altus_contact_info", JSON.stringify({ phone: viber, email }));
       window.dispatchEvent(new Event("storage"));
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
     }
-    setTimeout(() => setSaved(false), 2000);
   };
 
   return (
@@ -1580,16 +1532,71 @@ function SettingsView() {
 
 // ─── CRM View ─────────────────────────────────────────────────────────────────
 
-const mockClients = [
-  { id: 1, name: "Γιώργος Παπαδόπουλος", business: "Εστιατόριο Κυπαρίσσι", email: "g.papadopoulos@gmail.com", phone: "6945123456", projects: 1, totalValue: "€450", status: "active", since: "2026-05" },
-  { id: 2, name: "Άννα Πετράκη", business: "FashionGR Store", email: "anna@fashiongr.gr", phone: "6977001122", projects: 1, totalValue: "€890", status: "active", since: "2026-04" },
-  { id: 3, name: "Στέφανος Δημητρίου", business: "LawOffice Δημητρίου", email: "s.dimitriou@lawoffice.gr", phone: "2101234567", projects: 1, totalValue: "€520", status: "active", since: "2026-03" },
-  { id: 4, name: "Μαρία Σταύρου", business: "BeautyBox", email: "maria@beautybox.gr", phone: "6932112233", projects: 1, totalValue: "€350", status: "in-progress", since: "2026-06" },
-  { id: 5, name: "Νίκος Αλεξίου", business: "TechStart", email: "n.alexiou@business.gr", phone: "6966778899", projects: 1, totalValue: "€250", status: "lead", since: "2026-06" },
-];
-
 function CRMView() {
-  const [selected, setSelected] = useState<typeof mockClients[0] | null>(null);
+  const [messages, setMessages] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("messages")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setMessages(data);
+          }
+          setLoading(false);
+        });
+    } else {
+      const raw = localStorage.getItem("altus_messages");
+      if (raw) {
+        setMessages(JSON.parse(raw));
+      } else {
+        setMessages(mockMessages);
+      }
+      setLoading(false);
+    }
+  }, []);
+
+  const clients = useMemo(() => {
+    const map = new Map<string, any>();
+    // Sort chronologically so latest message overrides fields (name, phone, business)
+    const sorted = [...messages].sort((a, b) => new Date(a.created_at || a.date || 0).getTime() - new Date(b.created_at || b.date || 0).getTime());
+    
+    sorted.forEach((m) => {
+      const emailKey = m.email?.toLowerCase().trim() || "";
+      if (!emailKey) return;
+
+      const existing = map.get(emailKey);
+      let status = "lead";
+      if (m.status === "in-progress") status = "in-progress";
+      else if (m.status === "completed" || m.status === "replied") status = "active";
+
+      if (!existing) {
+        map.set(emailKey, {
+          id: emailKey,
+          name: m.name || "Ανώνυμος",
+          business: m.service || "Ιδιώτης",
+          email: m.email,
+          phone: m.phone || "—",
+          projects: 1,
+          totalValue: "Lead",
+          status: status,
+          since: m.date ? m.date.substring(0, 7) : new Date().toISOString().substring(0, 7),
+        });
+      } else {
+        existing.name = m.name || existing.name;
+        existing.business = m.service || existing.business;
+        existing.phone = m.phone || existing.phone;
+        existing.projects += 1;
+        existing.status = status;
+      }
+    });
+    return Array.from(map.values());
+  }, [messages]);
+
+  const [selected, setSelected] = useState<any | null>(null);
   const [filter, setFilter] = useState("all");
 
   const clientStatus: Record<string, { label: string; color: string }> = {
@@ -1598,14 +1605,18 @@ function CRMView() {
     lead: { label: "Υποψήφιος", color: "#3b82f6" },
   };
 
-  const filtered = filter === "all" ? mockClients : mockClients.filter((c) => c.status === filter);
+  const filtered = filter === "all" ? clients : clients.filter((c) => c.status === filter);
 
   return (
     <div>
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>Πελάτες</h1>
-          <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>{mockClients.length} πελάτες συνολικά</p>
+          {loading ? (
+            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>Φόρτωση πελατών...</p>
+          ) : (
+            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>{clients.length} πελάτες συνολικά</p>
+          )}
         </div>
         <div style={{ display: "flex", gap: 8 }}>
           {["all", "active", "in-progress", "lead"].map((f) => (
@@ -2113,10 +2124,24 @@ export function AdminPage() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
 
-  // Persist session
+  // Persist session and clean up old mock cache
   useEffect(() => {
     const session = localStorage.getItem("altus_admin");
     if (session === "true") setLoggedIn(true);
+
+    // Clear old test/mock data cache from localStorage if it exists
+    const cached = localStorage.getItem("altus_messages");
+    if (cached) {
+      try {
+        const parsed = JSON.parse(cached);
+        if (Array.isArray(parsed) && parsed.some((m: any) => m.name === "Γιώργος Παπαδόπουλος")) {
+          localStorage.removeItem("altus_messages");
+          localStorage.removeItem("altus_projects");
+        }
+      } catch (e) {
+        // ignore
+      }
+    }
   }, []);
 
   const handleLogin = () => {

@@ -18,7 +18,33 @@ export function Root() {
   const [maintenanceActive, setMaintenanceActive] = useState(false);
   const [loadingMaintenance, setLoadingMaintenance] = useState(true);
 
-  const isAdminLoggedIn = localStorage.getItem("altus_admin") === "true";
+  // Stateful admin status
+  const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem("altus_admin") === "true");
+
+  // 1. Check for ?preview=true on mount to bypass maintenance mode
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("preview") === "true") {
+      localStorage.setItem("altus_admin", "true");
+      setIsAdmin(true);
+      
+      // Clean query parameters from URL
+      const newUrl = window.location.pathname + window.location.hash;
+      window.history.replaceState({}, document.title, newUrl);
+      
+      // Dispatch storage event so other tabs and components sync up
+      window.dispatchEvent(new Event("storage"));
+    }
+  }, []);
+
+  // 2. Sync admin status via storage event listener
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setIsAdmin(localStorage.getItem("altus_admin") === "true");
+    };
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   useEffect(() => {
     // Dynamic settings loading (Maintenance & Contact Info)
@@ -57,7 +83,7 @@ export function Root() {
       setMaintenanceActive(localMode);
       setLoadingMaintenance(false);
     }
-  }, [isAdminLoggedIn, pathname]);
+  }, [isAdmin, pathname]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -88,7 +114,7 @@ export function Root() {
     );
   }
 
-  if (maintenanceActive && !isAdminLoggedIn) {
+  if (maintenanceActive && !isAdmin) {
     return (
       <ThemeProvider>
         <LanguageProvider>

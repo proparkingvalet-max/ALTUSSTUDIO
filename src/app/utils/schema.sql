@@ -111,20 +111,34 @@ ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
 -- Drop existing policies if they exist to prevent errors
 DROP POLICY IF EXISTS "Allow public settings read access" ON settings;
 DROP POLICY IF EXISTS "Allow settings modifications" ON settings;
+DROP POLICY IF EXISTS "Allow settings select" ON settings;
+DROP POLICY IF EXISTS "Allow settings insert" ON settings;
+DROP POLICY IF EXISTS "Allow settings update" ON settings;
 
 -- Policy to allow anyone to read settings (Select)
-CREATE POLICY "Allow public settings read access" 
+CREATE POLICY "Allow settings select" 
 ON settings FOR SELECT 
 TO anon 
 USING (true);
 
--- Policy to allow any updates or inserts on settings from the client
-CREATE POLICY "Allow settings modifications" 
-ON settings FOR ALL 
+-- Policy to allow inserts on settings (Insert)
+CREATE POLICY "Allow settings insert" 
+ON settings FOR INSERT 
 TO anon 
-USING (true);
+WITH CHECK (true);
 
--- Seed initial maintenance mode state
+-- Policy to allow updates on settings (Update)
+CREATE POLICY "Allow settings update" 
+ON settings FOR UPDATE 
+TO anon 
+USING (true)
+WITH CHECK (true);
+
+-- Seed initial settings
 INSERT INTO settings (key, value)
 VALUES ('maintenance_mode', '{"enabled": false}'::jsonb)
+ON CONFLICT (key) DO NOTHING;
+
+INSERT INTO settings (key, value)
+VALUES ('contact_info', '{"phone": "6970015447", "email": "info@altus-studio.gr"}'::jsonb)
 ON CONFLICT (key) DO NOTHING;
