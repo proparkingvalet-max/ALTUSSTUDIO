@@ -1,7 +1,9 @@
 import { motion } from "motion/react";
 import { Mail, Phone, Send, Lock, Construction } from "lucide-react";
+import { useContactInfo } from "@/app/utils/supabaseClient";
 
 export function MaintenancePage() {
+  const contactInfo = useContactInfo();
   return (
     <div
       className="min-h-screen bg-[#0A0F1E] flex flex-col justify-between items-center px-6 py-12 relative overflow-hidden text-[#F5F5F0]"
@@ -96,8 +98,8 @@ export function MaintenancePage() {
         {/* Contact info list */}
         <div className="pt-6 border-t border-white/5 grid grid-cols-1 sm:grid-cols-3 gap-4 text-left">
           {[
-            { icon: Mail, label: "EMAIL", val: "info@altus-studio.gr", href: "mailto:info@altus-studio.gr" },
-            { icon: Phone, label: "PHONE", val: "6970015447", href: "tel:6970015447" },
+            { icon: Mail, label: "EMAIL", val: contactInfo.email, href: `mailto:${contactInfo.email}` },
+            { icon: Phone, label: "PHONE", val: contactInfo.phone, href: `tel:${contactInfo.phone}` },
             { icon: Send, label: "TELEGRAM", val: "@altus_studio", href: "https://t.me/altus_studio" },
           ].map((item, idx) => {
             const Icon = item.icon;

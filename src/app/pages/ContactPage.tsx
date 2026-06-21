@@ -3,12 +3,13 @@ import { motion } from "motion/react";
 import { Mail, Send, ArrowUpRight, CheckCircle2, Phone } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { BookingCalendar } from "@/app/components/BookingCalendar";
-import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
+import { supabase, isSupabaseConfigured, useContactInfo } from "@/app/utils/supabaseClient";
 
 type FormState = "idle" | "sending" | "sent";
 
 export function ContactPage() {
   const { t } = useLanguage();
+  const contactInfo = useContactInfo();
 
   useEffect(() => {
     document.title = `${t("nav.contact")} | Altus Studio`;
@@ -128,8 +129,8 @@ export function ContactPage() {
               </h2>
               <div className="space-y-6">
                 {[
-                  { Icon: Mail, label: t("contact.info.email"), value: "info@altus-studio.gr" },
-                  { Icon: Phone, label: t("contact.info.phone"), value: "6970015447" },
+                  { Icon: Mail, label: t("contact.info.email"), value: contactInfo.email },
+                  { Icon: Phone, label: t("contact.info.phone"), value: contactInfo.phone },
                   { Icon: Send, label: "Telegram", value: "@altus_studio" },
                 ].map(({ Icon, label, value }) => (
                   <div key={label} className="flex items-start gap-4">

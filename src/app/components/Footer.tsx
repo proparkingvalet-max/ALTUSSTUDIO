@@ -4,10 +4,12 @@ import altusLogo from "@/assets/new_logo.png";
 import logoDark from "@/assets/logo_dark.png";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { useTheme } from "@/app/context/ThemeContext";
+import { useContactInfo } from "@/app/utils/supabaseClient";
 
 export function Footer() {
   const { t } = useLanguage();
   const { theme } = useTheme();
+  const contactInfo = useContactInfo();
 
   const navLinks = [
     { label: t("nav.home"), to: "/" },
@@ -64,7 +66,7 @@ export function Footer() {
               className="text-[#F5F5F0]/50 text-sm mb-6"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
-              info@altus-studio.gr
+              {contactInfo.email}
             </p>
             <div className="flex gap-4 md:justify-end">
               {[

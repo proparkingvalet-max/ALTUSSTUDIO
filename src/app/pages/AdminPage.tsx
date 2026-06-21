@@ -327,6 +327,37 @@ function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (
         })}
       </nav>
 
+      {/* View Site Link */}
+      <div style={{ padding: "0 12px 10px" }}>
+        <a
+          href="/"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            width: "100%",
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+            padding: "11px 14px",
+            borderRadius: 10,
+            background: "rgba(201,168,76,0.05)",
+            border: "1px solid rgba(201,168,76,0.15)",
+            color: "#C9A84C",
+            cursor: "pointer",
+            textDecoration: "none",
+            fontSize: 14,
+            fontWeight: 600,
+            boxSizing: "border-box",
+            transition: "all 0.2s",
+          }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.15)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.05)"; }}
+        >
+          <ExternalLink size={17} />
+          Προβολή Site
+        </a>
+      </div>
+
       {/* Logout */}
       <div style={{ padding: "16px 12px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <button
@@ -1373,9 +1404,33 @@ function SettingsView() {
           }
           setLoadingMaintenance(false);
         });
+
+      // Load contact info
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "contact_info")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data && data.value) {
+            if (data.value.phone) setViber(data.value.phone);
+            if (data.value.email) setEmail(data.value.email);
+          }
+        });
     } else {
       setMaintenanceMode(localStorage.getItem("altus_maintenance") === "true");
       setLoadingMaintenance(false);
+
+      const cached = localStorage.getItem("altus_contact_info");
+      if (cached) {
+        try {
+          const parsed = JSON.parse(cached);
+          if (parsed.phone) setViber(parsed.phone);
+          if (parsed.email) setEmail(parsed.email);
+        } catch (e) {
+          console.error(e);
+        }
+      }
     }
   }, []);
 
@@ -1397,6 +1452,22 @@ function SettingsView() {
 
   const save = () => {
     setSaved(true);
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("settings")
+        .upsert({ key: "contact_info", value: { phone: viber, email } })
+        .then(({ error }) => {
+          if (error) {
+            console.error("Failed to save contact info to Supabase:", error);
+          } else {
+            localStorage.setItem("altus_contact_info", JSON.stringify({ phone: viber, email }));
+            window.dispatchEvent(new Event("storage"));
+          }
+        });
+    } else {
+      localStorage.setItem("altus_contact_info", JSON.stringify({ phone: viber, email }));
+      window.dispatchEvent(new Event("storage"));
+    }
     setTimeout(() => setSaved(false), 2000);
   };
 
@@ -2044,17 +2115,17 @@ export function AdminPage() {
 
   // Persist session
   useEffect(() => {
-    const session = sessionStorage.getItem("altus_admin");
+    const session = localStorage.getItem("altus_admin");
     if (session === "true") setLoggedIn(true);
   }, []);
 
   const handleLogin = () => {
-    sessionStorage.setItem("altus_admin", "true");
+    localStorage.setItem("altus_admin", "true");
     setLoggedIn(true);
   };
 
   const handleLogout = () => {
-    sessionStorage.removeItem("altus_admin");
+    localStorage.removeItem("altus_admin");
     setLoggedIn(false);
   };
 

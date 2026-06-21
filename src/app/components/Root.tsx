@@ -18,15 +18,12 @@ export function Root() {
   const [maintenanceActive, setMaintenanceActive] = useState(false);
   const [loadingMaintenance, setLoadingMaintenance] = useState(true);
 
-  const isAdminLoggedIn = sessionStorage.getItem("altus_admin") === "true";
+  const isAdminLoggedIn = localStorage.getItem("altus_admin") === "true";
 
   useEffect(() => {
-    if (isAdminLoggedIn) {
-      setLoadingMaintenance(false);
-      return;
-    }
-
+    // Dynamic settings loading (Maintenance & Contact Info)
     if (isSupabaseConfigured && supabase) {
+      // 1. Fetch Maintenance Mode
       supabase
         .from("settings")
         .select("value")
@@ -37,6 +34,22 @@ export function Root() {
             setMaintenanceActive(!!data.value?.enabled);
           }
           setLoadingMaintenance(false);
+        });
+
+      // 2. Fetch Contact Info
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "contact_info")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data && data.value) {
+            localStorage.setItem("altus_contact_info", JSON.stringify({
+              phone: data.value.phone,
+              email: data.value.email
+            }));
+            window.dispatchEvent(new Event("storage"));
+          }
         });
     } else {
       // Local fallback
