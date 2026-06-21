@@ -1356,6 +1356,44 @@ function SettingsView() {
   const [viber, setViber] = useState("6970015447");
   const [email, setEmail] = useState("info@altusstudio.gr");
   const [saved, setSaved] = useState(false);
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+  const [loadingMaintenance, setLoadingMaintenance] = useState(true);
+
+  useEffect(() => {
+    // Load current maintenance state from Supabase
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "maintenance_mode")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setMaintenanceMode(!!data.value?.enabled);
+          }
+          setLoadingMaintenance(false);
+        });
+    } else {
+      setMaintenanceMode(localStorage.getItem("altus_maintenance") === "true");
+      setLoadingMaintenance(false);
+    }
+  }, []);
+
+  const handleToggleMaintenance = (enabled: boolean) => {
+    setMaintenanceMode(enabled);
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("settings")
+        .upsert({ key: "maintenance_mode", value: { enabled } })
+        .then(({ error }) => {
+          if (error) {
+            console.error("Failed to update maintenance state in Supabase:", error);
+          }
+        });
+    } else {
+      localStorage.setItem("altus_maintenance", enabled ? "true" : "false");
+    }
+  };
 
   const save = () => {
     setSaved(true);
@@ -1385,6 +1423,54 @@ function SettingsView() {
               />
             </div>
           ))}
+        </div>
+
+        {/* Maintenance Mode Toggle */}
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
+          <h3 style={{ color: "#C9A84C", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>
+            Κατάσταση Συντήρησης (Maintenance Mode)
+          </h3>
+          <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, lineHeight: 1.6, marginBottom: 20 }}>
+            Ενεργοποιήστε την κατάσταση συντήρησης για να εμποδίσετε την πρόσβαση στους απλούς χρήστες. 
+            Εσείς θα συνεχίσετε να έχετε κανονικά πρόσβαση σε όλες τις σελίδες εφόσον είστε συνδεδεμένος ως Admin.
+          </p>
+          {loadingMaintenance ? (
+            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>Φόρτωση κατάστασης...</div>
+          ) : (
+            <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
+              <button
+                onClick={() => handleToggleMaintenance(!maintenanceMode)}
+                style={{
+                  width: 50,
+                  height: 26,
+                  borderRadius: 13,
+                  background: maintenanceMode ? "#C9A84C" : "rgba(255,255,255,0.1)",
+                  position: "relative",
+                  cursor: "pointer",
+                  border: "none",
+                  transition: "background 0.3s",
+                  padding: 0,
+                  display: "block",
+                }}
+              >
+                <div
+                  style={{
+                    width: 20,
+                    height: 20,
+                    borderRadius: "50%",
+                    background: "#0A0F1E",
+                    position: "absolute",
+                    top: 3,
+                    left: maintenanceMode ? 27 : 3,
+                    transition: "left 0.3s",
+                  }}
+                />
+              </button>
+              <span style={{ color: "#fff", fontSize: 14, fontWeight: 600 }}>
+                {maintenanceMode ? "Ενεργοποιημένο (Maintenance Active)" : "Απενεργοποιημένο (Live)"}
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Security */}

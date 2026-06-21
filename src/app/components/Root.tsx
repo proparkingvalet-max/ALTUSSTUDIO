@@ -7,10 +7,44 @@ import { LanguageProvider } from "@/app/context/LanguageContext";
 import { AltusAssistant } from "./AltusAssistant";
 import { ThemeProvider } from "@/app/context/ThemeContext";
 import { CustomCursor } from "./CustomCursor";
+import { MaintenancePage } from "./MaintenancePage";
+import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
 
 export function Root() {
   const { pathname } = useLocation();
   const [scrollProgress, setScrollProgress] = useState(0);
+
+  // Dynamic maintenance mode states
+  const [maintenanceActive, setMaintenanceActive] = useState(false);
+  const [loadingMaintenance, setLoadingMaintenance] = useState(true);
+
+  const isAdminLoggedIn = sessionStorage.getItem("altus_admin") === "true";
+
+  useEffect(() => {
+    if (isAdminLoggedIn) {
+      setLoadingMaintenance(false);
+      return;
+    }
+
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "maintenance_mode")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setMaintenanceActive(!!data.value?.enabled);
+          }
+          setLoadingMaintenance(false);
+        });
+    } else {
+      // Local fallback
+      const localMode = localStorage.getItem("altus_maintenance") === "true";
+      setMaintenanceActive(localMode);
+      setLoadingMaintenance(false);
+    }
+  }, [isAdminLoggedIn, pathname]);
 
   useEffect(() => {
     window.scrollTo({ top: 0, behavior: "instant" });
@@ -32,6 +66,24 @@ export function Root() {
 
     return () => window.removeEventListener("scroll", handleScroll);
   }, [pathname]);
+
+  if (loadingMaintenance) {
+    return (
+      <div className="min-h-screen bg-[#0A0F1E] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#C9A84C]/40 border-t-[#C9A84C] rounded-full animate-spin" />
+      </div>
+    );
+  }
+
+  if (maintenanceActive && !isAdminLoggedIn) {
+    return (
+      <ThemeProvider>
+        <LanguageProvider>
+          <MaintenancePage />
+        </LanguageProvider>
+      </ThemeProvider>
+    );
+  }
 
   return (
     <ThemeProvider>

@@ -18,6 +18,11 @@ CREATE TABLE IF NOT EXISTS messages (
 -- Enable RLS for messages
 ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist to prevent errors
+DROP POLICY IF EXISTS "Allow anonymous message inserts" ON messages;
+DROP POLICY IF EXISTS "Allow message selects" ON messages;
+DROP POLICY IF EXISTS "Allow message updates" ON messages;
+
 -- Policy to allow anonymous submissions (Insert)
 CREATE POLICY "Allow anonymous message inserts" 
 ON messages FOR INSERT 
@@ -56,6 +61,10 @@ CREATE TABLE IF NOT EXISTS projects (
 -- Enable RLS for projects
 ALTER TABLE projects ENABLE ROW LEVEL SECURITY;
 
+-- Drop existing policies if they exist to prevent errors
+DROP POLICY IF EXISTS "Allow public projects read access" ON projects;
+DROP POLICY IF EXISTS "Allow project modifications" ON projects;
+
 -- Policy to allow everyone to view portfolio projects (Select)
 CREATE POLICY "Allow public projects read access" 
 ON projects FOR SELECT 
@@ -86,3 +95,36 @@ VALUES
   'https://proparkingvalet.gr'
 )
 ON CONFLICT (id) DO NOTHING;
+
+
+-- 4. Create Settings Table (Global app configuration)
+CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value JSONB NOT NULL,
+    created_at TIMESTAMPTZ DEFAULT NOW(),
+    updated_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for settings
+ALTER TABLE settings ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist to prevent errors
+DROP POLICY IF EXISTS "Allow public settings read access" ON settings;
+DROP POLICY IF EXISTS "Allow settings modifications" ON settings;
+
+-- Policy to allow anyone to read settings (Select)
+CREATE POLICY "Allow public settings read access" 
+ON settings FOR SELECT 
+TO anon 
+USING (true);
+
+-- Policy to allow any updates or inserts on settings from the client
+CREATE POLICY "Allow settings modifications" 
+ON settings FOR ALL 
+TO anon 
+USING (true);
+
+-- Seed initial maintenance mode state
+INSERT INTO settings (key, value)
+VALUES ('maintenance_mode', '{"enabled": false}'::jsonb)
+ON CONFLICT (key) DO NOTHING;
