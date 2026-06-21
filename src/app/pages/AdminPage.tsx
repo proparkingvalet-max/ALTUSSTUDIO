@@ -1306,53 +1306,140 @@ function ProjectsView() {
 // ─── Analytics View ────────────────────────────────────────────────────────────
 
 function AnalyticsView() {
-  const months = ["Ιαν", "Φεβ", "Μαρ", "Απρ", "Μάι", "Ιούν"];
-  const visitors = [410, 580, 720, 890, 1100, 1847];
-  const max = Math.max(...visitors);
+  const [views, setViews] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) {
+      setLoading(false);
+      return;
+    }
+    // Fetch last 30 days of page views
+    const from = new Date();
+    from.setDate(from.getDate() - 29);
+    const fromStr = from.toISOString().split("T")[0];
+
+    supabase
+      .from("page_views")
+      .select("date, path")
+      .gte("date", fromStr)
+      .order("date", { ascending: true })
+      .then(({ data }) => {
+        setViews(data || []);
+        setLoading(false);
+      });
+  }, []);
+
+  const today = new Date().toISOString().split("T")[0];
+  const thisMonth = new Date().toISOString().substring(0, 7);
+
+  const totalMonth = views.filter((v) => v.date?.startsWith(thisMonth)).length;
+  const totalToday = views.filter((v) => v.date === today).length;
+
+  // Build last 7 days bar chart
+  const last7: { label: string; date: string; count: number }[] = [];
+  for (let i = 6; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const dateStr = d.toISOString().split("T")[0];
+    const label = d.toLocaleDateString("el-GR", { day: "2-digit", month: "2-digit" });
+    last7.push({ label, date: dateStr, count: views.filter((v) => v.date === dateStr).length });
+  }
+  const maxCount = Math.max(...last7.map((d) => d.count), 1);
+
+  // Top pages
+  const pathCounts: Record<string, number> = {};
+  views.forEach((v) => {
+    const p = v.path || "/";
+    pathCounts[p] = (pathCounts[p] || 0) + 1;
+  });
+  const topPages = Object.entries(pathCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
 
   return (
     <div>
       <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 24 }}>
         Στατιστικά
       </h1>
-      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 32, marginBottom: 20 }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: 12 }}>
-          <div>
-            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 4 }}>Επισκέπτες ανά μήνα</div>
-            <div style={{ color: "#fff", fontSize: 28, fontWeight: 700 }}>1.847 <span style={{ color: "#22c55e", fontSize: 14 }}>↑ +12%</span></div>
-          </div>
-          <div style={{ display: "flex", gap: 6 }}>
-            {["7Η", "30Η", "6Μ", "1Χ"].map((r) => (
-              <button key={r} style={{ padding: "6px 12px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: r === "6Μ" ? "rgba(201,168,76,0.1)" : "transparent", color: r === "6Μ" ? "#C9A84C" : "rgba(255,255,255,0.4)", cursor: "pointer", fontSize: 12 }}>{r}</button>
-            ))}
-          </div>
-        </div>
 
-        {/* Simple bar chart */}
-        <div style={{ display: "flex", alignItems: "flex-end", gap: 12, height: 160, marginTop: 24 }}>
-          {months.map((m, i) => (
-            <div key={m} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 8 }}>
-              <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{visitors[i]}</div>
-              <div style={{ width: "100%", background: `linear-gradient(180deg, #C9A84C, #a8893e)`, height: `${(visitors[i] / max) * 120}px`, borderRadius: "4px 4px 0 0", opacity: i === months.length - 1 ? 1 : 0.4, transition: "opacity 0.2s" }} />
-              <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{m}</div>
-            </div>
-          ))}
+      {loading ? (
+        <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>
+          <div style={{ width: 32, height: 32, border: "2px solid rgba(201,168,76,0.3)", borderTop: "2px solid #C9A84C", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 12px" }} />
+          Φόρτωση στατιστικών...
         </div>
-      </div>
-
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 16 }}>
-        {[
-          { label: "Μέση διάρκεια επίσκεψης", value: "2:34", sub: "λεπτά" },
-          { label: "Bounce Rate", value: "38%", sub: "παραμένουν" },
-          { label: "Νέοι επισκέπτες", value: "74%", sub: "του μήνα" },
-        ].map((s) => (
-          <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 8 }}>{s.label}</div>
-            <div style={{ color: "#fff", fontSize: 28, fontWeight: 700 }}>{s.value}</div>
-            <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{s.sub}</div>
+      ) : (
+        <>
+          {/* Summary Cards */}
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+            {[
+              { label: "Σελιδοπροβολές Μήνα", value: totalMonth.toLocaleString("el-GR"), icon: Eye, color: "#C9A84C" },
+              { label: "Σελιδοπροβολές Σήμερα", value: totalToday.toLocaleString("el-GR"), icon: TrendingUp, color: "#22c55e" },
+            ].map((s) => {
+              const Icon = s.icon;
+              return (
+                <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "24px 28px", display: "flex", alignItems: "center", gap: 16 }}>
+                  <div style={{ width: 48, height: 48, borderRadius: 12, background: `${s.color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+                    <Icon size={22} color={s.color} />
+                  </div>
+                  <div>
+                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 4 }}>{s.label}</div>
+                    <div style={{ color: "#fff", fontSize: 28, fontWeight: 700 }}>{s.value}</div>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-        ))}
-      </div>
+
+          {/* Bar Chart — last 7 days */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28, marginBottom: 20 }}>
+            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Τελευταίες 7 μέρες</div>
+            {last7.every((d) => d.count === 0) ? (
+              <div style={{ textAlign: "center", padding: "32px 0", color: "rgba(255,255,255,0.2)", fontSize: 14 }}>
+                Δεν υπάρχουν δεδομένα ακόμα — αναμένουμε επισκέπτες!
+              </div>
+            ) : (
+              <div style={{ display: "flex", alignItems: "flex-end", gap: 10, height: 140 }}>
+                {last7.map((d) => (
+                  <div key={d.date} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
+                    <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{d.count > 0 ? d.count : ""}</div>
+                    <div style={{
+                      width: "100%",
+                      background: d.date === today
+                        ? "linear-gradient(180deg, #C9A84C, #a8893e)"
+                        : "rgba(201,168,76,0.3)",
+                      height: `${Math.max((d.count / maxCount) * 110, d.count > 0 ? 4 : 0)}px`,
+                      borderRadius: "4px 4px 0 0",
+                      transition: "height 0.3s",
+                    }} />
+                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{d.label}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Top Pages */}
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
+            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Top Σελίδες</div>
+            {topPages.length === 0 ? (
+              <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 14, textAlign: "center", padding: "16px 0" }}>Δεν υπάρχουν δεδομένα ακόμα</div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {topPages.map(([path, count]) => (
+                  <div key={path} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                    <div style={{ flex: 1, color: "#fff", fontSize: 14, fontFamily: "monospace" }}>{path}</div>
+                    <div style={{ width: 120, height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 999, overflow: "hidden" }}>
+                      <div style={{ width: `${(count / (topPages[0]?.[1] || 1)) * 100}%`, height: "100%", background: "#C9A84C", borderRadius: 999 }} />
+                    </div>
+                    <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 13, minWidth: 30, textAlign: "right" }}>{count}</div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
     </div>
   );
 }
