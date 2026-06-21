@@ -199,7 +199,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
 
 const navItems = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
-  { id: "messages", label: "Μηνύματα", icon: MessageSquare, badge: 1 },
+  { id: "messages", label: "Μηνύματα", icon: MessageSquare },
   { id: "projects", label: "Projects", icon: FolderOpen },
   { id: "clients", label: "Πελάτες (CRM)", icon: Users },
   { id: "quotes", label: "Προσφορές", icon: FileText },
@@ -405,11 +405,15 @@ function DashboardView() {
   const recentMessages = messages.slice(0, 3);
   const newMessagesCount = messages.filter((m) => m.status === "new").length;
 
+  const liveProjects = projects.filter((p) => p.isLive).length;
+  const activeProjects = projects.filter((p) => !p.isLive).length;
+  const totalProjects = projects.length;
+
   const dynamicStats = [
-    { label: "Επισκέπτες (Μήνας)", value: "1.847", change: "+12%", icon: Eye, color: "#C9A84C" },
-    { label: "Νέα Μηνύματα", value: newMessagesCount.toString(), change: `+${newMessagesCount} συνολικά`, icon: Mail, color: "#4CAF50" },
-    { label: "Ενεργά Projects", value: projects.filter((p) => !p.isLive).length.toString(), change: `${projects.filter((p) => p.isLive).length} ολοκλ.`, icon: FolderOpen, color: "#2196F3" },
-    { label: "Ολοκλ. Projects", value: projects.filter((p) => p.isLive).length.toString(), change: "+3 φέτος", icon: CheckCircle, color: "#9C27B0" },
+    { label: "Νέα Μηνύματα", value: newMessagesCount.toString(), change: newMessagesCount > 0 ? `${newMessagesCount} αδιάβαστα` : "Κανένα νέο", icon: Mail, color: "#4CAF50" },
+    { label: "Σύνολο Μηνυμάτων", value: messages.length.toString(), change: `${messages.length} συνολικά`, icon: Eye, color: "#C9A84C" },
+    { label: "Ενεργά Projects", value: activeProjects.toString(), change: `${liveProjects} live`, icon: FolderOpen, color: "#2196F3" },
+    { label: "Ολοκλ. Projects", value: totalProjects.toString(), change: `${liveProjects} live`, icon: CheckCircle, color: "#9C27B0" },
   ];
 
   return (
