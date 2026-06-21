@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { MessageSquare, X, Send, Bot, HelpCircle, Check, Loader2 } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
 
 interface Message {
   id: string;
@@ -150,11 +151,8 @@ export function AltusAssistant() {
       setIsTyping(false);
       setLeadSubmitted(true);
 
-      // Save to localStorage as a new CRM lead message!
+      // Save to Supabase (if configured) or fallback to localStorage as a new CRM lead message!
       try {
-        const raw = localStorage.getItem("altus_messages");
-        const existingMessages = raw ? JSON.parse(raw) : [];
-
         // Construct full transcript for the admin lead
         const transcript = messages
           .concat(contactMsg)
@@ -162,7 +160,6 @@ export function AltusAssistant() {
           .join("\n");
 
         const newLead = {
-          id: "lead-chat-" + Date.now(),
           name: lang === "el" ? "Πελάτης (Chatbot)" : "Client (Chatbot)",
           email: contactInput.includes("@") ? contactInput.trim() : "",
           phone: !contactInput.includes("@") ? contactInput.trim() : "",
@@ -173,11 +170,32 @@ export function AltusAssistant() {
           status: "new",
         };
 
-        const updated = [newLead, ...existingMessages];
-        localStorage.setItem("altus_messages", JSON.stringify(updated));
-        
-        // Dispatch event for Admin dashboard
-        window.dispatchEvent(new Event("storage"));
+        if (isSupabaseConfigured && supabase) {
+          supabase
+            .from("messages")
+            .insert([newLead])
+            .then(({ error }) => {
+              if (error) {
+                console.error("Error submitting chatbot lead to Supabase:", error);
+              }
+              // Dispatch event for Admin dashboard
+              window.dispatchEvent(new Event("storage"));
+            });
+        } else {
+          const raw = localStorage.getItem("altus_messages");
+          const existingMessages = raw ? JSON.parse(raw) : [];
+          
+          const localLead = {
+            id: "lead-chat-" + Date.now(),
+            ...newLead
+          };
+
+          const updated = [localLead, ...existingMessages];
+          localStorage.setItem("altus_messages", JSON.stringify(updated));
+          
+          // Dispatch event for Admin dashboard
+          window.dispatchEvent(new Event("storage"));
+        }
       } catch (err) {
         console.error("Failed to save chatbot lead", err);
       }

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getProjects, saveProjects, Project } from "@/app/utils/projects";
+import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
 import {
   LayoutDashboard,
   MessageSquare,
@@ -359,14 +360,65 @@ function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (
 
 function DashboardView() {
   const [messages, setMessages] = useState<any[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
 
   useEffect(() => {
-    const raw = localStorage.getItem("altus_messages");
-    if (raw) {
-      setMessages(JSON.parse(raw));
+    // Fetch messages from Supabase if configured
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("messages")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setMessages(data);
+            localStorage.setItem("altus_messages", JSON.stringify(data));
+          } else {
+            console.error("Failed to load messages from Supabase in dashboard:", error);
+            const raw = localStorage.getItem("altus_messages");
+            if (raw) setMessages(JSON.parse(raw));
+          }
+        });
     } else {
-      setMessages(mockMessages);
-      localStorage.setItem("altus_messages", JSON.stringify(mockMessages));
+      const raw = localStorage.getItem("altus_messages");
+      if (raw) {
+        setMessages(JSON.parse(raw));
+      } else {
+        setMessages(mockMessages);
+        localStorage.setItem("altus_messages", JSON.stringify(mockMessages));
+      }
+    }
+
+    // Fetch projects from Supabase if configured
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .then(({ data, error }) => {
+          if (!error && data) {
+            const mapped = data.map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              category: p.category,
+              tags: p.tags || [],
+              year: p.year || "",
+              description: p.description || "",
+              img: p.img || "",
+              results: p.results || "",
+              isLive: !!p.is_live,
+              gallery: p.gallery || [],
+              liveUrl: p.live_url || "",
+            }));
+            setProjects(mapped);
+            localStorage.setItem("altus_projects", JSON.stringify(mapped));
+          } else {
+            console.error("Failed to load projects from Supabase in dashboard:", error);
+            setProjects(getProjects());
+          }
+        });
+    } else {
+      setProjects(getProjects());
     }
   }, []);
 
@@ -376,8 +428,8 @@ function DashboardView() {
   const dynamicStats = [
     { label: "Επισκέπτες (Μήνας)", value: "1.847", change: "+12%", icon: Eye, color: "#C9A84C" },
     { label: "Νέα Μηνύματα", value: newMessagesCount.toString(), change: `+${newMessagesCount} συνολικά`, icon: Mail, color: "#4CAF50" },
-    { label: "Ενεργά Projects", value: "2", change: "1 ολοκλ.", icon: FolderOpen, color: "#2196F3" },
-    { label: "Ολοκλ. Projects", value: "12", change: "+3 φέτος", icon: CheckCircle, color: "#9C27B0" },
+    { label: "Ενεργά Projects", value: projects.filter((p) => !p.isLive).length.toString(), change: `${projects.filter((p) => p.isLive).length} ολοκλ.`, icon: FolderOpen, color: "#2196F3" },
+    { label: "Ολοκλ. Projects", value: projects.filter((p) => p.isLive).length.toString(), change: "+3 φέτος", icon: CheckCircle, color: "#9C27B0" },
   ];
 
   return (
@@ -423,7 +475,7 @@ function DashboardView() {
         })}
       </div>
 
-      {/* Recent messages */}
+      {/* Recent messages and Active Projects */}
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
@@ -442,14 +494,14 @@ function DashboardView() {
               }}
             >
               <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(201,168,76,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 14, color: "#C9A84C", fontWeight: 700 }}>
-                {msg.name[0]}
+                {msg.name ? msg.name[0] : "?"}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
                 <div style={{ color: "#fff", fontSize: 13, fontWeight: 600, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{msg.name}</div>
                 <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{msg.service}</div>
               </div>
-              <span style={{ fontSize: 11, color: statusColor[msg.status] || "#fff", background: `${statusColor[msg.status]}18`, padding: "3px 8px", borderRadius: 999, whiteSpace: "nowrap" }}>
-                {statusLabel[msg.status]}
+              <span style={{ fontSize: 11, color: statusColor[msg.status] || "#fff", background: `${statusColor[msg.status] || "#fff"}18`, padding: "3px 8px", borderRadius: 999, whiteSpace: "nowrap" }}>
+                {statusLabel[msg.status] || msg.status}
               </span>
             </div>
           ))}
@@ -461,7 +513,7 @@ function DashboardView() {
             <h3 style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>Ενεργά Projects</h3>
             <FolderOpen size={16} color="#C9A84C" />
           </div>
-          {mockProjects.filter((p) => p.status !== "live").map((p) => (
+          {projects.filter((p) => !p.isLive).map((p) => (
             <div
               key={p.id}
               style={{
@@ -476,11 +528,11 @@ function DashboardView() {
                 <Globe size={16} color="#2196F3" />
               </div>
               <div style={{ flex: 1 }}>
-                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{p.title}</div>
-                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{p.client}</div>
+                <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{p.name}</div>
+                <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 12 }}>{p.category}</div>
               </div>
-              <span style={{ fontSize: 11, color: statusColor[p.status], background: `${statusColor[p.status]}18`, padding: "3px 8px", borderRadius: 999 }}>
-                {p.status === "in-progress" ? "Σε εξέλιξη" : "Draft"}
+              <span style={{ fontSize: 11, color: statusColor["draft"], background: `${statusColor["draft"]}18`, padding: "3px 8px", borderRadius: 999 }}>
+                Draft
               </span>
             </div>
           ))}
@@ -499,12 +551,29 @@ function MessagesView() {
   const [sent, setSent] = useState(false);
 
   useEffect(() => {
-    const raw = localStorage.getItem("altus_messages");
-    if (raw) {
-      setMessages(JSON.parse(raw));
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("messages")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setMessages(data);
+            localStorage.setItem("altus_messages", JSON.stringify(data));
+          } else {
+            console.error("Failed to load messages from Supabase:", error);
+            const raw = localStorage.getItem("altus_messages");
+            if (raw) setMessages(JSON.parse(raw));
+          }
+        });
     } else {
-      setMessages(mockMessages);
-      localStorage.setItem("altus_messages", JSON.stringify(mockMessages));
+      const raw = localStorage.getItem("altus_messages");
+      if (raw) {
+        setMessages(JSON.parse(raw));
+      } else {
+        setMessages(mockMessages);
+        localStorage.setItem("altus_messages", JSON.stringify(mockMessages));
+      }
     }
   }, []);
 
@@ -517,29 +586,59 @@ function MessagesView() {
     }
   };
 
-  const markRead = (id: number) => {
+  const markRead = (id: any) => {
     const updated = messages.map((m) => m.id === id ? { ...m, read: true } : m);
     saveMessages(updated);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("messages")
+        .update({ read: true })
+        .eq("id", id)
+        .then(({ error }) => {
+          if (error) console.error("Failed to update message read state in Supabase:", error);
+        });
+    }
   };
 
-  const deleteMsg = (id: number) => {
+  const deleteMsg = (id: any) => {
     const updated = messages.filter((m) => m.id !== id);
     saveMessages(updated);
     if (selected?.id === id) { setSelected(null); setReply(""); }
+
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("messages")
+        .delete()
+        .eq("id", id)
+        .then(({ error }) => {
+          if (error) console.error("Failed to delete message in Supabase:", error);
+        });
+    }
   };
 
-  const markStatus = (id: number, status: string) => {
+  const markStatus = (id: any, status: string) => {
     const updated = messages.map((m) => m.id === id ? { ...m, status } : m);
     saveMessages(updated);
     if (selected?.id === id) setSelected((prev: any) => prev ? { ...prev, status } : prev);
+
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("messages")
+        .update({ status })
+        .eq("id", id)
+        .then(({ error }) => {
+          if (error) console.error("Failed to update message status in Supabase:", error);
+        });
+    }
   };
 
-  const handleSelect = (msg: typeof mockMessages[0]) => {
+  const handleSelect = (msg: any) => {
     setSelected(msg);
     markRead(msg.id);
     setSent(false);
     // Pre-fill a polite opening
-    setReply(`Αγαπητέ/ή ${msg.name.split(" ")[0]},\n\nΕυχαριστούμε για το ενδιαφέρον σας.\n\n`);
+    setReply(`Αγαπητέ/ή ${msg.name ? msg.name.split(" ")[0] : ""},\n\nΕυχαριστούμε για το ενδιαφέρον σας.\n\n`);
   };
 
   const sendReply = () => {
@@ -757,7 +856,36 @@ function ProjectsView() {
   const [formLiveUrl, setFormLiveUrl] = useState("");
 
   useEffect(() => {
-    setProjects(getProjects());
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("projects")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .then(({ data, error }) => {
+          if (!error && data) {
+            const mapped = data.map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              category: p.category,
+              tags: p.tags || [],
+              year: p.year || "",
+              description: p.description || "",
+              img: p.img || "",
+              results: p.results || "",
+              isLive: !!p.is_live,
+              gallery: p.gallery || [],
+              liveUrl: p.live_url || "",
+            }));
+            setProjects(mapped);
+            localStorage.setItem("altus_projects", JSON.stringify(mapped));
+          } else {
+            console.error("Failed to load projects from Supabase in admin projects view:", error);
+            setProjects(getProjects());
+          }
+        });
+    } else {
+      setProjects(getProjects());
+    }
   }, []);
 
   const openEdit = (p: Project) => {
@@ -863,6 +991,16 @@ function ProjectsView() {
       const updated = projects.filter((p) => p.id !== id);
       setProjects(updated);
       saveProjects(updated);
+
+      if (isSupabaseConfigured && supabase) {
+        supabase
+          .from("projects")
+          .delete()
+          .eq("id", id)
+          .then(({ error }) => {
+            if (error) console.error("Failed to delete project from Supabase:", error);
+          });
+      }
     }
   };
 

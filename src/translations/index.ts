@@ -6,6 +6,8 @@ export const translations = {
       home: "Αρχική",
       services: "Υπηρεσίες",
       portfolio: "Portfolio",
+      about: "Σχετικά",
+      blog: "Blog",
       contact: "Επικοινωνία",
       cta: "Επικοινωνία",
       ctaMobile: "Ξεκινήστε ένα Project",
@@ -340,6 +342,59 @@ export const translations = {
       title: "Όροι Χρήσης",
       lastUpdated: "Τελευταία ενημέρωση:",
     },
+    aboutPage: {
+      hero: {
+        label: "Ποιοι Είμαστε",
+        heading1: "Σχετικά με την",
+        heading2: "Altus Studio",
+        sub: "Είμαστε μια ομάδα από παθιασμένους designers και developers που δημιουργούν premium ψηφιακά προϊόντα."
+      },
+      philosophy: {
+        title: "Η Φιλοσοφία Μας",
+        items: [
+          { title: "Αισθητική Υπεροχή", desc: "Κάθε pixel έχει σημασία. Σχεδιάζουμε custom UI/UX που μαγνητίζει και αναδεικνύει την ταυτότητα της επιχείρησής σας." },
+          { title: "Τεχνική Ακρίβεια", desc: "Γράφουμε καθαρό, γρήγορο κώδικα (React, Vite, Tailwind) βελτιστοποιημένο για SEO, ταχύτητα φόρτωσης και Core Web Vitals." },
+          { title: "Στρατηγική Εστίαση", desc: "Δεν φτιάχνουμε απλώς όμορφα sites, αλλά ψηφιακά εργαλεία με σκοπό τη μετατροπή των επισκεπτών σε πελάτες (high conversion)." }
+        ]
+      },
+      team: {
+        title: "Η Ομάδα Μας",
+        roles: {
+          design: "Lead UI/UX Designer",
+          dev: "Lead Web Developer",
+          pm: "Creative Director"
+        }
+      }
+    },
+    booking: {
+      title: "Κλείστε Call Γνωριμίας",
+      sub: "Επιλέξτε ημερομηνία και ώρα για ένα δωρεάν Call 15 λεπτών.",
+      selectDate: "1. Επιλογή Ημερομηνίας",
+      selectTime: "2. Επιλογή Ώρας",
+      enterDetails: "3. Στοιχεία Επικοινωνίας",
+      name: "Ονοματεπώνυμο",
+      email: "Email",
+      phone: "Τηλέφωνο",
+      submit: "Επιβεβαίωση Κράτησης",
+      successTitle: "Η Κράτηση Επιβεβαιώθηκε!",
+      successSub: "Σας στείλαμε email επιβεβαίωσης με τις λεπτομέρειες. Θα σας καλέσουμε την επιλεγμένη ώρα.",
+      back: "Πίσω",
+      next: "Επόμενο",
+      close: "Κλείσιμο",
+      emptySlots: "Δεν υπάρχουν διαθέσιμες ώρες για αυτή τη μέρα.",
+    },
+    projectDetails: {
+      backToPortfolio: "Πίσω στο Portfolio",
+      year: "Έτος",
+      category: "Κατηγορία",
+      tags: "Τεχνολογίες",
+      results: "Αποτελέσματα",
+      liveProject: "Δείτε το Live Project",
+      challenge: "Η Πρόκληση",
+      solution: "Η Λύση μας",
+      gallery: "Γκαλερί Έργου",
+      nextProject: "Επόμενο Project",
+    },
   },
 
   en: {
@@ -347,6 +402,8 @@ export const translations = {
       home: "Home",
       services: "Services",
       portfolio: "Portfolio",
+      about: "About",
+      blog: "Blog",
       contact: "Contact",
       cta: "Contact Us",
       ctaMobile: "Start a Project",
@@ -672,6 +729,59 @@ export const translations = {
     terms: {
       title: "Terms of Use",
       lastUpdated: "Last updated:",
+    },
+    aboutPage: {
+      hero: {
+        label: "Who We Are",
+        heading1: "About",
+        heading2: "Altus Studio",
+        sub: "We are a team of passionate designers and developers building premium digital products."
+      },
+      philosophy: {
+        title: "Our Philosophy",
+        items: [
+          { title: "Aesthetic Excellence", desc: "Every pixel matters. We design custom UI/UX that captivates and highlights your business identity." },
+          { title: "Technical Precision", desc: "We write clean, fast code (React, Vite, Tailwind) optimized for SEO, load speeds, and Core Web Vitals." },
+          { title: "Strategic Focus", desc: "We don't just build beautiful sites, but digital tools aimed at converting visitors into clients (high conversion)." }
+        ]
+      },
+      team: {
+        title: "Our Team",
+        roles: {
+          design: "Lead UI/UX Designer",
+          dev: "Lead Web Developer",
+          pm: "Creative Director"
+        }
+      }
+    },
+    booking: {
+      title: "Book a Discovery Call",
+      sub: "Choose a date and time for a free 15-minute call.",
+      selectDate: "1. Select Date",
+      selectTime: "2. Select Time",
+      enterDetails: "3. Contact Details",
+      name: "Full Name",
+      email: "Email",
+      phone: "Phone",
+      submit: "Confirm Booking",
+      successTitle: "Booking Confirmed!",
+      successSub: "We've sent you a confirmation email. We will call you at the selected time.",
+      back: "Back",
+      next: "Next",
+      close: "Close",
+      emptySlots: "No slots available for this day.",
+    },
+    projectDetails: {
+      backToPortfolio: "Back to Portfolio",
+      year: "Year",
+      category: "Category",
+      tags: "Technologies",
+      results: "Results",
+      liveProject: "View Live Project",
+      challenge: "The Challenge",
+      solution: "Our Solution",
+      gallery: "Project Gallery",
+      nextProject: "Next Project",
     },
   },
 };

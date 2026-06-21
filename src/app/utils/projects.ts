@@ -5,6 +5,7 @@ import resortBooking from "@/assets/resort_booking.png";
 import ppHero from "@/assets/proparking/hero_section.png";
 import ppBooking from "@/assets/proparking/booking_section.png";
 import ppMarina from "@/assets/proparking/marina.jpg";
+import { supabase, isSupabaseConfigured } from "./supabaseClient";
 
 export interface Project {
   id: string;
@@ -63,6 +64,33 @@ export const defaultProjects: Project[] = [
 ];
 
 export function getProjects(): Project[] {
+  // Async background sync with Supabase if configured
+  if (isSupabaseConfigured && supabase) {
+    supabase
+      .from("projects")
+      .select("*")
+      .then(({ data, error }) => {
+        if (!error && data) {
+          const mapped = data.map((p: any) => ({
+            id: p.id,
+            name: p.name,
+            category: p.category,
+            tags: p.tags || [],
+            year: p.year || "",
+            description: p.description || "",
+            img: p.img || "",
+            results: p.results || "",
+            isLive: !!p.is_live,
+            gallery: p.gallery || [],
+            liveUrl: p.live_url || "",
+          }));
+          localStorage.setItem("altus_projects", JSON.stringify(mapped));
+          // Notify components list to re-render
+          window.dispatchEvent(new Event("storage"));
+        }
+      });
+  }
+
   const stored = localStorage.getItem("altus_projects");
   if (!stored) {
     localStorage.setItem("altus_projects", JSON.stringify(defaultProjects));
@@ -106,4 +134,29 @@ export function getProjects(): Project[] {
 
 export function saveProjects(projects: Project[]): void {
   localStorage.setItem("altus_projects", JSON.stringify(projects));
+
+  if (isSupabaseConfigured && supabase) {
+    const dbPayload = projects.map((p) => ({
+      id: p.id,
+      name: p.name,
+      category: p.category,
+      tags: p.tags || [],
+      year: p.year || "",
+      description: p.description || "",
+      img: p.img || "",
+      results: p.results || "",
+      is_live: p.isLive,
+      gallery: p.gallery || [],
+      live_url: p.liveUrl || "",
+    }));
+
+    supabase
+      .from("projects")
+      .upsert(dbPayload)
+      .then(({ error }) => {
+        if (error) {
+          console.error("Failed to sync updated projects with Supabase:", error);
+        }
+      });
+  }
 }

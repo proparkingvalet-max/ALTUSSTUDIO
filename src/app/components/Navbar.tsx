@@ -17,12 +17,16 @@ export function Navbar() {
     { label: t("nav.home"), to: "/" },
     { label: t("nav.services"), to: "/services" },
     { label: "Portfolio", to: "/portfolio" },
+    { label: t("nav.about"), to: "/about" },
+    { label: t("nav.blog"), to: "/blog" },
     { label: t("nav.contact"), to: "/contact" },
   ];
 
   const isDarkPage =
     location.pathname === "/" ||
     location.pathname === "/portfolio" ||
+    location.pathname === "/about" ||
+    location.pathname.startsWith("/blog") ||
     location.pathname === "/contact";
 
   const isVisualDark = theme === "dark" && isDarkPage;

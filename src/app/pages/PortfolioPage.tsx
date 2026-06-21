@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
@@ -8,6 +8,7 @@ import { getProjects, Project } from "@/app/utils/projects";
 
 export function PortfolioPage() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [projectsList, setProjectsList] = useState<Project[]>([]);
 
   const allLabel = t("portfolio.filter.all");
@@ -141,7 +142,7 @@ export function PortfolioPage() {
                 className="relative group cursor-pointer bg-[#0A0F1E]"
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
-                onClick={() => setSelectedProject(project)}
+                onClick={() => navigate(`/portfolio/${project.id}`)}
               >
                 <div className="aspect-[4/3] overflow-hidden relative">
                   <img

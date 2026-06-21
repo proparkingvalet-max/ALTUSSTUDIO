@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, Globe, ShoppingCart, Zap, Smartphone, TrendingUp, HeadphonesIcon, Quote } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
@@ -696,6 +696,7 @@ function AboutSection() {
 
 function PortfolioSection() {
   const { t } = useLanguage();
+  const navigate = useNavigate();
   const [projectsList, setProjectsList] = useState<Project[]>([]);
   const [hovered, setHovered] = useState<number | null>(null);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -756,7 +757,7 @@ function PortfolioSection() {
               className="relative aspect-[4/3] overflow-hidden cursor-pointer group border border-[#0A0F1E]/5 bg-[#0D1220]"
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
-              onClick={() => setSelectedProject(project)}
+              onClick={() => navigate(`/portfolio/${project.id}`)}
             >
               <img
                 src={project.img}

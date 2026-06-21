@@ -2,6 +2,8 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, CheckCircle2, ChevronRight, ChevronLeft, Calculator, Laptop, ShoppingCart, Zap, PlusCircle, Check } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
+import { BookingCalendar } from "./BookingCalendar";
+import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
 
 interface Addon {
   id: string;
@@ -15,6 +17,7 @@ interface Addon {
 export function QuoteEstimator() {
   const { lang, t } = useLanguage();
   const [step, setStep] = useState(1);
+  const [showBookingModal, setShowBookingModal] = useState(false);
   
   // Selection States
   const [projectType, setProjectType] = useState<"website" | "eshop" | "landing" | null>(null);
@@ -79,36 +82,53 @@ export function QuoteEstimator() {
     const compLabel = complexity === "basic" ? "Βασικό" : complexity === "medium" ? "Μεσαίο (έως 10 σελίδες)" : "Premium / Large Scale";
     const selectedAddsList = addons.filter((a) => selectedAddons.includes(a.id)).map((a) => a.nameEl).join(", ");
 
-    setTimeout(() => {
-      try {
-        const existingMessagesRaw = localStorage.getItem("altus_messages");
-        const existingMessages = existingMessagesRaw ? JSON.parse(existingMessagesRaw) : [];
-        
-        const newMessage = {
-          id: Date.now(),
-          name,
-          email,
-          phone,
-          service: `Προσφορά: ${typeLabel}`,
-          message: `Αυτόματη εκτίμηση κόστους: €${calculateTotal()}
+    const payload = {
+      name,
+      email,
+      phone,
+      service: `Προσφορά: ${typeLabel}`,
+      message: `Αυτόματη εκτίμηση κόστους: €${calculateTotal()}
 --
 Τύπος: ${typeLabel}
 Πολυπλοκότητα: ${compLabel}
 Πρόσθετα: ${selectedAddsList || "Κανένα"}`,
-          date: new Date().toISOString().split("T")[0],
-          read: false,
-          status: "new"
-        };
+      date: new Date().toISOString().split("T")[0],
+      read: false,
+      status: "new"
+    };
+
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("messages")
+        .insert([payload])
+        .then(({ error }) => {
+          if (error) {
+            console.error("Error submitting quote lead to Supabase:", error);
+          }
+          setSending(false);
+          setSubmitted(true);
+        });
+    } else {
+      setTimeout(() => {
+        try {
+          const existingMessagesRaw = localStorage.getItem("altus_messages");
+          const existingMessages = existingMessagesRaw ? JSON.parse(existingMessagesRaw) : [];
+          
+          const newMessage = {
+            id: Date.now(),
+            ...payload
+          };
+          
+          const updatedMessages = [newMessage, ...existingMessages];
+          localStorage.setItem("altus_messages", JSON.stringify(updatedMessages));
+        } catch (err) {
+          console.error("Failed to save estimator quote lead:", err);
+        }
         
-        const updatedMessages = [newMessage, ...existingMessages];
-        localStorage.setItem("altus_messages", JSON.stringify(updatedMessages));
-      } catch (err) {
-        console.error("Failed to save estimator quote lead:", err);
-      }
-      
-      setSending(false);
-      setSubmitted(true);
-    }, 1200);
+        setSending(false);
+        setSubmitted(true);
+      }, 1200);
+    }
   };
 
   return (
@@ -453,22 +473,38 @@ export function QuoteEstimator() {
                     ? "Λάβαμε τις προδιαγραφές σας και υπολογίσαμε το κόστος. Η ομάδα μας θα επικοινωνήσει μαζί σας μέσω email σύντομα!"
                     : "We have received your specifications and estimated budget. Our team will contact you via email shortly!"}
                 </p>
-                <button
-                  onClick={() => {
-                    setStep(1);
-                    setProjectType(null);
-                    setComplexity("basic");
-                    setSelectedAddons([]);
-                    setName("");
-                    setEmail("");
-                    setPhone("");
-                    setSubmitted(false);
-                  }}
-                  className="px-8 py-3 border border-[#C9A84C]/30 text-[#C9A84C] hover:bg-[#C9A84C]/10 text-xs tracking-wider uppercase transition-colors cursor-pointer"
-                >
-                  {lang === "el" ? "Νέος Υπολογισμός" : "New Estimation"}
-                </button>
+                <div className="flex flex-wrap gap-4 justify-center">
+                  <button
+                    onClick={() => setShowBookingModal(true)}
+                    className="px-8 py-3 bg-[#C9A84C] hover:bg-[#D4B76A] text-[#0A0F1E] font-bold text-xs tracking-wider uppercase transition-colors cursor-pointer"
+                  >
+                    {lang === "el" ? "Κλείσιμο Ραντεβού" : "Schedule Call"}
+                  </button>
+                  <button
+                    onClick={() => {
+                      setStep(1);
+                      setProjectType(null);
+                      setComplexity("basic");
+                      setSelectedAddons([]);
+                      setName("");
+                      setEmail("");
+                      setPhone("");
+                      setSubmitted(false);
+                    }}
+                    className="px-8 py-3 border border-[#C9A84C]/30 text-[#C9A84C] hover:bg-[#C9A84C]/10 text-xs tracking-wider uppercase transition-colors cursor-pointer"
+                  >
+                    {lang === "el" ? "Νέος Υπολογισμός" : "New Estimation"}
+                  </button>
+                </div>
               </motion.div>
+            )}
+
+            {showBookingModal && (
+              <BookingCalendar
+                isModal={true}
+                onClose={() => setShowBookingModal(false)}
+                initialService={lang === "el" ? "Call από Κοστολογητή" : "Quote Call"}
+              />
             )}
           </AnimatePresence>
         </div>

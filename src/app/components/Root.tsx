@@ -6,6 +6,7 @@ import { useEffect, useState } from "react";
 import { LanguageProvider } from "@/app/context/LanguageContext";
 import { AltusAssistant } from "./AltusAssistant";
 import { ThemeProvider } from "@/app/context/ThemeContext";
+import { CustomCursor } from "./CustomCursor";
 
 export function Root() {
   const { pathname } = useLocation();
@@ -36,6 +37,7 @@ export function Root() {
     <ThemeProvider>
       <LanguageProvider>
         <div className="min-h-screen bg-[#F5F5F0]">
+          <CustomCursor />
           {/* Global Scroll Progress Bar */}
           <div
             className="fixed top-0 left-0 h-[3px] bg-[#C9A84C] z-[9999] transition-all duration-75 ease-out"

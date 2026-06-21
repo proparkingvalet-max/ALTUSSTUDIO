@@ -13,6 +13,8 @@ export function Footer() {
     { label: t("nav.home"), to: "/" },
     { label: t("nav.services"), to: "/services" },
     { label: "Portfolio", to: "/portfolio" },
+    { label: t("nav.about"), to: "/about" },
+    { label: t("nav.blog"), to: "/blog" },
     { label: t("nav.contact"), to: "/contact" },
   ];
 
