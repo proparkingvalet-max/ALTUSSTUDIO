@@ -3368,47 +3368,43 @@ function QuotesView({
           left: 0,
           width: "100vw",
           height: "100vh",
-          background: "rgba(0,0,0,0.85)",
-          backdropFilter: "blur(8px)",
+          background: "rgba(0,0,0,0.88)",
+          backdropFilter: "blur(10px)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           zIndex: 9999,
-          padding: isMobile ? 10 : 20,
+          padding: isMobile ? 8 : 24,
           boxSizing: "border-box"
         }}>
           <div style={{
             background: "#111827",
             border: "1px solid rgba(201,168,76,0.3)",
-            borderRadius: 20,
+            borderRadius: isMobile ? 16 : 20,
             width: "100%",
-            maxWidth: 840,
-            maxHeight: "95vh",
+            maxWidth: isMobile ? "100%" : 880,
+            maxHeight: "96vh",
             display: "flex",
             flexDirection: "column",
             overflow: "hidden",
-            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)"
+            boxShadow: "0 30px 60px -12px rgba(0,0,0,0.6)"
           }}>
             {/* Header */}
             <div style={{
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
-              padding: "16px 24px",
-              borderBottom: "1px solid rgba(255,255,255,0.08)"
+              padding: isMobile ? "12px 16px" : "16px 24px",
+              borderBottom: "1px solid rgba(255,255,255,0.08)",
+              flexShrink: 0
             }}>
-              <h3 style={{ margin: 0, color: "#fff", fontSize: 16, display: "flex", alignItems: "center", gap: 8 }}>
-                <Eye size={18} color="#C9A84C" /> Προεπισκόπηση Προσφοράς (A4 Layout)
+              <h3 style={{ margin: 0, color: "#fff", fontSize: isMobile ? 14 : 16, display: "flex", alignItems: "center", gap: 8 }}>
+                <Eye size={isMobile ? 16 : 18} color="#C9A84C" />
+                {isMobile ? "Σύνοψη Προσφοράς" : "Προεπισκόπηση Προσφοράς (A4 Layout)"}
               </h3>
               <button
                 onClick={() => setPreviewOpen(false)}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "rgba(255,255,255,0.4)",
-                  cursor: "pointer",
-                  padding: 4
-                }}
+                style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: 4 }}
                 onMouseEnter={(e) => e.currentTarget.style.color = "#fff"}
                 onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
               >
@@ -3416,64 +3412,120 @@ function QuotesView({
               </button>
             </div>
 
-            {/* Iframe content */}
-            <div style={{ flex: 1, padding: 20, background: "#0a0f1d" }}>
-              <iframe
-                title="PDF Preview"
-                srcDoc={generateQuoteHtml("TEMP", new Date().toLocaleDateString("el-GR"))}
-                style={{
-                  width: "100%",
-                  height: "65vh",
-                  border: "none",
-                  borderRadius: 8,
-                  background: "#ffffff"
-                }}
-              />
-            </div>
+            {/* ── DESKTOP: scaled A4 iframe ── */}
+            {!isMobile && (
+              <div style={{ flex: 1, overflow: "auto", background: "#0a0f1d", padding: "20px 24px" }}>
+                {/* The A4 page is 794px wide. We scale it to fit the modal width (~832px inner) */}
+                <div style={{
+                  width: 794,
+                  transformOrigin: "top left",
+                  transform: "scale(1)",
+                  margin: "0 auto",
+                  boxShadow: "0 4px 32px rgba(0,0,0,0.5)",
+                  borderRadius: 4,
+                  overflow: "hidden"
+                }}>
+                  <iframe
+                    title="PDF Preview Desktop"
+                    srcDoc={generateQuoteHtml("PREVIEW", new Date().toLocaleDateString("el-GR"))}
+                    sandbox="allow-same-origin"
+                    style={{
+                      width: "794px",
+                      height: "1123px",
+                      border: "none",
+                      display: "block",
+                      background: "#fff"
+                    }}
+                  />
+                </div>
+              </div>
+            )}
 
-            {/* Footer actions inside Modal */}
+            {/* ── MOBILE: card-based text summary ── */}
+            {isMobile && (
+              <div style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: 12 }}>
+                {/* Header card */}
+                <div style={{ background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 12, padding: "14px 16px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+                    <div>
+                      <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 15, fontFamily: "'Playfair Display', serif" }}>ALTUS STUDIO</div>
+                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>Ημ/νία: {new Date().toLocaleDateString("el-GR")}</div>
+                    </div>
+                    <div style={{ textAlign: "right" }}>
+                      <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.1em" }}>ΠΡΟΣΦΟΡΑ</div>
+                      <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>#{editingQuoteId || "NEW"}</div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Client card */}
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "12px 16px" }}>
+                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 6 }}>Προς</div>
+                  <div style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>{clientName || "—"}</div>
+                  {clientEmail && <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginTop: 3 }}>✉ {clientEmail}</div>}
+                  {clientPhone && <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginTop: 2 }}>📞 {clientPhone}</div>}
+                </div>
+
+                {/* Items */}
+                <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "12px 16px" }}>
+                  <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 10 }}>Υπηρεσίες</div>
+                  {items.length === 0 ? (
+                    <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 13, textAlign: "center", padding: "12px 0" }}>Δεν έχουν επιλεγεί υπηρεσίες</div>
+                  ) : (
+                    items.map((item) => (
+                      <div key={item.name} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "8px 0", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                        <div>
+                          <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{item.name}</div>
+                          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>€{item.price} × {item.qty}</div>
+                        </div>
+                        <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 14 }}>€{item.price * item.qty}</div>
+                      </div>
+                    ))
+                  )}
+                </div>
+
+                {/* Total */}
+                <div style={{ background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.3)", borderRadius: 12, padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600, fontSize: 13, textTransform: "uppercase", letterSpacing: "0.1em" }}>Συνολικό Κόστος</span>
+                  <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: 22 }}>€{total}</span>
+                </div>
+
+                {/* Note */}
+                {note && (
+                  <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 12, padding: "12px 16px" }}>
+                    <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 10, textTransform: "uppercase", letterSpacing: "0.15em", marginBottom: 6 }}>Σημείωση</div>
+                    <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 13, lineHeight: 1.6 }}>{note}</div>
+                  </div>
+                )}
+
+                {/* Footer info */}
+                <div style={{ textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 11, paddingBottom: 4 }}>
+                  Altus Studio · info@altusstudio.gr · 6970015447 · altusstudio.gr
+                </div>
+              </div>
+            )}
+
+            {/* Footer actions */}
             <div style={{
               display: "flex",
               justifyContent: "flex-end",
-              gap: 12,
-              padding: "16px 24px",
+              gap: 10,
+              padding: isMobile ? "12px 16px" : "16px 24px",
               borderTop: "1px solid rgba(255,255,255,0.08)",
-              background: "rgba(255,255,255,0.02)"
+              background: "rgba(255,255,255,0.02)",
+              flexShrink: 0
             }}>
               <button
                 onClick={() => setPreviewOpen(false)}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: 8,
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  background: "transparent",
-                  color: "rgba(255,255,255,0.6)",
-                  cursor: "pointer",
-                  fontSize: 13
-                }}
+                style={{ padding: isMobile ? "9px 14px" : "8px 16px", borderRadius: 8, border: "1px solid rgba(255,255,255,0.1)", background: "transparent", color: "rgba(255,255,255,0.6)", cursor: "pointer", fontSize: 13 }}
               >
                 Κλείσιμο
               </button>
               <button
-                onClick={() => {
-                  printQuote("download");
-                  setPreviewOpen(false);
-                }}
-                style={{
-                  padding: "8px 16px",
-                  borderRadius: 8,
-                  border: "none",
-                  background: "linear-gradient(135deg, #C9A84C, #a8893e)",
-                  color: "#0A0F1E",
-                  cursor: "pointer",
-                  fontWeight: 600,
-                  fontSize: 13,
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6
-                }}
+                onClick={() => { printQuote("download"); setPreviewOpen(false); }}
+                style={{ padding: isMobile ? "9px 14px" : "8px 16px", borderRadius: 8, border: "none", background: "linear-gradient(135deg, #C9A84C, #a8893e)", color: "#0A0F1E", cursor: "pointer", fontWeight: 600, fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}
               >
-                <Download size={14} /> Κατέβασμα PDF
+                <Download size={14} /> {isMobile ? "Κατέβασμα PDF" : "Λήψη PDF"}
               </button>
             </div>
           </div>
