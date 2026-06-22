@@ -2984,68 +2984,99 @@ function QuotesView({
   };
 
     if (action === "download") {
-      // Helper: parse HTML string → inject into hidden div → generate PDF
-      const generatePdfFromHtml = (htmlString: string, filename: string, margins: number | number[]) => {
+      const generatePdfFromHtml = (htmlString: string, filename: string, bodyPadding: string) => {
         const parser = new DOMParser();
         const parsed = parser.parseFromString(htmlString, "text/html");
 
-        const container = document.createElement("div");
-        container.style.position = "fixed";
-        container.style.left = "0";
-        container.style.top = "0";
-        container.style.width = "794px";
-        container.style.zIndex = "-9999";
-        container.style.opacity = "0";
-        container.style.pointerEvents = "none";
-        container.style.background = "#ffffff";
-        container.style.fontFamily = "'DM Sans', Arial, sans-serif";
+        // ① Loading overlay — shown to user while PDF renders
+        const overlay = document.createElement("div");
+        overlay.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(10,15,30,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;";
+        overlay.innerHTML = `
+          <div style="color:#C9A84C;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.05em;">📄 Δημιουργία PDF...</div>
+          <div style="color:rgba(255,255,255,0.45);font-family:'DM Sans',sans-serif;font-size:13px;">Παρακαλώ περιμένετε</div>
+        `;
+        document.body.appendChild(overlay);
 
-        // Inject <style> tags first
+        // ② Inject CSS into <head> so classes like .header, .logo etc apply correctly
+        const injectedStyleEls: HTMLStyleElement[] = [];
         parsed.querySelectorAll("style").forEach((s) => {
-          const styleEl = document.createElement("style");
-          styleEl.textContent = s.textContent;
-          container.appendChild(styleEl);
+          const el = document.createElement("style");
+          // Replace `body {` → `.pdf-root {` so body-padding scopes to our wrapper
+          el.textContent = (s.textContent || "").replace(/\bbody\s*{/g, ".pdf-root {");
+          document.head.appendChild(el);
+          injectedStyleEls.push(el);
         });
 
-        // Inject body content
-        const bodyEl = document.createElement("div");
-        bodyEl.innerHTML = parsed.body.innerHTML;
-        container.appendChild(bodyEl);
+        // ③ Create render container — VISIBLE (z-index:1) behind overlay (z-index:99999)
+        const container = document.createElement("div");
+        container.style.cssText = `
+          position: fixed;
+          left: 0; top: 0;
+          width: 794px;
+          z-index: 1;
+          background: #ffffff;
+        `;
 
+        // Wrapper div that gets the body-level styles via .pdf-root class
+        const wrapper = document.createElement("div");
+        wrapper.className = "pdf-root";
+        // Also apply padding inline so it's guaranteed to work
+        wrapper.style.padding = bodyPadding;
+        wrapper.style.boxSizing = "border-box";
+        wrapper.style.webkitPrintColorAdjust = "exact";
+        wrapper.innerHTML = parsed.body.innerHTML;
+        container.appendChild(wrapper);
         document.body.appendChild(container);
 
-        const opt = {
-          margin: margins,
-          filename: filename,
-          image: { type: "jpeg", quality: 0.98 },
-          html2canvas: { scale: 2, useCORS: true, logging: false, width: 794 },
-          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        const cleanup = () => {
+          if (document.body.contains(container)) document.body.removeChild(container);
+          if (document.body.contains(overlay)) document.body.removeChild(overlay);
+          injectedStyleEls.forEach((el) => {
+            if (document.head.contains(el)) document.head.removeChild(el);
+          });
         };
 
-        html2pdf()
-          .from(container)
-          .set(opt)
-          .save()
-          .then(() => document.body.removeChild(container))
-          .catch((err: any) => {
-            console.error("PDF error:", err);
-            document.body.removeChild(container);
-          });
+        // ④ Wait for fonts to load, then generate
+        document.fonts.ready.then(() => {
+          setTimeout(() => {
+            const opt = {
+              margin: 0,
+              filename: filename,
+              image: { type: "jpeg", quality: 0.98 },
+              html2canvas: {
+                scale: 2,
+                useCORS: true,
+                allowTaint: false,
+                logging: false,
+                width: 794,
+                windowWidth: 794,
+              },
+              jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+            };
+
+            html2pdf()
+              .from(container)
+              .set(opt)
+              .save()
+              .then(cleanup)
+              .catch((err: any) => { console.error("PDF error:", err); cleanup(); });
+          }, 400);
+        });
       };
 
       if (isMobile) {
-        // ── MOBILE: card-layout PDF ──
+        // ── MOBILE: card-layout PDF (28px padding matches card template) ──
         generatePdfFromHtml(
           generateMobilePdfHtml(qId, dateToday),
           `Altus_Quote_${newQuote.id}.pdf`,
-          [10, 8, 10, 8]
+          "28px 24px"
         );
       } else {
-        // ── DESKTOP: A4 full-table PDF ──
+        // ── DESKTOP: A4 full-table PDF (40px padding matches desktop template) ──
         generatePdfFromHtml(
           generateQuoteHtml(qId, dateToday),
           `Altus_Quote_${newQuote.id}.pdf`,
-          10
+          "40px"
         );
       }
     } else {
