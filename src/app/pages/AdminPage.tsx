@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
+import html2pdf from "html2pdf.js";
 import { getProjects, saveProjects, mapSupabaseProject, Project } from "@/app/utils/projects";
 import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
 import { useIsMobile } from "@/app/components/ui/use-mobile";
@@ -2560,19 +2561,7 @@ function QuotesView({
 
   const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
 
-  const loadHtml2Pdf = () => {
-    return new Promise<void>((resolve, reject) => {
-      if ((window as any).html2pdf) {
-        resolve();
-        return;
-      }
-      const script = document.createElement("script");
-      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error("Failed to load html2pdf"));
-      document.head.appendChild(script);
-    });
-  };
+  const loadHtml2Pdf = (): Promise<void> => Promise.resolve();
 
   const generateQuoteHtml = (qId: string, date: string) => {
     return `
@@ -2836,7 +2825,7 @@ function QuotesView({
                   jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
                 };
 
-                (window as any).html2pdf()
+                html2pdf()
                   .from(iframeDoc.body)
                   .set(opt)
                   .save()
