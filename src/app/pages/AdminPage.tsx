@@ -34,6 +34,9 @@ import {
   MinusCircle,
   PlusCircle,
   Menu,
+  Briefcase,
+  Smartphone,
+  ShoppingCart,
 } from "lucide-react";
 
 const ADMIN_PASSWORD = "gate71337";
@@ -205,6 +208,7 @@ const navItems = [
   { id: "projects", label: "Projects", icon: FolderOpen },
   { id: "clients", label: "Πελάτες (CRM)", icon: Users },
   { id: "quotes", label: "Προσφορές", icon: FileText },
+  { id: "packages", label: "Πακέτα & Παροχές", icon: Briefcase },
   { id: "analytics", label: "Στατιστικά", icon: BarChart2 },
   { id: "settings", label: "Ρυθμίσεις", icon: Settings },
 ];
@@ -2739,6 +2743,151 @@ function QuotesView() {
   );
 }
 
+// ─── Packages & Services View ──────────────────────────────────────────────────
+
+function PackagesView() {
+  const isMobile = useIsMobile();
+  
+  const packagesList = [
+    {
+      id: "landing",
+      title: "Landing Page (Μονοσέλιδο)",
+      price: "250€",
+      icon: Smartphone,
+      color: "#FF9800",
+      description: "Ιδανικό για στοχευμένες διαφημιστικές καμπάνιες (Google / Social Ads) και άμεση συλλογή στοιχείων (leads).",
+      items: [
+        "Μονοσέλιδη στοχευμένη δομή (Single Page)",
+        "Έως 6 σχεδιαστικές ενότητες (Sections)",
+        "Φόρμα επικοινωνίας & κουμπιά Call-to-Action",
+        "Πλήρης responsive προσαρμογή για κινητά",
+        "Σύνδεση με Google Analytics",
+        "Βασική βελτιστοποίηση ταχύτητας"
+      ]
+    },
+    {
+      id: "website",
+      title: "Εταιρική Ιστοσελίδα (Corporate)",
+      price: "350€",
+      icon: Globe,
+      color: "#C9A84C",
+      description: "Για επαγγελματίες και επιχειρήσεις που θέλουν πλήρη εταιρική παρουσία, αναλυτικές υπηρεσίες και καλό SEO.",
+      items: [
+        "Ολοκληρωμένη πολυσελιδική δομή (5-8 σελίδες)",
+        "Σελίδες: Αρχική, Υπηρεσίες, Portfolio, Επικοινωνία, Σχετικά",
+        "Bespoke UI/UX σχεδίαση μακέτας στο Figma",
+        "Responsive για κινητά & tablets",
+        "Setup Google Search Console (SEO)",
+        "Βελτιστοποίηση ταχύτητας (PageSpeed 90+)"
+      ]
+    },
+    {
+      id: "eshop",
+      title: "Ηλεκτρονικό Κατάστημα (E-Shop)",
+      price: "790€",
+      icon: ShoppingCart,
+      color: "#9C27B0",
+      description: "Για καταστήματα που θέλουν να πουλάνε online προϊόντα, να δέχονται κάρτες και να διαχειρίζονται stock.",
+      items: [
+        "Πλατφόρμα e-commerce με καλάθι & checkout",
+        "Σύνδεση με τράπεζες (Stripe, Viva) & PayPal",
+        "Διαχείριση αποστολών & υπολογισμός μεταφορικών",
+        "Πλήρες διαχειριστικό panel προϊόντων & παραγγελιών",
+        "Σύνθετα φίλτρα & αναζήτηση προϊόντων",
+        "GDPR Συμμόρφωση & Cookies Banner"
+      ]
+    }
+  ];
+
+  return (
+    <div>
+      <div style={{ marginBottom: 32 }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", margin: "0 0 8px 0" }}>
+          Έτοιμα Πλάνα & Παροχές
+        </h1>
+        <p style={{ color: "rgba(255,255,255,0.45)", margin: 0, fontSize: 14 }}>
+          Δείτε τι περιλαμβάνει το κάθε πακέτο για να καθοδηγείτε εύκολα τους πελάτες σας κατά την προσφορά.
+        </p>
+      </div>
+
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 24 }}>
+        {packagesList.map((pkg) => {
+          const IconComponent = pkg.icon;
+          return (
+            <div
+              key={pkg.id}
+              style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                borderRadius: 20,
+                padding: 30,
+                display: "flex",
+                flexDirection: "column",
+                position: "relative",
+                overflow: "hidden"
+              }}
+            >
+              {/* Colored Glow Accent at Top */}
+              <div 
+                style={{ 
+                  position: "absolute", 
+                  top: 0, 
+                  left: 0, 
+                  right: 0, 
+                  height: 4, 
+                  background: `linear-gradient(90deg, ${pkg.color}, transparent)` 
+                }} 
+              />
+
+              {/* Package Header */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: 20 }}>
+                <div style={{ 
+                  width: 48, 
+                  height: 48, 
+                  borderRadius: 14, 
+                  background: `${pkg.color}15`, 
+                  display: "flex", 
+                  alignItems: "center", 
+                  justifyContent: "center",
+                  color: pkg.color
+                }}>
+                  <IconComponent size={22} />
+                </div>
+                <div style={{ textAlign: "right" }}>
+                  <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 2 }}>Αρχική Τιμή</div>
+                  <div style={{ color: "#fff", fontSize: 24, fontWeight: 700 }}>{pkg.price}</div>
+                </div>
+              </div>
+
+              {/* Title & Description */}
+              <h3 style={{ color: "#fff", fontSize: 18, fontWeight: 600, margin: "0 0 10px 0" }}>{pkg.title}</h3>
+              <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, lineHeight: 1.6, margin: "0 0 24px 0", flexGrow: 0, minHeight: 60 }}>
+                {pkg.description}
+              </p>
+
+              {/* Divider */}
+              <div style={{ height: 1, background: "rgba(255,255,255,0.06)", marginBottom: 24 }} />
+
+              {/* Features List */}
+              <div style={{ flexGrow: 1 }}>
+                <div style={{ color: pkg.color, fontSize: 12, fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: 16 }}>Τι Παρέχεται</div>
+                <ul style={{ listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: 12 }}>
+                  {pkg.items.map((item, idx) => (
+                    <li key={idx} style={{ display: "flex", gap: 10, alignItems: "flex-start", color: "rgba(255,255,255,0.8)", fontSize: 13, lineHeight: 1.5 }}>
+                      <span style={{ color: pkg.color, fontWeight: "bold" }}>✓</span>
+                      <span>{item}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
 // ─── Main Component ────────────────────────────────────────────────────────────
 
 export function AdminPage() {
@@ -2772,6 +2921,7 @@ export function AdminPage() {
       case "projects": return <ProjectsView />;
       case "clients": return <CRMView />;
       case "quotes": return <QuotesView />;
+      case "packages": return <PackagesView />;
       case "analytics": return <AnalyticsView />;
       case "settings": return <SettingsView />;
       default: return <DashboardView />;
