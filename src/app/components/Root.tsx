@@ -1,4 +1,4 @@
-import { Outlet, useLocation } from "react-router";
+import { Outlet, useLocation, Link } from "react-router";
 import { Navbar } from "./Navbar";
 import { Footer } from "./Footer";
 import { CookieBanner } from "./CookieBanner";
@@ -182,6 +182,65 @@ export function Root() {
     );
   }
 
+  const renderAdminFloat = () => {
+    if (!isAdmin || pathname.startsWith("/admin")) return null;
+
+    return (
+      <div
+        style={{
+          position: "fixed",
+          bottom: 24,
+          left: 24,
+          zIndex: 99999,
+          background: "rgba(10, 15, 30, 0.95)",
+          backdropFilter: "blur(8px)",
+          border: "1px solid rgba(201, 168, 76, 0.3)",
+          borderRadius: 16,
+          padding: "10px 20px",
+          display: "flex",
+          alignItems: "center",
+          gap: 12,
+          boxShadow: "0 8px 32px 0 rgba(0, 0, 0, 0.37)",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+          <span style={{
+            width: 8,
+            height: 8,
+            borderRadius: "50%",
+            background: "#22c55e",
+            boxShadow: "0 0 8px #22c55e",
+            display: "inline-block"
+          }} />
+          <span style={{ color: "rgba(255, 255, 255, 0.5)", fontSize: 11, fontWeight: 600, letterSpacing: "0.05em", textTransform: "uppercase" }}>
+            Admin Session
+          </span>
+        </div>
+
+        <div style={{ width: 1, height: 16, background: "rgba(255,255,255,0.15)" }} />
+
+        <Link
+          to="/admin"
+          style={{
+            color: "#C9A84C",
+            fontSize: 13,
+            fontWeight: 700,
+            textDecoration: "none",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+            transition: "color 0.2s"
+          }}
+          onMouseEnter={(e) => (e.currentTarget.style.color = "#ebd083")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#C9A84C")}
+        >
+          <span>Dashboard</span>
+          <span style={{ fontSize: 12 }}>→</span>
+        </Link>
+      </div>
+    );
+  };
+
   return (
     <ThemeProvider>
       <LanguageProvider>
@@ -199,6 +258,7 @@ export function Root() {
           <Footer />
           <CookieBanner />
           <AltusAssistant />
+          {renderAdminFloat()}
         </div>
       </LanguageProvider>
     </ThemeProvider>
