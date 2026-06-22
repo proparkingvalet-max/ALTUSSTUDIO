@@ -28,6 +28,8 @@ import {
   FileText,
   Plus,
   Printer,
+  Download,
+  Share2,
   UserCheck,
   Building2,
   Send,
@@ -574,7 +576,7 @@ function DashboardView() {
 
 // ─── Messages View ─────────────────────────────────────────────────────────────
 
-function MessagesView() {
+function MessagesView({ onCreateQuote }: { onCreateQuote: (client: { name: string; email: string; phone: string; inquiryId: string }) => void }) {
   const isMobile = useIsMobile();
   const [messages, setMessages] = useState<any[]>([]);
   const [selected, setSelected] = useState<any | null>(null);
@@ -760,9 +762,34 @@ function MessagesView() {
                       <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, margin: "0 8px" }}>·</span>
                       <a href={`tel:${selected.phone}`} style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, textDecoration: "none" }}>{selected.phone}</a>
                     </div>
-                    <button onClick={() => deleteMsg(selected.id)} style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "7px 12px", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 12, alignSelf: isMobile ? "flex-start" : "auto" }}>
-                      <Trash2 size={13} /> Διαγραφή
-                    </button>
+                    <div style={{ display: "flex", gap: 10, alignSelf: isMobile ? "flex-start" : "auto" }}>
+                      <button
+                        onClick={() => onCreateQuote({
+                          name: selected.name || "",
+                          email: selected.email || "",
+                          phone: selected.phone || "",
+                          inquiryId: selected.id
+                        })}
+                        style={{
+                          background: "rgba(201,168,76,0.1)",
+                          border: "1px solid rgba(201,168,76,0.2)",
+                          borderRadius: 8,
+                          padding: "7px 12px",
+                          cursor: "pointer",
+                          color: "#C9A84C",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 6,
+                          fontSize: 12
+                        }}
+                      >
+                        <FileText size={13} /> Δημιουργία Προσφοράς
+                      </button>
+                      <button onClick={() => deleteMsg(selected.id)} style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "7px 12px", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 12 }}>
+                        <Trash2 size={13} /> Διαγραφή
+                      </button>
+                    </div>
                   </div>
 
                 {/* Status changer */}
@@ -2323,7 +2350,13 @@ const packageDeliverables: Record<string, { titleEl: string; titleEn: string; pr
   }
 };
 
-function QuotesView() {
+function QuotesView({
+  prefilledClient,
+  onClearPrefilled,
+}: {
+  prefilledClient: { name: string; email: string; phone: string; inquiryId: string } | null;
+  onClearPrefilled: () => void;
+}) {
   const isMobile = useIsMobile();
   const [tab, setTab] = useState<"list" | "new">("list");
   const [quotes, setQuotes] = useState<any[]>([]);
@@ -2335,6 +2368,43 @@ function QuotesView() {
   const [note, setNote] = useState("");
   const [items, setItems] = useState<{ name: string; price: number; qty: number; pkgKey?: string }[]>([]);
   const [printed, setPrinted] = useState(false);
+  const [linkedInquiryId, setLinkedInquiryId] = useState<string | null>(null);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
+
+  useEffect(() => {
+    if (prefilledClient) {
+      setClientName(prefilledClient.name);
+      setClientEmail(prefilledClient.email);
+      setClientPhone(prefilledClient.phone);
+      setLinkedInquiryId(prefilledClient.inquiryId);
+      setTab("new");
+      onClearPrefilled();
+    }
+  }, [prefilledClient, onClearPrefilled]);
+
+  const markInquiryStatus = (id: string, status: string) => {
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("messages")
+        .update({ status })
+        .eq("id", id)
+        .then(({ error }) => {
+          if (error) console.error("Failed to update message status in Supabase:", error);
+        });
+    }
+    try {
+      const raw = localStorage.getItem("altus_messages");
+      if (raw) {
+        const msgs = JSON.parse(raw);
+        const updated = msgs.map((m: any) => m.id === id ? { ...m, status } : m);
+        localStorage.setItem("altus_messages", JSON.stringify(updated));
+        window.dispatchEvent(new Event("storage"));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const fetchQuotes = () => {
     if (isSupabaseConfigured && supabase) {
@@ -2369,22 +2439,68 @@ function QuotesView() {
   }, []);
 
   const saveQuote = (newQuote: any) => {
-    const updated = [newQuote, ...quotes];
+    let updated;
+    if (editingQuoteId) {
+      updated = quotes.map((q) => q.id === editingQuoteId ? newQuote : q);
+    } else {
+      updated = [newQuote, ...quotes];
+    }
+    setQuotes(updated);
+    localStorage.setItem("altus_quotes", JSON.stringify(updated));
+
+    if (isSupabaseConfigured && supabase) {
+      if (editingQuoteId) {
+        supabase
+          .from("quotes")
+          .update({
+            client: newQuote.client,
+            email: newQuote.email,
+            phone: newQuote.phone,
+            date: newQuote.date,
+            total: total,
+            status: newQuote.status,
+            items: newQuote.items,
+            note: newQuote.note,
+          })
+          .eq("id", editingQuoteId)
+          .then(({ error }) => {
+            if (error) console.error("Failed to update quote in Supabase:", error);
+            fetchQuotes();
+          });
+      } else {
+        supabase
+          .from("quotes")
+          .insert([newQuote])
+          .then(({ error }) => {
+            if (error) console.error("Failed to save new quote in Supabase:", error);
+            fetchQuotes();
+          });
+      }
+    }
+    setEditingQuoteId(null);
+  };
+
+  const deleteQuote = (id: string) => {
+    if (!window.confirm("Είστε σίγουροι ότι θέλετε να διαγράψετε οριστικά αυτή την προσφορά;")) return;
+
+    const updated = quotes.filter((q) => q.id !== id);
     setQuotes(updated);
     localStorage.setItem("altus_quotes", JSON.stringify(updated));
 
     if (isSupabaseConfigured && supabase) {
       supabase
         .from("quotes")
-        .insert([newQuote])
+        .delete()
+        .eq("id", id)
         .then(({ error }) => {
-          if (error) console.error("Failed to save new quote in Supabase:", error);
+          if (error) console.error("Failed to delete quote in Supabase:", error);
           fetchQuotes();
         });
     }
   };
 
   const openQuote = (q: any) => {
+    setEditingQuoteId(q.id);
     setClientName(q.client || q.name || "");
     setClientEmail(q.email || "");
     setClientPhone(q.phone || "");
@@ -2401,6 +2517,16 @@ function QuotesView() {
       setSelectedPackage(null);
     }
     
+  };
+
+  const startNewQuote = () => {
+    setEditingQuoteId(null);
+    setClientName("");
+    setClientEmail("");
+    setClientPhone("");
+    setNote("");
+    setItems([]);
+    setSelectedPackage(null);
     setTab("new");
   };
 
@@ -2433,10 +2559,215 @@ function QuotesView() {
     });
   };
 
-  const printQuote = () => {
+  const generateQuoteHtml = (qId: string, date: string) => {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <link rel="preconnect" href="https://fonts.googleapis.com">
+          <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+          <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+          <style>
+            body {
+              font-family: 'DM Sans', Arial, sans-serif;
+              padding: 40px;
+              color: #0A0F1E;
+              background: #ffffff;
+              margin: 0;
+              box-sizing: border-box;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
+            }
+            .header {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              margin-bottom: 40px;
+            }
+            .logo {
+              font-size: 24px;
+              font-weight: 700;
+              letter-spacing: 2px;
+              color: #C9A84C;
+              font-family: 'Playfair Display', serif;
+            }
+            .title {
+              font-size: 28px;
+              font-weight: 700;
+              color: #C9A84C;
+              font-family: 'Playfair Display', serif;
+            }
+            .meta-section {
+              margin-bottom: 40px;
+            }
+            .label {
+              font-size: 11px;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+              color: #999;
+              margin-bottom: 6px;
+              font-weight: 700;
+            }
+            table {
+              width: 100%;
+              border-collapse: collapse;
+              margin-bottom: 30px;
+            }
+            th {
+              text-align: left;
+              padding: 12px 16px;
+              background: #f8f8f5;
+              font-size: 11px;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              color: #888;
+              border-bottom: 1px solid #eee;
+            }
+            td {
+              padding: 16px;
+              border-bottom: 1px solid #eee;
+              vertical-align: top;
+              font-size: 14px;
+              color: #222;
+            }
+            .service-name {
+              font-size: 15px;
+              font-weight: 700;
+              color: #0A0F1E;
+            }
+            .deliverables {
+              margin-top: 10px;
+              padding: 12px 16px;
+              background: #f8f8f5;
+              border-left: 3px solid #C9A84C;
+              border-radius: 4px;
+              text-align: left;
+            }
+            .deliverables-title {
+              font-size: 11px;
+              font-weight: 700;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              color: #C9A84C;
+              margin-bottom: 6px;
+            }
+            ul {
+              margin: 0;
+              padding-left: 16px;
+              font-size: 12px;
+              color: #444;
+              line-height: 1.8;
+              list-style-type: disc;
+            }
+            .total-label {
+              text-align: right;
+              font-size: 13px;
+              font-weight: 600;
+              color: #888;
+              text-transform: uppercase;
+              letter-spacing: 1px;
+              border-bottom: none;
+              padding-top: 20px;
+            }
+            .total-value {
+              text-align: right;
+              font-size: 22px;
+              font-weight: 700;
+              color: #C9A84C;
+              border-bottom: none;
+              padding-top: 20px;
+            }
+            .note-box {
+              background: #f8f8f5;
+              padding: 20px;
+              border-radius: 8px;
+              font-size: 14px;
+              color: #555;
+              margin-top: 20px;
+              text-align: left;
+              border-left: 3px solid #bbb;
+            }
+            .footer {
+              margin-top: 60px;
+              text-align: center;
+              font-size: 12px;
+              color: #bbb;
+              border-top: 1px solid #eee;
+              padding-top: 20px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="header">
+            <div>
+              <div class="logo">ALTUS STUDIO</div>
+              <div style="color: #888; font-size: 14px; margin-top: 4px;">Ημ/νία: ${date}</div>
+            </div>
+            <div style="text-align: right;">
+              <div class="title">ΠΡΟΣΦΟΡΑ</div>
+              <div style="color: #999; font-size: 14px;">#${qId}</div>
+            </div>
+          </div>
+
+          <div class="meta-section">
+            <div class="label">Προς</div>
+            <div style="font-size: 18px; font-weight: 600; color: #0A0F1E;">${clientName}</div>
+            <div style="color: #555; font-size: 13px; margin-top: 4px;">Email: ${clientEmail}</div>
+            ${clientPhone ? `<div style="color: #555; font-size: 13px; margin-top: 2px;">Τηλ: ${clientPhone}</div>` : ""}
+          </div>
+
+          <table>
+            <thead>
+              <tr>
+                <th>Υπηρεσία</th>
+                <th style="text-align: right; width: 120px;">Τιμή</th>
+                <th style="text-align: right; width: 120px;">Σύνολο</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${items.map((i) => {
+                const pk = i.pkgKey || "";
+                const deliv = pk && packageDeliverables[pk]
+                  ? `<div class="deliverables">
+                       <div class="deliverables-title">Αναλυτικά Περιλαμβάνει:</div>
+                       <ul>
+                         ${packageDeliverables[pk].items.map(d => `<li>${d}</li>`).join("")}
+                       </ul>
+                     </div>`
+                  : "";
+                return `
+                  <tr>
+                    <td style="text-align: left;">
+                      <div class="service-name">${i.name}</div>
+                      ${deliv}
+                    </td>
+                    <td style="text-align: right; white-space: nowrap;">€${i.price} × ${i.qty}</td>
+                    <td style="text-align: right; font-weight: 700; color: #0A0F1E; white-space: nowrap;">€${i.price * i.qty}</td>
+                  </tr>
+                `;
+              }).join("")}
+              <tr>
+                <td colspan="2" class="total-label">ΣΥΝΟΛΙΚΟ ΚΟΣΤΟΣ</td>
+                <td class="total-value">€${total}</td>
+              </tr>
+            </tbody>
+          </table>
+
+          ${note ? `<div class="note-box"><strong>Σημείωση:</strong> ${note}</div>` : ""}
+          
+          <div class="footer">
+            Altus Studio · info@altusstudio.gr · 6970015447 · altusstudio.gr
+          </div>
+        </body>
+      </html>
+    `;
+  };
+
+  const printQuote = (action: "download" | "print" = "download") => {
     if (!clientName) return;
 
-    const qId = "Q" + Math.floor(1000 + Math.random() * 9000);
+    const qId = editingQuoteId || ("Q" + Math.floor(1000 + Math.random() * 9000));
     const dateToday = new Date().toLocaleDateString("el-GR");
 
     const newQuote = {
@@ -2453,165 +2784,64 @@ function QuotesView() {
 
     saveQuote(newQuote);
 
-    if (isMobile) {
-      // Mobile Direct PDF Download
+    // Update CRM status if linked
+    if (linkedInquiryId) {
+      markInquiryStatus(linkedInquiryId, "replied");
+    }
+
+    if (action === "download") {
       loadHtml2Pdf()
         .then(() => {
-          const element = document.createElement("div");
-          element.style.position = "fixed";
-          element.style.left = "-9999px";
-          element.style.top = "0";
-          element.style.width = "794px"; // Standard A4 pixel width at 96 DPI
-          element.style.background = "#ffffff";
-          element.style.color = "#0A0F1E";
-          
-          element.innerHTML = `
-            <div style="font-family: 'DM Sans', Arial, sans-serif; padding: 40px; color: #0A0F1E; width: 714px; box-sizing: border-box;">
-              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
-                <div>
-                  <div style="font-size: 24px; font-weight: 700; letter-spacing: 2px; color: #C9A84C;">ALTUS STUDIO</div>
-                  <div style="color: #888; font-size: 14px; margin-top: 4px;">Ημ/νία: ${newQuote.date}</div>
-                </div>
-                <div style="text-align:right">
-                  <div style="font-size:28px;font-weight:700;color:#C9A84C">ΠΡΟΣΦΟΡΑ</div>
-                  <div style="color:#999;font-size:14px">#${newQuote.id}</div>
-                </div>
-              </div>
-              
-              <div style="margin-bottom: 40px;">
-                <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 6px;">Προς</div>
-                <div style="font-size:18px;font-weight:600">${clientName}</div>
-                <div style="color:#555;font-size:13px;margin-top:2px;">Email: ${clientEmail}</div>
-                ${clientPhone ? `<div style="color:#555;font-size:13px;margin-top:2px;">Τηλ: ${clientPhone}</div>` : ""}
-              </div>
+          const iframe = document.createElement("iframe");
+          iframe.style.position = "fixed";
+          iframe.style.left = "-9999px";
+          iframe.style.top = "0";
+          iframe.style.width = "794px"; // Standard A4 pixel width at 96 DPI
+          iframe.style.height = "1123px";
+          iframe.style.border = "none";
+          document.body.appendChild(iframe);
 
-              <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-                <thead>
-                  <tr style="background: #f8f8f5;">
-                    <th style="text-align: left; padding: 12px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; border-bottom: 1px solid #eee;">Υπηρεσία</th>
-                    <th style="text-align: right; padding: 12px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; border-bottom: 1px solid #eee;">Τιμή</th>
-                    <th style="text-align: right; padding: 12px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; border-bottom: 1px solid #eee;">Σύνολο</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  ${items.map((i) => {
-                    const pk = i.pkgKey || "";
-                    const deliv = pk && packageDeliverables[pk]
-                      ? `<div style="margin-top:10px;padding:10px 14px;background:#f8f8f5;border-left:3px solid #C9A84C;border-radius:4px;text-align:left;">
-                           <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#C9A84C;margin-bottom:6px;">Αναλυτικά Περιλαμβάνει:</div>
-                           <ul style="margin:0;padding-left:16px;font-size:12px;color:#444;line-height:1.8;list-style-type:disc;">
-                             ${packageDeliverables[pk].items.map(d => `<li>${d}</li>`).join("")}
-                           </ul>
-                         </div>`
-                      : "";
-                    return `
-                      <tr>
-                        <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:left;">
-                          <div style="font-size:15px;font-weight:700;color:#0A0F1E;">${i.name}</div>
-                          ${deliv}
-                        </td>
-                        <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;white-space:nowrap;">€${i.price} × ${i.qty}</td>
-                        <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;font-weight:700;color:#0A0F1E;white-space:nowrap;">€${i.price * i.qty}</td>
-                      </tr>
-                    `;
-                  }).join("")}
-                  <tr>
-                    <td colspan="2" style="padding:16px;text-align:right;font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:1px;">ΣΥΝΟΛΙΚΟ ΚΟΣΤΟΣ</td>
-                    <td style="padding:16px;text-align:right;font-size:22px;font-weight:700;color:#C9A84C;">€${total}</td>
-                  </tr>
-                </tbody>
-              </table>
+          const doc = iframe.contentDocument || iframe.contentWindow.document;
+          doc.open();
+          doc.write(generateQuoteHtml(qId, dateToday));
+          doc.close();
 
-              ${note ? `<div style="background: #f8f8f5; padding: 20px; border-radius: 8px; font-size: 14px; color: #555; margin-top: 20px; text-align:left;"><strong>Σημείωση:</strong> ${note}</div>` : ""}
-              <div style="margin-top: 60px; text-align: center; font-size: 12px; color: #bbb;">Altus Studio · info@altusstudio.gr · 6970015447 · altusstudio.gr</div>
-            </div>
-          `;
-          document.body.appendChild(element);
+          iframe.contentWindow.document.fonts.ready.then(() => {
+            setTimeout(() => {
+              const opt = {
+                margin:       10,
+                filename:     `Altus_Quote_${newQuote.id}.pdf`,
+                image:        { type: 'jpeg', quality: 0.98 },
+                html2canvas:  { scale: 2, useCORS: true, logging: false },
+                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+              };
 
-          const opt = {
-            margin:       10,
-            filename:     `Altus_Quote_${newQuote.id}.pdf`,
-            image:        { type: 'jpeg', quality: 0.98 },
-            html2canvas:  { scale: 2, useCORS: true, logging: false },
-            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-          };
-
-          (window as any).html2pdf()
-            .from(element)
-            .set(opt)
-            .save()
-            .then(() => {
-              document.body.removeChild(element);
-            })
-            .catch((err: any) => {
-              console.error("PDF generation error:", err);
-              document.body.removeChild(element);
-            });
+              (window as any).html2pdf()
+                .from(iframe.contentDocument.body)
+                .set(opt)
+                .save()
+                .then(() => {
+                  document.body.removeChild(iframe);
+                })
+                .catch((err: any) => {
+                  console.error("PDF generation error:", err);
+                  document.body.removeChild(iframe);
+                });
+            }, 250);
+          });
         })
         .catch((err) => {
           console.error("html2pdf failed to load:", err);
         });
     } else {
       // Desktop: window.open + print
-      const content = `
-        <html><head><style>
-          body { font-family: 'DM Sans', Arial, sans-serif; padding: 60px; color: #0A0F1E; }
-          h1 { font-size: 32px; margin-bottom: 4px; } h2 { font-size: 20px; color: #888; font-weight: 400; margin-bottom: 40px; }
-          .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; }
-          .logo { font-size: 24px; font-weight: 700; letter-spacing: 2px; color: #C9A84C; }
-          .date { color: #888; font-size: 14px; margin-top: 4px; }
-          .to { margin-bottom: 40px; } .label { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 6px; }
-          table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-          th { text-align: left; padding: 12px 16px; background: #f8f8f5; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; }
-          td { padding: 14px 16px; border-bottom: 1px solid #eee; font-size: 15px; }
-          .total-row { font-weight: 700; font-size: 18px; color: #C9A84C; }
-          .note { background: #f8f8f5; padding: 20px; border-radius: 8px; font-size: 14px; color: #555; margin-top: 20px; }
-          .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #bbb; }
-          .gold { color: #C9A84C; }
-        </style></head><body>
-          <div class="header">
-            <div><div class="logo">ALTUS STUDIO</div><div class="date">Ημ/νία: ${newQuote.date}</div></div>
-            <div style="text-align:right"><div style="font-size:28px;font-weight:700;color:#C9A84C">ΠΡΟΣΦΟΡΑ</div><div style="color:#999;font-size:14px">#${newQuote.id}</div></div>
-          </div>
-          <div class="to">
-            <div class="label">Προς</div>
-            <div style="font-size:18px;font-weight:600">${clientName}</div>
-            <div style="color:#555;font-size:13px;margin-top:2px;">Email: ${clientEmail}</div>
-            ${clientPhone ? `<div style="color:#555;font-size:13px;margin-top:2px;">Τηλ: ${clientPhone}</div>` : ""}
-          </div>
-          <table>
-            <thead><tr><th>Υπηρεσία</th><th style="text-align:right">Τιμή</th><th style="text-align:right">Σύνολο</th></tr></thead>
-            <tbody>
-              ${items.map((i) => {
-                const pk = i.pkgKey || "";
-                const deliv = pk && packageDeliverables[pk]
-                  ? `<div style="margin-top:10px;padding:10px 14px;background:#f8f8f5;border-left:3px solid #C9A84C;border-radius:4px;">
-                       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#C9A84C;margin-bottom:6px;">Αναλυτικά Περιλαμβάνει:</div>
-                       <ul style="margin:0;padding-left:16px;font-size:12px;color:#444;line-height:1.8;">
-                         ${packageDeliverables[pk].items.map(d => `<li>${d}</li>`).join("")}
-                       </ul>
-                     </div>`
-                  : "";
-                return `
-                  <tr>
-                    <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;">
-                      <div style="font-size:15px;font-weight:700;color:#0A0F1E;">${i.name}</div>
-                      ${deliv}
-                    </td>
-                    <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;white-space:nowrap;">€${i.price} × ${i.qty}</td>
-                    <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;font-weight:700;color:#0A0F1E;white-space:nowrap;">€${i.price * i.qty}</td>
-                  </tr>
-                `;
-              }).join("")}
-              <tr><td colspan="2" style="padding:16px;text-align:right;font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:1px;">ΣΥΝΟΛΙΚΟ ΚΟΣΤΟΣ</td><td style="padding:16px;text-align:right;font-size:22px;font-weight:700;color:#C9A84C;">€${total}</td></tr>
-            </tbody>
-          </table>
-          ${note ? `<div class="note"><strong>Σημείωση:</strong> ${note}</div>` : ""}
-          <div class="footer">Altus Studio · info@altusstudio.gr · 6970015447 · altusstudio.gr</div>
-        </body></html>
-      `;
+      const content = generateQuoteHtml(qId, dateToday);
       const w = window.open("", "_blank");
-      if (w) { w.document.write(content); w.document.close(); w.print(); }
+      if (w) {
+        w.document.write(content);
+        w.document.close();
+        w.print();
+      }
     }
 
     setPrinted(true);
@@ -2627,7 +2857,7 @@ function QuotesView() {
         <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>Προσφορές</h1>
         <div style={{ display: "flex", gap: 8, alignSelf: isMobile ? "flex-start" : "auto" }}>
           <button onClick={() => setTab("list")} style={{ padding: "9px 18px", borderRadius: 10, border: `1px solid ${tab === "list" ? "#C9A84C" : "rgba(255,255,255,0.1)"}`, background: tab === "list" ? "rgba(201,168,76,0.1)" : "transparent", color: tab === "list" ? "#C9A84C" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 13 }}>Ιστορικό</button>
-          <button onClick={() => setTab("new")} style={{ padding: "9px 18px", borderRadius: 10, border: "1px solid #C9A84C", background: "rgba(201,168,76,0.15)", color: "#C9A84C", cursor: "pointer", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+          <button onClick={startNewQuote} style={{ padding: "9px 18px", borderRadius: 10, border: "1px solid #C9A84C", background: "rgba(201,168,76,0.15)", color: "#C9A84C", cursor: "pointer", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
             <Plus size={14} /> Νέα Προσφορά
           </button>
         </div>
@@ -2670,9 +2900,14 @@ function QuotesView() {
                     <span style={{ fontSize: 12, color: quoteStatusColor[q.status] || "#6b7280", background: `${quoteStatusColor[q.status] || "#6b7280"}18`, padding: "4px 10px", borderRadius: 999 }}>{quoteStatusLabel[q.status] || q.status}</span>
                   </td>
                   <td style={{ padding: "14px 20px" }}>
-                    <button onClick={() => openQuote(q)} style={{ background: "transparent", border: "none", color: "#C9A84C", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 4, fontWeight: 600 }}>
-                      <FileText size={14} /> Άνοιγμα
-                    </button>
+                    <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                      <button onClick={() => openQuote(q)} style={{ background: "transparent", border: "none", color: "#C9A84C", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 4, fontWeight: 600 }}>
+                        <FileText size={14} /> Επεξεργασία
+                      </button>
+                      <button onClick={() => deleteQuote(q.id)} style={{ background: "transparent", border: "none", color: "#ef4444", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 4, fontWeight: 600 }}>
+                        <Trash2 size={14} /> Διαγραφή
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}
@@ -2681,7 +2916,39 @@ function QuotesView() {
           )}
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.2fr", gap: 20 }}>
+        <>
+          {editingQuoteId && (
+            <div style={{
+              background: "rgba(201,168,76,0.1)",
+              border: "1px solid rgba(201,168,76,0.3)",
+              borderRadius: 12,
+              padding: "12px 16px",
+              marginBottom: 20,
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center"
+            }}>
+              <span style={{ color: "#C9A84C", fontSize: 14, fontWeight: 600 }}>
+                📝 Επεξεργασία Προσφοράς #{editingQuoteId}
+              </span>
+              <button
+                onClick={startNewQuote}
+                style={{
+                  background: "rgba(255,255,255,0.05)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: 6,
+                  padding: "4px 10px",
+                  color: "#fff",
+                  cursor: "pointer",
+                  fontSize: 12,
+                  fontWeight: 600
+                }}
+              >
+                Ακύρωση / Νέα Προσφορά
+              </button>
+            </div>
+          )}
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.2fr", gap: 20 }}>
           {/* Left: services selector */}
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Client info */}
@@ -2845,16 +3112,423 @@ function QuotesView() {
               style={{ width: "100%", minHeight: 70, padding: "10px 14px", background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "rgba(255,255,255,0.7)", fontSize: 13, outline: "none", resize: "vertical", fontFamily: "'DM Sans', sans-serif", boxSizing: "border-box", marginBottom: 14 }}
             />
 
-            <button
-              onClick={printQuote}
-              disabled={!clientName || items.length === 0}
-              style={{ width: "100%", padding: "13px", background: printed ? "rgba(34,197,94,0.15)" : (clientName && items.length > 0 ? "linear-gradient(135deg, #C9A84C, #a8893e)" : "rgba(255,255,255,0.05)"), border: printed ? "1px solid rgba(34,197,94,0.4)" : "none", borderRadius: 12, color: printed ? "#22c55e" : (clientName && items.length > 0 ? "#0A0F1E" : "rgba(255,255,255,0.2)"), fontWeight: 700, fontSize: 15, cursor: clientName && items.length > 0 ? "pointer" : "not-allowed", transition: "all 0.3s", display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}
-            >
-              {printed ? <><CheckCircle size={16} /> Έτοιμο για εκτύπωση!</> : <><Printer size={16} /> Εκτύπωση / PDF</>}
-            </button>
+            {isMobile ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                <button
+                  onClick={() => printQuote("download")}
+                  disabled={!clientName || items.length === 0}
+                  style={{
+                    width: "100%",
+                    padding: "13px",
+                    background: printed ? "rgba(34,197,94,0.15)" : (clientName && items.length > 0 ? "linear-gradient(135deg, #C9A84C, #a8893e)" : "rgba(255,255,255,0.05)"),
+                    border: printed ? "1px solid rgba(34,197,94,0.4)" : "none",
+                    borderRadius: 12,
+                    color: printed ? "#22c55e" : (clientName && items.length > 0 ? "#0A0F1E" : "rgba(255,255,255,0.2)"),
+                    fontWeight: 700,
+                    fontSize: 14,
+                    cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
+                    transition: "all 0.3s",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8
+                  }}
+                >
+                  {printed ? <><CheckCircle size={16} /> Κατέβηκε!</> : <><Download size={16} /> Κατέβασμα PDF</>}
+                </button>
+
+                <button
+                  onClick={() => setPreviewOpen(true)}
+                  disabled={!clientName || items.length === 0}
+                  style={{
+                    width: "100%",
+                    padding: "13px",
+                    background: "rgba(255,255,255,0.05)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: 12,
+                    color: clientName && items.length > 0 ? "#C9A84C" : "rgba(255,255,255,0.2)",
+                    fontWeight: 600,
+                    fontSize: 14,
+                    cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
+                    transition: "all 0.3s",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8
+                  }}
+                >
+                  <Eye size={16} /> Προεπισκόπηση
+                </button>
+              </div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {/* Row 1: Preview & Share */}
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button
+                    onClick={() => setPreviewOpen(true)}
+                    disabled={!clientName || items.length === 0}
+                    style={{
+                      flex: 1,
+                      padding: "11px",
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: 10,
+                      color: clientName && items.length > 0 ? "#fff" : "rgba(255,255,255,0.2)",
+                      fontWeight: 600,
+                      fontSize: 13,
+                      cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
+                      transition: "all 0.2s",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6
+                    }}
+                  >
+                    <Eye size={15} /> Προεπισκόπηση
+                  </button>
+                  
+                  <button
+                    onClick={() => setShareOpen(true)}
+                    disabled={!clientName || items.length === 0}
+                    style={{
+                      flex: 1,
+                      padding: "11px",
+                      background: "rgba(255,255,255,0.03)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: 10,
+                      color: clientName && items.length > 0 ? "#fff" : "rgba(255,255,255,0.2)",
+                      fontWeight: 600,
+                      fontSize: 13,
+                      cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
+                      transition: "all 0.2s",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 6
+                    }}
+                  >
+                    <Share2 size={15} /> Κοινοποίηση
+                  </button>
+                </div>
+
+                {/* Row 2: Download & Print */}
+                <div style={{ display: "flex", gap: 10 }}>
+                  <button
+                    onClick={() => printQuote("download")}
+                    disabled={!clientName || items.length === 0}
+                    style={{
+                      flex: 1,
+                      padding: "13px",
+                      background: printed ? "rgba(34,197,94,0.15)" : (clientName && items.length > 0 ? "rgba(201,168,76,0.1)" : "rgba(255,255,255,0.05)"),
+                      border: printed ? "1px solid rgba(34,197,94,0.4)" : "1px solid rgba(201,168,76,0.3)",
+                      borderRadius: 12,
+                      color: printed ? "#22c55e" : (clientName && items.length > 0 ? "#C9A84C" : "rgba(255,255,255,0.2)"),
+                      fontWeight: 700,
+                      fontSize: 14,
+                      cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
+                      transition: "all 0.3s",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8
+                    }}
+                  >
+                    {printed ? <><CheckCircle size={16} /> Κατέβηκε!</> : <><Download size={16} /> Λήψη PDF</>}
+                  </button>
+
+                  <button
+                    onClick={() => printQuote("print")}
+                    disabled={!clientName || items.length === 0}
+                    style={{
+                      flex: 1,
+                      padding: "13px",
+                      background: clientName && items.length > 0 ? "linear-gradient(135deg, #C9A84C, #a8893e)" : "rgba(255,255,255,0.05)",
+                      border: "none",
+                      borderRadius: 12,
+                      color: clientName && items.length > 0 ? "#0A0F1E" : "rgba(255,255,255,0.2)",
+                      fontWeight: 700,
+                      fontSize: 14,
+                      cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
+                      transition: "all 0.3s",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      gap: 8
+                    }}
+                  >
+                    <Printer size={16} /> Εκτύπωση
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+        </>
+      )}
+
+      {/* Preview Modal */}
+      {previewOpen && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          width: "100vw",
+          height: "100vh",
+          background: "rgba(0,0,0,0.85)",
+          backdropFilter: "blur(8px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999,
+          padding: isMobile ? 10 : 20,
+          boxSizing: "border-box"
+        }}>
+          <div style={{
+            background: "#111827",
+            border: "1px solid rgba(201,168,76,0.3)",
+            borderRadius: 20,
+            width: "100%",
+            maxWidth: 840,
+            maxHeight: "95vh",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
+            boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)"
+          }}>
+            {/* Header */}
+            <div style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+              padding: "16px 24px",
+              borderBottom: "1px solid rgba(255,255,255,0.08)"
+            }}>
+              <h3 style={{ margin: 0, color: "#fff", fontSize: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                <Eye size={18} color="#C9A84C" /> Προεπισκόπηση Προσφοράς (A4 Layout)
+              </h3>
+              <button
+                onClick={() => setPreviewOpen(false)}
+                style={{
+                  background: "transparent",
+                  border: "none",
+                  color: "rgba(255,255,255,0.4)",
+                  cursor: "pointer",
+                  padding: 4
+                }}
+                onMouseEnter={(e) => e.currentTarget.style.color = "#fff"}
+                onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
+              >
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Iframe content */}
+            <div style={{ flex: 1, padding: 20, background: "#0a0f1d" }}>
+              <iframe
+                title="PDF Preview"
+                srcDoc={generateQuoteHtml("TEMP", new Date().toLocaleDateString("el-GR"))}
+                style={{
+                  width: "100%",
+                  height: "65vh",
+                  border: "none",
+                  borderRadius: 8,
+                  background: "#ffffff"
+                }}
+              />
+            </div>
+
+            {/* Footer actions inside Modal */}
+            <div style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              gap: 12,
+              padding: "16px 24px",
+              borderTop: "1px solid rgba(255,255,255,0.08)",
+              background: "rgba(255,255,255,0.02)"
+            }}>
+              <button
+                onClick={() => setPreviewOpen(false)}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  background: "transparent",
+                  color: "rgba(255,255,255,0.6)",
+                  cursor: "pointer",
+                  fontSize: 13
+                }}
+              >
+                Κλείσιμο
+              </button>
+              <button
+                onClick={() => {
+                  printQuote("download");
+                  setPreviewOpen(false);
+                }}
+                style={{
+                  padding: "8px 16px",
+                  borderRadius: 8,
+                  border: "none",
+                  background: "linear-gradient(135deg, #C9A84C, #a8893e)",
+                  color: "#0A0F1E",
+                  cursor: "pointer",
+                  fontWeight: 600,
+                  fontSize: 13,
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6
+                }}
+              >
+                <Download size={14} /> Κατέβασμα PDF
+              </button>
+            </div>
           </div>
         </div>
       )}
+
+      {/* Share Modal */}
+      {shareOpen && (() => {
+        const shareText = `Γεια σας! Σας στέλνουμε την προσφορά σας από την Altus Studio για τις υπηρεσίες: ${items.map(i => i.name).join(", ")}. Συνολικό κόστος: €${total}. Μπορείτε να βρείτε την αναλυτική προσφορά σας στο συνημμένο PDF.`;
+        const encodedText = encodeURIComponent(shareText);
+        const waLink = `https://wa.me/${clientPhone.replace(/\D/g, '') || ''}?text=${encodedText}`;
+        const viberLink = `viber://forward?text=${encodedText}`;
+        const emailSubject = encodeURIComponent(`Προσφορά Συνεργασίας – Altus Studio`);
+        const emailBody = encodeURIComponent(`Αγαπητέ/ή ${clientName},\n\nΣας στέλνουμε συνημμένα την προσφορά μας για τις υπηρεσίες:\n${items.map(i => `- ${i.name} (€${i.price})`).join("\n")}\n\nΣυνολικό Κόστος: €${total}\n\nΘα βρείτε το αναλυτικό έγγραφο της προσφοράς στο συνημμένο PDF.\n\nΜε εκτίμηση,\nAltus Studio\ninfo@altusstudio.gr`);
+        const mailLink = `mailto:${clientEmail}?subject=${emailSubject}&body=${emailBody}`;
+
+        return (
+          <div style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            background: "rgba(0,0,0,0.85)",
+            backdropFilter: "blur(8px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: 9999,
+            padding: 20,
+            boxSizing: "border-box"
+          }}>
+            <div style={{
+              background: "#111827",
+              border: "1px solid rgba(201,168,76,0.3)",
+              borderRadius: 20,
+              width: "100%",
+              maxWidth: 440,
+              overflow: "hidden",
+              boxShadow: "0 25px 50px -12px rgba(0,0,0,0.5)"
+            }}>
+              {/* Header */}
+              <div style={{
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "16px 24px",
+                borderBottom: "1px solid rgba(255,255,255,0.08)"
+              }}>
+                <h3 style={{ margin: 0, color: "#fff", fontSize: 16, display: "flex", alignItems: "center", gap: 8 }}>
+                  <Share2 size={18} color="#C9A84C" /> Κοινοποίηση Προσφοράς
+                </h3>
+                <button
+                  onClick={() => setShareOpen(false)}
+                  style={{
+                    background: "transparent",
+                    border: "none",
+                    color: "rgba(255,255,255,0.4)",
+                    cursor: "pointer",
+                    padding: 4
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.color = "#fff"}
+                  onMouseLeave={(e) => e.currentTarget.style.color = "rgba(255,255,255,0.4)"}
+                >
+                  <X size={20} />
+                </button>
+              </div>
+
+              {/* Body */}
+              <div style={{ padding: 24, display: "flex", flexDirection: "column", gap: 14 }}>
+                <p style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, margin: "0 0 10px" }}>
+                  Επιλέξτε κανάλι για να στείλετε το έτοιμο κείμενο σύνοψης της προσφοράς. Μπορείτε να επισυνάψετε το PDF αρχείο στη συνέχεια.
+                </p>
+
+                <a
+                  href={waLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setShareOpen(false)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: "12px 16px",
+                    background: "rgba(37,211,102,0.1)",
+                    border: "1px solid rgba(37,211,102,0.3)",
+                    borderRadius: 10,
+                    color: "#25D366",
+                    textDecoration: "none",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    transition: "background 0.2s"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(37,211,102,0.18)"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(37,211,102,0.1)"}
+                >
+                  <span style={{ fontSize: 18 }}>💬</span> WhatsApp Share
+                </a>
+
+                <a
+                  href={viberLink}
+                  onClick={() => setShareOpen(false)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: "12px 16px",
+                    background: "rgba(115,108,187,0.1)",
+                    border: "1px solid rgba(115,108,187,0.3)",
+                    borderRadius: 10,
+                    color: "#736CBB",
+                    textDecoration: "none",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    transition: "background 0.2s"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(115,108,187,0.18)"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(115,108,187,0.1)"}
+                >
+                  <span style={{ fontSize: 18 }}>💜</span> Viber Share
+                </a>
+
+                <a
+                  href={mailLink}
+                  onClick={() => setShareOpen(false)}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 12,
+                    padding: "12px 16px",
+                    background: "rgba(201,168,76,0.1)",
+                    border: "1px solid rgba(201,168,76,0.3)",
+                    borderRadius: 10,
+                    color: "#C9A84C",
+                    textDecoration: "none",
+                    fontSize: 14,
+                    fontWeight: 600,
+                    transition: "background 0.2s"
+                  }}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(201,168,76,0.18)"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(201,168,76,0.1)"}
+                >
+                  <Mail size={16} /> Αποστολή Email
+                </a>
+              </div>
+            </div>
+          </div>
+        );
+      })()}
     </div>
   );
 }
@@ -3011,6 +3685,7 @@ export function AdminPage() {
   const [activeSection, setActiveSection] = useState("dashboard");
   const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [prefilledClient, setPrefilledClient] = useState<{ name: string; email: string; phone: string; inquiryId: string } | null>(null);
 
   // Persist session
   useEffect(() => {
@@ -3033,10 +3708,22 @@ export function AdminPage() {
   const renderContent = () => {
     switch (activeSection) {
       case "dashboard": return <DashboardView />;
-      case "messages": return <MessagesView />;
+      case "messages": return (
+        <MessagesView
+          onCreateQuote={(client) => {
+            setPrefilledClient(client);
+            setActiveSection("quotes");
+          }}
+        />
+      );
       case "projects": return <ProjectsView />;
       case "clients": return <CRMView />;
-      case "quotes": return <QuotesView />;
+      case "quotes": return (
+        <QuotesView
+          prefilledClient={prefilledClient}
+          onClearPrefilled={() => setPrefilledClient(null)}
+        />
+      );
       case "packages": return <PackagesView />;
       case "analytics": return <AnalyticsView />;
       case "settings": return <SettingsView />;

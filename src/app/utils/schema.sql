@@ -22,6 +22,7 @@ ALTER TABLE messages ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow anonymous message inserts" ON messages;
 DROP POLICY IF EXISTS "Allow message selects" ON messages;
 DROP POLICY IF EXISTS "Allow message updates" ON messages;
+DROP POLICY IF EXISTS "Allow message deletes" ON messages;
 
 -- Policy to allow anonymous submissions (Insert)
 CREATE POLICY "Allow anonymous message inserts" 
@@ -38,6 +39,12 @@ USING (true);
 -- Policy to update read/status state in the admin dashboard (Update)
 CREATE POLICY "Allow message updates" 
 ON messages FOR UPDATE 
+TO anon 
+USING (true);
+
+-- Policy to allow deleting messages in the admin dashboard (Delete)
+CREATE POLICY "Allow message deletes" 
+ON messages FOR DELETE 
 TO anon 
 USING (true);
 
@@ -199,6 +206,7 @@ ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Allow anonymous quote inserts" ON quotes;
 DROP POLICY IF EXISTS "Allow quote selects" ON quotes;
 DROP POLICY IF EXISTS "Allow quote updates" ON quotes;
+DROP POLICY IF EXISTS "Allow quote deletes" ON quotes;
 
 -- Policy to allow anonymous submissions (Insert)
 CREATE POLICY "Allow anonymous quote inserts" 
@@ -215,6 +223,12 @@ USING (true);
 -- Policy to update quote state in the admin dashboard (Update)
 CREATE POLICY "Allow quote updates" 
 ON quotes FOR UPDATE 
+TO anon 
+USING (true);
+
+-- Policy to allow deleting quotes in the admin dashboard (Delete)
+CREATE POLICY "Allow quote deletes" 
+ON quotes FOR DELETE 
 TO anon 
 USING (true);
 
