@@ -120,11 +120,17 @@ export function getProjects(): Project[] {
           
           // Merge with current local projects to avoid deleting unsynced ones
           const localStored = localStorage.getItem("altus_projects");
-          let currentList = defaultProjects;
+          const currentList = [...defaultProjects];
           if (localStored) {
             try {
               const parsed = JSON.parse(localStored);
-              if (Array.isArray(parsed)) currentList = parsed;
+              if (Array.isArray(parsed)) {
+                for (const p of parsed) {
+                  if (!currentList.some((dp) => dp.id === p.id)) {
+                    currentList.push(p);
+                  }
+                }
+              }
             } catch (e) {}
           }
           
@@ -175,7 +181,17 @@ export function getProjects(): Project[] {
   try {
     const parsed = JSON.parse(stored);
     if (Array.isArray(parsed)) {
-      return parsed.map((p: any) => {
+      const mergedList = [...defaultProjects];
+      for (const p of parsed) {
+        const idx = mergedList.findIndex((dp) => dp.id === p.id);
+        if (idx !== -1) {
+          mergedList[idx] = p;
+        } else {
+          mergedList.push(p);
+        }
+      }
+
+      return mergedList.map((p: any) => {
         let img = p.img || "";
         let gallery = Array.isArray(p.gallery) ? p.gallery : [];
         if (p.id === "project-1") {
