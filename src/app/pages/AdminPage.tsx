@@ -2768,31 +2768,6 @@ function QuotesView({
     `;
   };
 
-  const printQuote = (action: "download" | "print" = "download") => {
-    if (!clientName) return;
-
-    const qId = editingQuoteId || ("Q" + Math.floor(1000 + Math.random() * 9000));
-    const dateToday = new Date().toLocaleDateString("el-GR");
-
-    const newQuote = {
-      id: qId,
-      client: clientName,
-      email: clientEmail,
-      phone: clientPhone,
-      date: dateToday,
-      total: total,
-      status: "accepted",
-      items: items,
-      note: note,
-    };
-
-    saveQuote(newQuote);
-
-    // Update CRM status if linked
-    if (linkedInquiryId) {
-      markInquiryStatus(linkedInquiryId, "replied");
-    }
-
   const generateMobilePdfHtml = (qId: string, date: string) => {
     return `
       <!DOCTYPE html>
@@ -2984,111 +2959,105 @@ function QuotesView({
   };
 
     if (action === "download") {
-      const generatePdfFromHtml = (htmlString: string, filename: string, bodyPadding: string) => {
+
+      if (!isMobile) {
+        // ══ DESKTOP: window.open() + print() ══
+        // This is the ONLY 100% reliable approach. The browser renders HTML natively
+        // and the user saves it as PDF from the print dialog (Ctrl+P → Save as PDF).
+        // Triggered by user click so popup blocker won't interfere.
+        const content = generateQuoteHtml(qId, dateToday);
+        const w = window.open("", "_blank");
+        if (w) {
+          w.document.open();
+          w.document.write(content);
+          w.document.close();
+          w.focus();
+          // Wait for fonts/images to load before print dialog
+          w.onload = () => setTimeout(() => w.print(), 500);
+          // Fallback if onload doesn't fire
+          setTimeout(() => {
+            try { w.print(); } catch (_) { /* ignore if already triggered */ }
+          }, 1200);
+        }
+
+      } else {
+        // ══ MOBILE: html2pdf with visible container ══
+        const htmlString = generateMobilePdfHtml(qId, dateToday);
         const parser = new DOMParser();
         const parsed = parser.parseFromString(htmlString, "text/html");
 
-        // ① Loading overlay — shown to user while PDF renders
+        // Loading overlay (highest z-index — user sees this)
         const overlay = document.createElement("div");
-        overlay.style.cssText = "position:fixed;inset:0;z-index:99999;background:rgba(10,15,30,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;";
+        overlay.style.cssText = [
+          "position:fixed", "inset:0", "z-index:2147483647",
+          "background:rgba(10,15,30,0.92)",
+          "display:flex", "flex-direction:column",
+          "align-items:center", "justify-content:center", "gap:12px"
+        ].join(";");
         overlay.innerHTML = `
-          <div style="color:#C9A84C;font-family:'DM Sans',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.05em;">📄 Δημιουργία PDF...</div>
-          <div style="color:rgba(255,255,255,0.45);font-family:'DM Sans',sans-serif;font-size:13px;">Παρακαλώ περιμένετε</div>
+          <div style="color:#C9A84C;font-family:sans-serif;font-size:16px;font-weight:700">📄 Δημιουργία PDF...</div>
+          <div style="color:rgba(255,255,255,0.4);font-family:sans-serif;font-size:13px">Παρακαλώ περιμένετε</div>
         `;
         document.body.appendChild(overlay);
 
-        // ② Inject CSS into <head> so classes like .header, .logo etc apply correctly
-        const injectedStyleEls: HTMLStyleElement[] = [];
-        parsed.querySelectorAll("style").forEach((s) => {
-          const el = document.createElement("style");
-          // Replace `body {` → `.pdf-root {` so body-padding scopes to our wrapper
-          el.textContent = (s.textContent || "").replace(/\bbody\s*{/g, ".pdf-root {");
-          document.head.appendChild(el);
-          injectedStyleEls.push(el);
-        });
+        // Inject style rules from template into <head>
+        // Strip the `body {}` selector so it doesn't affect the host page
+        const styleEl = document.createElement("style");
+        styleEl.setAttribute("data-pdf-temp", "1");
+        styleEl.textContent = Array.from(parsed.querySelectorAll("style"))
+          .map(s => (s.textContent || "").replace(/\bbody\s*\{[^}]*\}/gs, ""))
+          .join("\n");
+        document.head.appendChild(styleEl);
 
-        // ③ Create render container — VISIBLE (z-index:1) behind overlay (z-index:99999)
+        // PDF container — visible at z-index BELOW overlay
+        // Do NOT use opacity:0 / display:none — html2canvas won't render those!
         const container = document.createElement("div");
-        container.style.cssText = `
-          position: fixed;
-          left: 0; top: 0;
-          width: 794px;
-          z-index: 1;
-          background: #ffffff;
-        `;
-
-        // Wrapper div that gets the body-level styles via .pdf-root class
-        const wrapper = document.createElement("div");
-        wrapper.className = "pdf-root";
-        // Also apply padding inline so it's guaranteed to work
-        wrapper.style.padding = bodyPadding;
-        wrapper.style.boxSizing = "border-box";
-        wrapper.style.webkitPrintColorAdjust = "exact";
-        wrapper.innerHTML = parsed.body.innerHTML;
-        container.appendChild(wrapper);
+        container.style.cssText = [
+          "position:fixed", "left:0", "top:0",
+          "width:794px",
+          "z-index:2147483646", // Just below overlay
+          "background:#ffffff",
+          "padding:28px 24px",
+          "box-sizing:border-box",
+          "font-family:'DM Sans',Arial,sans-serif",
+          "color:#0A0F1E"
+        ].join(";");
+        container.innerHTML = parsed.body.innerHTML;
         document.body.appendChild(container);
 
         const cleanup = () => {
           if (document.body.contains(container)) document.body.removeChild(container);
           if (document.body.contains(overlay)) document.body.removeChild(overlay);
-          injectedStyleEls.forEach((el) => {
-            if (document.head.contains(el)) document.head.removeChild(el);
-          });
+          document.querySelectorAll("style[data-pdf-temp]").forEach(el => el.remove());
         };
 
-        // ④ Wait for fonts to load, then generate
+        // Wait for fonts + 2 paint frames before capture
         document.fonts.ready.then(() => {
-          setTimeout(() => {
-            const opt = {
-              margin: 0,
-              filename: filename,
-              image: { type: "jpeg", quality: 0.98 },
-              html2canvas: {
-                scale: 2,
-                useCORS: true,
-                allowTaint: false,
-                logging: false,
-                width: 794,
-                windowWidth: 794,
-              },
-              jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-            };
-
-            html2pdf()
-              .from(container)
-              .set(opt)
-              .save()
-              .then(cleanup)
-              .catch((err: any) => { console.error("PDF error:", err); cleanup(); });
-          }, 400);
+          requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+              const opt = {
+                margin: 0,
+                filename: `Altus_Quote_${newQuote.id}.pdf`,
+                image: { type: "jpeg", quality: 0.95 },
+                html2canvas: {
+                  scale: 2,
+                  useCORS: true,
+                  allowTaint: true,
+                  logging: false,
+                },
+                jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+              };
+              html2pdf()
+                .from(container)
+                .set(opt)
+                .save()
+                .then(cleanup)
+                .catch((err: any) => { console.error("Mobile PDF error:", err); cleanup(); });
+            });
+          });
         });
-      };
+      }
 
-      if (isMobile) {
-        // ── MOBILE: card-layout PDF (28px padding matches card template) ──
-        generatePdfFromHtml(
-          generateMobilePdfHtml(qId, dateToday),
-          `Altus_Quote_${newQuote.id}.pdf`,
-          "28px 24px"
-        );
-      } else {
-        // ── DESKTOP: A4 full-table PDF (40px padding matches desktop template) ──
-        generatePdfFromHtml(
-          generateQuoteHtml(qId, dateToday),
-          `Altus_Quote_${newQuote.id}.pdf`,
-          "40px"
-        );
-      }
-    } else {
-      // Desktop: window.open + print
-      const content = generateQuoteHtml(qId, dateToday);
-      const w = window.open("", "_blank");
-      if (w) {
-        w.document.write(content);
-        w.document.close();
-        w.print();
-      }
-    }
 
     setPrinted(true);
     setTimeout(() => setPrinted(false), 3000);
