@@ -902,7 +902,7 @@ function ProjectsView() {
   const [formYear, setFormYear] = useState("");
   const [formDescription, setFormDescription] = useState("");
   const [formImg, setFormImg] = useState("");
-  const [formGallery, setFormGallery] = useState("");
+  const [formGallery, setFormGallery] = useState<string[]>([]);
   const [formResults, setFormResults] = useState("");
   const [formIsLive, setFormIsLive] = useState(false);
   const [formLiveUrl, setFormLiveUrl] = useState("");
@@ -936,7 +936,7 @@ function ProjectsView() {
     setFormYear(p.year);
     setFormDescription(p.description);
     setFormImg(p.img);
-    setFormGallery(p.gallery.join(", "));
+    setFormGallery(p.gallery || []);
     setFormResults(p.results);
     setFormIsLive(p.isLive);
     setFormLiveUrl(p.liveUrl || "");
@@ -962,7 +962,7 @@ function ProjectsView() {
     setFormYear(new Date().getFullYear().toString());
     setFormDescription("");
     setFormImg("");
-    setFormGallery("");
+    setFormGallery([]);
     setFormResults("");
     setFormIsLive(false);
     setFormLiveUrl("");
@@ -975,10 +975,7 @@ function ProjectsView() {
       .split(",")
       .map((t) => t.trim())
       .filter(Boolean);
-    const galleryArray = formGallery
-      .split(",")
-      .map((g) => g.trim())
-      .filter(Boolean);
+    const galleryArray = formGallery.filter(Boolean);
 
     const updatedProjects = [...projects];
 
@@ -1186,24 +1183,209 @@ function ProjectsView() {
                 />
               </div>
 
+              {/* Main Image Selection */}
               <div>
-                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>URL Κύριας Εικόνας</label>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Κύρια Εικόνα</label>
+                <div style={{ display: "flex", gap: 12, alignItems: "center", marginBottom: 8 }}>
+                  {formImg && (
+                    <img 
+                      src={formImg} 
+                      alt="Preview" 
+                      style={{ width: 60, height: 60, borderRadius: 8, objectFit: "cover", border: "1px solid rgba(255,255,255,0.1)" }} 
+                    />
+                  )}
+                  <div style={{ flex: 1 }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            setFormImg(reader.result as string);
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      style={{ display: "none" }}
+                      id="main-image-upload"
+                    />
+                    <label 
+                      htmlFor="main-image-upload"
+                      style={{
+                        display: "inline-block",
+                        padding: "8px 16px",
+                        background: "rgba(201,168,76,0.1)",
+                        border: "1px solid rgba(201,168,76,0.3)",
+                        borderRadius: 10,
+                        color: "#C9A84C",
+                        fontSize: 13,
+                        cursor: "pointer",
+                        marginRight: 10,
+                        userSelect: "none"
+                      }}
+                    >
+                      Επιλογή Αρχείου
+                    </label>
+                    {formImg && (
+                      <button
+                        type="button"
+                        onClick={() => setFormImg("")}
+                        style={{
+                          padding: "8px 16px",
+                          background: "rgba(244,67,54,0.1)",
+                          border: "1px solid rgba(244,67,54,0.3)",
+                          borderRadius: 10,
+                          color: "#F44336",
+                          fontSize: 13,
+                          cursor: "pointer"
+                        }}
+                      >
+                        Διαγραφή
+                      </button>
+                    )}
+                  </div>
+                </div>
                 <input
                   value={formImg}
                   onChange={(e) => setFormImg(e.target.value)}
-                  placeholder="Εισάγετε URL εικόνας ή τοπική διαδρομή"
-                  style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                  placeholder="Ή εισάγετε URL εικόνας..."
+                  style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none", boxSizing: "border-box" }}
                 />
               </div>
 
+              {/* Gallery Images Selection */}
               <div>
-                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Gallery Εικόνες (URLs διαχωρισμένα με κόμμα)</label>
-                <input
-                  value={formGallery}
-                  onChange={(e) => setFormGallery(e.target.value)}
-                  placeholder="Image URL 1, Image URL 2..."
-                  style={{ width: "100%", padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
-                />
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Γκαλερί Εικόνων</label>
+                
+                {/* Thumbnails list with delete buttons */}
+                {formGallery.length > 0 && (
+                  <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(70px, 1fr))", gap: 10, marginBottom: 12 }}>
+                    {formGallery.map((imgUrl, idx) => (
+                      <div key={idx} style={{ position: "relative", aspectRatio: "1/1", borderRadius: 8, overflow: "hidden", border: "1px solid rgba(255,255,255,0.1)" }}>
+                        <img 
+                          src={imgUrl} 
+                          alt={`Gallery ${idx}`} 
+                          style={{ width: "100%", height: "100%", objectFit: "cover" }} 
+                        />
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const newGallery = [...formGallery];
+                            newGallery.splice(idx, 1);
+                            setFormGallery(newGallery);
+                          }}
+                          style={{
+                            position: "absolute",
+                            top: 4,
+                            right: 4,
+                            width: 18,
+                            height: 18,
+                            borderRadius: "50%",
+                            background: "rgba(244,67,54,0.9)",
+                            color: "#fff",
+                            border: "none",
+                            fontSize: 10,
+                            fontWeight: "bold",
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            padding: 0,
+                            lineHeight: 1
+                          }}
+                        >
+                          ✕
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={(e) => {
+                      const files = e.target.files;
+                      if (files) {
+                        const promises = Array.from(files).map((file) => {
+                          return new Promise<string>((resolve) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => {
+                              resolve(reader.result as string);
+                            };
+                            reader.readAsDataURL(file);
+                          });
+                        });
+                        Promise.all(promises).then((base64Images) => {
+                          setFormGallery((prev) => [...prev, ...base64Images]);
+                        });
+                      }
+                    }}
+                    style={{ display: "none" }}
+                    id="gallery-images-upload"
+                  />
+                  <label 
+                    htmlFor="gallery-images-upload"
+                    style={{
+                      display: "inline-block",
+                      padding: "8px 16px",
+                      background: "rgba(201,168,76,0.1)",
+                      border: "1px solid rgba(201,168,76,0.3)",
+                      borderRadius: 10,
+                      color: "#C9A84C",
+                      fontSize: 13,
+                      cursor: "pointer",
+                      userSelect: "none"
+                    }}
+                  >
+                    + Προσθήκη Αρχείων
+                  </label>
+                </div>
+                
+                {/* Text input to append URL manually */}
+                <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
+                  <input
+                    id="manual-gallery-url"
+                    placeholder="Ή εισάγετε URL εικόνας..."
+                    style={{ flex: 1, padding: "12px 16px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.preventDefault();
+                        const val = (e.target as HTMLInputElement).value.trim();
+                        if (val) {
+                          setFormGallery((prev) => [...prev, val]);
+                          (e.target as HTMLInputElement).value = "";
+                        }
+                      }
+                    }}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const input = document.getElementById("manual-gallery-url") as HTMLInputElement;
+                      const val = input.value.trim();
+                      if (val) {
+                        setFormGallery((prev) => [...prev, val]);
+                        input.value = "";
+                      }
+                    }}
+                    style={{
+                      padding: "12px 16px",
+                      background: "rgba(255,255,255,0.05)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: 10,
+                      color: "#fff",
+                      fontSize: 13,
+                      cursor: "pointer"
+                    }}
+                  >
+                    Προσθήκη
+                  </button>
+                </div>
               </div>
 
               <div style={{ display: "flex", alignItems: "center", gap: 10, marginTop: 12 }}>
