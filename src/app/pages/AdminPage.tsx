@@ -2793,59 +2793,290 @@ function QuotesView({
       markInquiryStatus(linkedInquiryId, "replied");
     }
 
-    if (action === "download") {
-      loadHtml2Pdf()
-        .then(() => {
-          const iframe = document.createElement("iframe");
-          iframe.style.position = "fixed";
-          iframe.style.left = "0";
-          iframe.style.top = "0";
-          iframe.style.width = "794px"; // Standard A4 pixel width at 96 DPI
-          iframe.style.height = "1123px";
-          iframe.style.border = "none";
-          iframe.style.zIndex = "-9999";
-          iframe.style.opacity = "0";
-          iframe.style.pointerEvents = "none";
-
-          iframe.onload = () => {
-            const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-            if (!iframeDoc) {
-              console.error("Iframe document not accessible");
-              document.body.removeChild(iframe);
-              return;
+  const generateMobilePdfHtml = (qId: string, date: string) => {
+    return `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+          <style>
+            * { box-sizing: border-box; margin: 0; padding: 0; }
+            body {
+              font-family: 'DM Sans', Arial, sans-serif;
+              background: #ffffff;
+              color: #0A0F1E;
+              padding: 28px 24px;
+              -webkit-print-color-adjust: exact;
+              print-color-adjust: exact;
             }
+            .top-bar {
+              background: #0A0F1E;
+              color: #C9A84C;
+              padding: 18px 20px;
+              border-radius: 10px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 18px;
+            }
+            .company-name {
+              font-family: 'Playfair Display', serif;
+              font-size: 20px;
+              font-weight: 700;
+              letter-spacing: 1px;
+            }
+            .quote-label {
+              text-align: right;
+              font-size: 11px;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+              opacity: 0.6;
+            }
+            .quote-id {
+              font-size: 16px;
+              font-weight: 700;
+              margin-top: 2px;
+            }
+            .date-line {
+              font-size: 12px;
+              color: #999;
+              margin-bottom: 16px;
+              padding-left: 4px;
+            }
+            .card {
+              border: 1.5px solid #eee;
+              border-radius: 10px;
+              padding: 16px 18px;
+              margin-bottom: 14px;
+            }
+            .card-label {
+              font-size: 10px;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+              color: #C9A84C;
+              font-weight: 700;
+              margin-bottom: 8px;
+            }
+            .client-name {
+              font-size: 18px;
+              font-weight: 700;
+              color: #0A0F1E;
+              margin-bottom: 4px;
+            }
+            .client-contact {
+              font-size: 13px;
+              color: #666;
+              margin-top: 3px;
+            }
+            .service-row {
+              display: flex;
+              justify-content: space-between;
+              align-items: flex-start;
+              padding: 12px 0;
+              border-bottom: 1px solid #f0f0f0;
+            }
+            .service-row:last-child { border-bottom: none; }
+            .service-name {
+              font-size: 14px;
+              font-weight: 600;
+              color: #0A0F1E;
+            }
+            .service-detail {
+              font-size: 12px;
+              color: #888;
+              margin-top: 2px;
+            }
+            .service-price {
+              font-size: 14px;
+              font-weight: 700;
+              color: #0A0F1E;
+              white-space: nowrap;
+              margin-left: 12px;
+            }
+            .total-card {
+              background: #0A0F1E;
+              border-radius: 10px;
+              padding: 16px 18px;
+              display: flex;
+              justify-content: space-between;
+              align-items: center;
+              margin-bottom: 14px;
+            }
+            .total-text {
+              font-size: 12px;
+              text-transform: uppercase;
+              letter-spacing: 2px;
+              color: rgba(255,255,255,0.5);
+              font-weight: 600;
+            }
+            .total-amount {
+              font-size: 26px;
+              font-weight: 700;
+              color: #C9A84C;
+              font-family: 'Playfair Display', serif;
+            }
+            .note-card {
+              border-left: 3px solid #C9A84C;
+              background: #fdfaf4;
+              padding: 12px 16px;
+              border-radius: 0 8px 8px 0;
+              margin-bottom: 14px;
+              font-size: 13px;
+              color: #555;
+            }
+            .footer {
+              text-align: center;
+              font-size: 11px;
+              color: #bbb;
+              border-top: 1px solid #eee;
+              padding-top: 16px;
+              margin-top: 8px;
+              letter-spacing: 0.5px;
+            }
+          </style>
+        </head>
+        <body>
+          <div class="top-bar">
+            <div class="company-name">ALTUS STUDIO</div>
+            <div style="text-align:right">
+              <div class="quote-label">Προσφορά</div>
+              <div class="quote-id">#${qId}</div>
+            </div>
+          </div>
 
-            iframeDoc.fonts.ready.then(() => {
-              setTimeout(() => {
-                const opt = {
-                  margin:       10,
-                  filename:     `Altus_Quote_${newQuote.id}.pdf`,
-                  image:        { type: 'jpeg', quality: 0.98 },
-                  html2canvas:  { scale: 2, useCORS: true, logging: false },
-                  jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-                };
+          <div class="date-line">Ημερομηνία: ${date}</div>
 
-                html2pdf()
-                  .from(iframeDoc.body)
-                  .set(opt)
-                  .save()
-                  .then(() => {
-                    document.body.removeChild(iframe);
-                  })
-                  .catch((err: any) => {
-                    console.error("PDF generation error:", err);
-                    document.body.removeChild(iframe);
-                  });
-              }, 250);
-            });
-          };
+          <div class="card">
+            <div class="card-label">Προς</div>
+            <div class="client-name">${clientName}</div>
+            ${clientEmail ? `<div class="client-contact">✉ ${clientEmail}</div>` : ""}
+            ${clientPhone ? `<div class="client-contact">📞 ${clientPhone}</div>` : ""}
+          </div>
 
-          iframe.srcdoc = generateQuoteHtml(qId, dateToday);
-          document.body.appendChild(iframe);
-        })
-        .catch((err) => {
-          console.error("html2pdf failed to load:", err);
+          <div class="card">
+            <div class="card-label">Υπηρεσίες</div>
+            ${items.map((i) => `
+              <div class="service-row">
+                <div>
+                  <div class="service-name">${i.name}</div>
+                  <div class="service-detail">€${i.price} × ${i.qty}</div>
+                </div>
+                <div class="service-price">€${i.price * i.qty}</div>
+              </div>
+            `).join("")}
+          </div>
+
+          <div class="total-card">
+            <div class="total-text">Συνολικό Κόστος</div>
+            <div class="total-amount">€${total}</div>
+          </div>
+
+          ${note ? `<div class="note-card"><strong>Σημείωση:</strong> ${note}</div>` : ""}
+
+          <div class="footer">
+            Altus Studio &nbsp;·&nbsp; info@altusstudio.gr &nbsp;·&nbsp; 6970015447 &nbsp;·&nbsp; altusstudio.gr
+          </div>
+        </body>
+      </html>
+    `;
+  };
+
+    if (action === "download") {
+      if (isMobile) {
+        // ── MOBILE: use hidden div, card-layout PDF ──
+        const htmlString = generateMobilePdfHtml(qId, dateToday);
+        const container = document.createElement("div");
+        container.style.position = "fixed";
+        container.style.left = "0";
+        container.style.top = "0";
+        container.style.width = "794px";
+        container.style.zIndex = "-9999";
+        container.style.opacity = "0";
+        container.style.pointerEvents = "none";
+        container.style.background = "#ffffff";
+        // Parse and inject just the body content to avoid nested html tags
+        const parser = new DOMParser();
+        const parsedDoc = parser.parseFromString(htmlString, "text/html");
+        container.innerHTML = parsedDoc.body.innerHTML;
+        // Also inject styles from the parsed doc
+        parsedDoc.querySelectorAll("style").forEach((s) => {
+          const styleEl = document.createElement("style");
+          styleEl.textContent = s.textContent;
+          container.prepend(styleEl);
         });
+        document.body.appendChild(container);
+
+        const opt = {
+          margin: [10, 8, 10, 8],
+          filename: `Altus_Quote_${newQuote.id}.pdf`,
+          image: { type: "jpeg", quality: 0.98 },
+          html2canvas: { scale: 2, useCORS: true, logging: false, width: 794 },
+          jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+        };
+
+        html2pdf()
+          .from(container)
+          .set(opt)
+          .save()
+          .then(() => document.body.removeChild(container))
+          .catch((err: any) => {
+            console.error("Mobile PDF error:", err);
+            document.body.removeChild(container);
+          });
+
+      } else {
+        // ── DESKTOP: iframe srcdoc, A4 table layout ──
+        loadHtml2Pdf()
+          .then(() => {
+            const iframe = document.createElement("iframe");
+            iframe.style.position = "fixed";
+            iframe.style.left = "0";
+            iframe.style.top = "0";
+            iframe.style.width = "794px";
+            iframe.style.height = "1123px";
+            iframe.style.border = "none";
+            iframe.style.zIndex = "-9999";
+            iframe.style.opacity = "0";
+            iframe.style.pointerEvents = "none";
+
+            iframe.onload = () => {
+              const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+              if (!iframeDoc) {
+                console.error("Iframe document not accessible");
+                document.body.removeChild(iframe);
+                return;
+              }
+
+              iframeDoc.fonts.ready.then(() => {
+                setTimeout(() => {
+                  const opt = {
+                    margin: 10,
+                    filename: `Altus_Quote_${newQuote.id}.pdf`,
+                    image: { type: "jpeg", quality: 0.98 },
+                    html2canvas: { scale: 2, useCORS: true, logging: false },
+                    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
+                  };
+
+                  html2pdf()
+                    .from(iframeDoc.body)
+                    .set(opt)
+                    .save()
+                    .then(() => document.body.removeChild(iframe))
+                    .catch((err: any) => {
+                      console.error("PDF generation error:", err);
+                      document.body.removeChild(iframe);
+                    });
+                }, 300);
+              });
+            };
+
+            iframe.srcdoc = generateQuoteHtml(qId, dateToday);
+            document.body.appendChild(iframe);
+          })
+          .catch((err) => console.error("html2pdf failed to load:", err));
+      }
     } else {
       // Desktop: window.open + print
       const content = generateQuoteHtml(qId, dateToday);
