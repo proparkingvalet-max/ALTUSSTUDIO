@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from "react";
 import { getProjects, saveProjects, Project } from "@/app/utils/projects";
 import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
+import { useIsMobile } from "@/app/components/ui/use-mobile";
 import {
   LayoutDashboard,
   MessageSquare,
@@ -32,6 +33,7 @@ import {
   Send,
   MinusCircle,
   PlusCircle,
+  Menu,
 } from "lucide-react";
 
 const ADMIN_PASSWORD = "gate71337";
@@ -207,19 +209,38 @@ const navItems = [
   { id: "settings", label: "Ρυθμίσεις", icon: Settings },
 ];
 
-function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (s: string) => void; onLogout: () => void }) {
+function Sidebar({
+  active,
+  setActive,
+  onLogout,
+  isMobile,
+  isOpen,
+  onClose,
+}: {
+  active: string;
+  setActive: (s: string) => void;
+  onLogout: () => void;
+  isMobile?: boolean;
+  isOpen?: boolean;
+  onClose?: () => void;
+}) {
   return (
     <aside
       style={{
         width: 240,
         minHeight: "100vh",
+        height: isMobile ? "100vh" : "auto",
         background: "#0A0F1E",
         borderRight: "1px solid rgba(201,168,76,0.15)",
         display: "flex",
         flexDirection: "column",
         padding: "32px 0",
-        position: "sticky",
+        position: isMobile ? "fixed" : "sticky",
         top: 0,
+        left: isMobile ? (isOpen ? 0 : -240) : 0,
+        zIndex: 100,
+        transition: isMobile ? "left 0.3s ease" : "none",
+        boxShadow: isMobile && isOpen ? "0 0 40px rgba(0,0,0,0.8)" : "none",
         flexShrink: 0,
       }}
     >
@@ -244,7 +265,10 @@ function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (
           return (
             <button
               key={item.id}
-              onClick={() => setActive(item.id)}
+              onClick={() => {
+                setActive(item.id);
+                if (isMobile && onClose) onClose();
+              }}
               style={{
                 width: "100%",
                 display: "flex",
@@ -282,6 +306,9 @@ function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (
           href="/?preview=true"
           target="_blank"
           rel="noopener noreferrer"
+          onClick={() => {
+            if (isMobile && onClose) onClose();
+          }}
           style={{
             width: "100%",
             display: "flex",
@@ -310,7 +337,10 @@ function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (
       {/* Logout */}
       <div style={{ padding: "16px 12px", borderTop: "1px solid rgba(255,255,255,0.06)" }}>
         <button
-          onClick={onLogout}
+          onClick={() => {
+            onLogout();
+            if (isMobile && onClose) onClose();
+          }}
           style={{
             width: "100%",
             display: "flex",
@@ -339,6 +369,7 @@ function Sidebar({ active, setActive, onLogout }: { active: string; setActive: (
 // ─── Dashboard View ────────────────────────────────────────────────────────────
 
 function DashboardView() {
+  const isMobile = useIsMobile();
   const [messages, setMessages] = useState<any[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [pageViewsMonth, setPageViewsMonth] = useState<number | null>(null);
@@ -451,7 +482,7 @@ function DashboardView() {
       </div>
 
       {/* Stats Grid */}
-      <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "repeat(2, 1fr)" : "repeat(4, 1fr)", gap: 16, marginBottom: 32 }}>
         {dynamicStats.map((s) => {
           const Icon = s.icon;
           return (
@@ -483,7 +514,7 @@ function DashboardView() {
       </div>
 
       {/* Recent messages and Active Projects */}
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20 }}>
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
             <h3 style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>Πρόσφατα Μηνύματα</h3>
@@ -552,6 +583,7 @@ function DashboardView() {
 // ─── Messages View ─────────────────────────────────────────────────────────────
 
 function MessagesView() {
+  const isMobile = useIsMobile();
   const [messages, setMessages] = useState<any[]>([]);
   const [selected, setSelected] = useState<any | null>(null);
   const [reply, setReply] = useState("");
@@ -664,59 +696,82 @@ function MessagesView() {
         Μηνύματα
       </h1>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.6fr", gap: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.6fr", gap: 20 }}>
         {/* List */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden", maxHeight: "75vh", overflowY: "auto" }}>
-          {messages.map((msg) => (
-            <div
-              key={msg.id}
-              onClick={() => handleSelect(msg)}
-              style={{
-                padding: "16px 20px",
-                borderBottom: "1px solid rgba(255,255,255,0.06)",
-                cursor: "pointer",
-                background: selected?.id === msg.id ? "rgba(201,168,76,0.08)" : msg.read ? "transparent" : "rgba(255,255,255,0.03)",
-                borderLeft: selected?.id === msg.id ? "3px solid #C9A84C" : "3px solid transparent",
-                transition: "all 0.15s",
-              }}
-            >
-              <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
-                <span style={{ color: "#fff", fontSize: 14, fontWeight: msg.read ? 500 : 700 }}>{msg.name}</span>
-                <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{msg.date}</span>
+        {(!isMobile || !selected) && (
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden", maxHeight: "75vh", overflowY: "auto" }}>
+            {messages.map((msg) => (
+              <div
+                key={msg.id}
+                onClick={() => handleSelect(msg)}
+                style={{
+                  padding: "16px 20px",
+                  borderBottom: "1px solid rgba(255,255,255,0.06)",
+                  cursor: "pointer",
+                  background: selected?.id === msg.id ? "rgba(201,168,76,0.08)" : msg.read ? "transparent" : "rgba(255,255,255,0.03)",
+                  borderLeft: selected?.id === msg.id ? "3px solid #C9A84C" : "3px solid transparent",
+                  transition: "all 0.15s",
+                }}
+              >
+                <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4 }}>
+                  <span style={{ color: "#fff", fontSize: 14, fontWeight: msg.read ? 500 : 700 }}>{msg.name}</span>
+                  <span style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>{msg.date}</span>
+                </div>
+                <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginBottom: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                  {msg.message}
+                </div>
+                <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
+                  <span style={{ fontSize: 11, color: "#C9A84C", background: "rgba(201,168,76,0.1)", padding: "2px 8px", borderRadius: 999 }}>
+                    {msg.service}
+                  </span>
+                  <span style={{ fontSize: 11, color: statusColor[msg.status], background: `${statusColor[msg.status]}18`, padding: "2px 8px", borderRadius: 999 }}>
+                    {statusLabel[msg.status]}
+                  </span>
+                  {!msg.read && <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#3b82f6", display: "inline-block" }} />}
+                </div>
               </div>
-              <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginBottom: 8, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-                {msg.message}
-              </div>
-              <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                <span style={{ fontSize: 11, color: "#C9A84C", background: "rgba(201,168,76,0.1)", padding: "2px 8px", borderRadius: 999 }}>
-                  {msg.service}
-                </span>
-                <span style={{ fontSize: 11, color: statusColor[msg.status], background: `${statusColor[msg.status]}18`, padding: "2px 8px", borderRadius: 999 }}>
-                  {statusLabel[msg.status]}
-                </span>
-                {!msg.read && <span style={{ width: 7, height: 7, borderRadius: "50%", background: "#3b82f6", display: "inline-block" }} />}
-              </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Detail + Compose */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column" }}>
-          {selected ? (
-            <>
-              {/* Header */}
-              <div style={{ padding: "24px 28px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-                <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                  <div>
-                    <h2 style={{ color: "#fff", fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{selected.name}</h2>
-                    <a href={`mailto:${selected.email}`} style={{ color: "#C9A84C", fontSize: 13, textDecoration: "none" }}>{selected.email}</a>
-                    <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, margin: "0 8px" }}>·</span>
-                    <a href={`tel:${selected.phone}`} style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, textDecoration: "none" }}>{selected.phone}</a>
+        {(!isMobile || selected) && (
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden", display: "flex", flexDirection: "column" }}>
+            {selected ? (
+              <>
+                {/* Back button on mobile */}
+                {isMobile && (
+                  <div style={{ padding: "16px 20px 0" }}>
+                    <button
+                      onClick={() => setSelected(null)}
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: 8,
+                        padding: "6px 12px",
+                        color: "#C9A84C",
+                        cursor: "pointer",
+                        fontSize: 13,
+                        fontWeight: 600,
+                      }}
+                    >
+                      ← Πίσω στα Μηνύματα
+                    </button>
                   </div>
-                  <button onClick={() => deleteMsg(selected.id)} style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "7px 12px", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", gap: 6, fontSize: 12 }}>
-                    <Trash2 size={13} /> Διαγραφή
-                  </button>
-                </div>
+                )}
+                {/* Header */}
+                <div style={{ padding: "24px 28px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "flex-start", gap: isMobile ? 16 : 0 }}>
+                    <div>
+                      <h2 style={{ color: "#fff", fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{selected.name}</h2>
+                      <a href={`mailto:${selected.email}`} style={{ color: "#C9A84C", fontSize: 13, textDecoration: "none" }}>{selected.email}</a>
+                      <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, margin: "0 8px" }}>·</span>
+                      <a href={`tel:${selected.phone}`} style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, textDecoration: "none" }}>{selected.phone}</a>
+                    </div>
+                    <button onClick={() => deleteMsg(selected.id)} style={{ background: "rgba(239,68,68,0.1)", border: "1px solid rgba(239,68,68,0.2)", borderRadius: 8, padding: "7px 12px", cursor: "pointer", color: "#ef4444", display: "flex", alignItems: "center", justifyContent: "center", gap: 6, fontSize: 12, alignSelf: isMobile ? "flex-start" : "auto" }}>
+                      <Trash2 size={13} /> Διαγραφή
+                    </button>
+                  </div>
 
                 {/* Status changer */}
                 <div style={{ display: "flex", gap: 6, marginTop: 14 }}>
@@ -837,6 +892,7 @@ function MessagesView() {
             </div>
           )}
         </div>
+      )}
       </div>
     </div>
   );
@@ -846,6 +902,7 @@ function MessagesView() {
 // ─── Projects View ─────────────────────────────────────────────────────────────
 
 function ProjectsView() {
+  const isMobile = useIsMobile();
   const [projects, setProjects] = useState<Project[]>([]);
   const [filter, setFilter] = useState("Όλα");
   const [editingProject, setEditingProject] = useState<Project | null>(null);
@@ -936,24 +993,21 @@ function ProjectsView() {
   };
 
   const handleSave = () => {
-    if (!formName.trim()) {
-      alert("Παρακαλώ εισάγετε όνομα έργου.");
-      return;
-    }
+    if (!formName.trim()) return;
 
     const tagsArray = formTags
       .split(",")
       .map((t) => t.trim())
-      .filter((t) => t.length > 0);
+      .filter(Boolean);
     const galleryArray = formGallery
       .split(",")
       .map((g) => g.trim())
-      .filter((g) => g.length > 0);
+      .filter(Boolean);
 
     const updatedProjects = [...projects];
 
     if (editingProject && editingProject.id) {
-      // Edit mode
+      // Editing
       const idx = updatedProjects.findIndex((p) => p.id === editingProject.id);
       if (idx !== -1) {
         updatedProjects[idx] = {
@@ -967,13 +1021,34 @@ function ProjectsView() {
           gallery: galleryArray,
           results: formResults,
           isLive: formIsLive,
-          liveUrl: formLiveUrl,
+          liveUrl: formIsLive ? formLiveUrl : "",
         };
       }
+
+      if (isSupabaseConfigured && supabase) {
+        supabase
+          .from("projects")
+          .update({
+            name: formName,
+            category: formCategory,
+            tags: tagsArray,
+            year: formYear,
+            description: formDescription,
+            img: formImg,
+            gallery: galleryArray,
+            results: formResults,
+            is_live: formIsLive,
+            live_url: formIsLive ? formLiveUrl : "",
+          })
+          .eq("id", editingProject.id)
+          .then(({ error }) => {
+            if (error) console.error("Error updating project in Supabase:", error);
+          });
+      }
     } else {
-      // Add mode
+      // Creating
       const newProj: Project = {
-        id: "project-" + Date.now(),
+        id: "p_" + Date.now().toString(),
         name: formName,
         category: formCategory,
         tags: tagsArray,
@@ -983,9 +1058,32 @@ function ProjectsView() {
         gallery: galleryArray,
         results: formResults,
         isLive: formIsLive,
-        liveUrl: formLiveUrl,
+        liveUrl: formIsLive ? formLiveUrl : "",
       };
-      updatedProjects.push(newProj);
+      updatedProjects.unshift(newProj);
+
+      if (isSupabaseConfigured && supabase) {
+        supabase
+          .from("projects")
+          .insert([
+            {
+              id: newProj.id,
+              name: formName,
+              category: formCategory,
+              tags: tagsArray,
+              year: formYear,
+              description: formDescription,
+              img: formImg,
+              gallery: galleryArray,
+              results: formResults,
+              is_live: formIsLive,
+              live_url: formIsLive ? formLiveUrl : "",
+            },
+          ])
+          .then(({ error }) => {
+            if (error) console.error("Error inserting project to Supabase:", error);
+          });
+      }
     }
 
     setProjects(updatedProjects);
@@ -994,7 +1092,7 @@ function ProjectsView() {
   };
 
   const handleDelete = (id: string) => {
-    if (confirm("Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το έργο;")) {
+    if (confirm("Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το project;")) {
       const updated = projects.filter((p) => p.id !== id);
       setProjects(updated);
       saveProjects(updated);
@@ -1005,7 +1103,7 @@ function ProjectsView() {
           .delete()
           .eq("id", id)
           .then(({ error }) => {
-            if (error) console.error("Failed to delete project from Supabase:", error);
+            if (error) console.error("Error deleting project in Supabase:", error);
           });
       }
     }
@@ -1021,7 +1119,7 @@ function ProjectsView() {
   if (editingProject) {
     return (
       <div>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 0, marginBottom: 24 }}>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>
             {editingProject.id ? "Επεξεργασία Έργου" : "Νέο Έργο"}
           </h1>
@@ -1034,15 +1132,16 @@ function ProjectsView() {
               borderRadius: 10,
               color: "rgba(255,255,255,0.6)",
               cursor: "pointer",
-              fontSize: 13
+              fontSize: 13,
+              alignSelf: isMobile ? "flex-start" : "auto",
             }}
           >
             Ακύρωση
           </button>
         </div>
 
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 32 }}>
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20, marginBottom: 20 }}>
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: isMobile ? 16 : 32 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20, marginBottom: 20 }}>
             {/* Left Column */}
             <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
               <div>
@@ -1140,7 +1239,7 @@ function ProjectsView() {
                   style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#C9A84C" }}
                 />
                 <label htmlFor="formIsLive" style={{ color: "#fff", fontSize: 14, cursor: "pointer", userSelect: "none" }}>
-                  Είναι Live Project (Εμφάνιση πράσινης ένδειξης)
+                  Είναι Live Project (Εμφάνιση πράσινης ένδευξης)
                 </label>
               </div>
 
@@ -1196,11 +1295,11 @@ function ProjectsView() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 0, marginBottom: 24 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>
           Projects
         </h1>
-        <div style={{ display: "flex", gap: 12 }}>
+        <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
           {/* Add Project Button */}
           <button
             onClick={openNew}
@@ -1242,8 +1341,8 @@ function ProjectsView() {
         </div>
       </div>
 
-      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
+      <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", minWidth: isMobile ? 700 : "auto" }}>
           <thead>
             <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
               {["Project", "Κατηγορία", "Tags / Έτος", "Αποτέλεσμα", "Status", ""].map((h) => (
@@ -1306,6 +1405,7 @@ function ProjectsView() {
 // ─── Analytics View ────────────────────────────────────────────────────────────
 
 function AnalyticsView() {
+  const isMobile = useIsMobile();
   const [views, setViews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -1371,14 +1471,14 @@ function AnalyticsView() {
       ) : (
         <>
           {/* Summary Cards */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
             {[
               { label: "Σελιδοπροβολές Μήνα", value: totalMonth.toLocaleString("el-GR"), icon: Eye, color: "#C9A84C" },
               { label: "Σελιδοπροβολές Σήμερα", value: totalToday.toLocaleString("el-GR"), icon: TrendingUp, color: "#22c55e" },
             ].map((s) => {
               const Icon = s.icon;
               return (
-                <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: "24px 28px", display: "flex", alignItems: "center", gap: 16 }}>
+                <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: isMobile ? "16px 20px" : "24px 28px", display: "flex", alignItems: "center", gap: 16 }}>
                   <div style={{ width: 48, height: 48, borderRadius: 12, background: `${s.color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
                     <Icon size={22} color={s.color} />
                   </div>
@@ -1392,14 +1492,14 @@ function AnalyticsView() {
           </div>
 
           {/* Bar Chart — last 7 days */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28, marginBottom: 20 }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: isMobile ? 16 : 28, marginBottom: 20 }}>
             <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Τελευταίες 7 μέρες</div>
             {last7.every((d) => d.count === 0) ? (
               <div style={{ textAlign: "center", padding: "32px 0", color: "rgba(255,255,255,0.2)", fontSize: 14 }}>
                 Δεν υπάρχουν δεδομένα ακόμα — αναμένουμε επισκέπτες!
               </div>
             ) : (
-              <div style={{ display: "flex", alignItems: "flex-end", gap: 10, height: 140 }}>
+              <div style={{ display: "flex", alignItems: "flex-end", gap: isMobile ? 6 : 10, height: 140 }}>
                 {last7.map((d) => (
                   <div key={d.date} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 6 }}>
                     <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 11 }}>{d.count > 0 ? d.count : ""}</div>
@@ -1420,7 +1520,7 @@ function AnalyticsView() {
           </div>
 
           {/* Top Pages */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: isMobile ? 16 : 28 }}>
             <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Top Σελίδες</div>
             {topPages.length === 0 ? (
               <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 14, textAlign: "center", padding: "16px 0" }}>Δεν υπάρχουν δεδομένα ακόμα</div>
@@ -1647,6 +1747,7 @@ function SettingsView() {
 // ─── CRM View ─────────────────────────────────────────────────────────────────
 
 function CRMView() {
+  const isMobile = useIsMobile();
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -1723,7 +1824,7 @@ function CRMView() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 0, marginBottom: 24 }}>
         <div>
           <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>Πελάτες</h1>
           {loading ? (
@@ -1732,7 +1833,7 @@ function CRMView() {
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>{clients.length} πελάτες συνολικά</p>
           )}
         </div>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
           {["all", "active", "in-progress", "lead"].map((f) => (
             <button
               key={f}
@@ -1743,6 +1844,7 @@ function CRMView() {
                 background: filter === f ? "rgba(201,168,76,0.1)" : "transparent",
                 color: filter === f ? "#C9A84C" : "rgba(255,255,255,0.45)",
                 cursor: "pointer", fontSize: 13,
+                flex: isMobile ? 1 : "auto",
               }}
             >
               {f === "all" ? "Όλοι" : clientStatus[f]?.label}
@@ -1751,61 +1853,84 @@ function CRMView() {
         </div>
       </div>
 
-      <div style={{ display: "grid", gridTemplateColumns: "1fr 1.5fr", gap: 20 }}>
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.5fr", gap: 20 }}>
         {/* Client list */}
-        <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-          {filtered.map((c) => (
-            <div
-              key={c.id}
-              onClick={() => setSelected(c)}
-              style={{
-                background: selected?.id === c.id ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
-                border: `1px solid ${selected?.id === c.id ? "rgba(201,168,76,0.3)" : "rgba(255,255,255,0.08)"}`,
-                borderRadius: 14, padding: "16px 18px", cursor: "pointer", transition: "all 0.15s",
-              }}
-            >
-              <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(201,168,76,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#C9A84C", fontWeight: 700, flexShrink: 0 }}>
-                  {c.name[0]}
-                </div>
-                <div style={{ flex: 1, minWidth: 0 }}>
-                  <div style={{ color: "#fff", fontWeight: 600, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</div>
-                  <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{c.business}</div>
-                </div>
-                <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
-                  <span style={{ fontSize: 13, fontWeight: 700, color: "#C9A84C" }}>{c.totalValue}</span>
-                  <span style={{ fontSize: 11, color: clientStatus[c.status]?.color, background: `${clientStatus[c.status]?.color}18`, padding: "2px 8px", borderRadius: 999 }}>{clientStatus[c.status]?.label}</span>
+        {(!isMobile || !selected) && (
+          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            {filtered.map((c) => (
+              <div
+                key={c.id}
+                onClick={() => setSelected(c)}
+                style={{
+                  background: selected?.id === c.id ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${selected?.id === c.id ? "rgba(201,168,76,0.3)" : "rgba(255,255,255,0.08)"}`,
+                  borderRadius: 14, padding: "16px 18px", cursor: "pointer", transition: "all 0.15s",
+                }}
+              >
+                <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                  <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(201,168,76,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#C9A84C", fontWeight: 700, flexShrink: 0 }}>
+                    {c.name[0]}
+                  </div>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ color: "#fff", fontWeight: 600, fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{c.name}</div>
+                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{c.business}</div>
+                  </div>
+                  <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#C9A84C" }}>{c.totalValue}</span>
+                    <span style={{ fontSize: 11, color: clientStatus[c.status]?.color, background: `${clientStatus[c.status]?.color}18`, padding: "2px 8px", borderRadius: 999 }}>{clientStatus[c.status]?.label}</span>
+                  </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
 
         {/* Client detail */}
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden" }}>
-          {selected ? (
-            <>
-              {/* Profile header */}
-              <div style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.03))", padding: "28px 28px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
-                  <div style={{ width: 60, height: 60, borderRadius: "50%", background: "rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: "#C9A84C", fontWeight: 700, border: "2px solid rgba(201,168,76,0.3)" }}>
-                    {selected.name[0]}
+        {(!isMobile || selected) && (
+          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden" }}>
+            {selected ? (
+              <>
+                {/* Back button on mobile */}
+                {isMobile && (
+                  <div style={{ padding: "16px 20px 0" }}>
+                    <button
+                      onClick={() => setSelected(null)}
+                      style={{
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: 8,
+                        padding: "6px 12px",
+                        color: "#C9A84C",
+                        cursor: "pointer",
+                        fontSize: 13,
+                        fontWeight: 600,
+                      }}
+                    >
+                      ← Πίσω στους Πελάτες
+                    </button>
                   </div>
-                  <div>
-                    <h2 style={{ color: "#fff", fontSize: 20, fontWeight: 700, marginBottom: 2 }}>{selected.name}</h2>
-                    <div style={{ display: "flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.45)", fontSize: 13 }}>
-                      <Building2 size={13} /> {selected.business}
+                )}
+                {/* Profile header */}
+                <div style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.03))", padding: "28px 28px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                  <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "stretch" : "center", gap: 16 }}>
+                    <div style={{ width: 60, height: 60, borderRadius: "50%", background: "rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: "#C9A84C", fontWeight: 700, border: "2px solid rgba(201,168,76,0.3)", alignSelf: isMobile ? "flex-start" : "auto" }}>
+                      {selected.name[0]}
                     </div>
+                    <div>
+                      <h2 style={{ color: "#fff", fontSize: 20, fontWeight: 700, marginBottom: 2 }}>{selected.name}</h2>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6, color: "rgba(255,255,255,0.45)", fontSize: 13 }}>
+                        <Building2 size={13} /> {selected.business}
+                      </div>
+                    </div>
+                    <span style={{ marginLeft: isMobile ? 0 : "auto", alignSelf: isMobile ? "flex-start" : "center", fontSize: 12, color: clientStatus[selected.status]?.color, background: `${clientStatus[selected.status]?.color}18`, padding: "4px 12px", borderRadius: 999, border: `1px solid ${clientStatus[selected.status]?.color}40` }}>
+                      {clientStatus[selected.status]?.label}
+                    </span>
                   </div>
-                  <span style={{ marginLeft: "auto", fontSize: 12, color: clientStatus[selected.status]?.color, background: `${clientStatus[selected.status]?.color}18`, padding: "4px 12px", borderRadius: 999, border: `1px solid ${clientStatus[selected.status]?.color}40` }}>
-                    {clientStatus[selected.status]?.label}
-                  </span>
                 </div>
-              </div>
 
-              <div style={{ padding: 28 }}>
-                {/* Contact info */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 24 }}>
+                <div style={{ padding: 28 }}>
+                  {/* Contact info */}
+                  <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 12, marginBottom: 24 }}>
                   {[
                     { icon: Mail, label: "Email", value: selected.email, href: `mailto:${selected.email}` },
                     { icon: Phone, label: "Τηλέφωνο", value: selected.phone, href: `tel:${selected.phone}` },
@@ -1851,6 +1976,7 @@ function CRMView() {
             </div>
           )}
         </div>
+      )}
       </div>
     </div>
   );
@@ -1912,6 +2038,7 @@ const packageDeliverables: Record<string, { titleEl: string; titleEn: string; pr
 const savedQuotes: any[] = [];
 
 function QuotesView() {
+  const isMobile = useIsMobile();
   const [tab, setTab] = useState<"list" | "new">("list");
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
@@ -2006,9 +2133,9 @@ function QuotesView() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 24 }}>
+      <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 0, marginBottom: 24 }}>
         <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>Προσφορές</h1>
-        <div style={{ display: "flex", gap: 8 }}>
+        <div style={{ display: "flex", gap: 8, alignSelf: isMobile ? "flex-start" : "auto" }}>
           <button onClick={() => setTab("list")} style={{ padding: "9px 18px", borderRadius: 10, border: `1px solid ${tab === "list" ? "#C9A84C" : "rgba(255,255,255,0.1)"}`, background: tab === "list" ? "rgba(201,168,76,0.1)" : "transparent", color: tab === "list" ? "#C9A84C" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 13 }}>Ιστορικό</button>
           <button onClick={() => setTab("new")} style={{ padding: "9px 18px", borderRadius: 10, border: "1px solid #C9A84C", background: "rgba(201,168,76,0.15)", color: "#C9A84C", cursor: "pointer", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
             <Plus size={14} /> Νέα Προσφορά
@@ -2017,7 +2144,7 @@ function QuotesView() {
       </div>
 
       {tab === "list" ? (
-        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden" }}>
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflowX: "auto" }}>
           {savedQuotes.length === 0 ? (
             <div style={{ padding: "60px 20px", textAlign: "center", color: "rgba(255,255,255,0.25)" }}>
               <FileText size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
@@ -2025,7 +2152,7 @@ function QuotesView() {
               <p style={{ margin: "6px 0 0", fontSize: 13 }}>Πατήστε «Νέα Προσφορά» για να δημιουργήσετε την πρώτη</p>
             </div>
           ) : (
-          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: isMobile ? 650 : "auto" }}>
             <thead>
               <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
                 {["#", "Πελάτης", "Ημ/νία", "Σύνολο", "Status", ""].map((h) => (
@@ -2058,7 +2185,7 @@ function QuotesView() {
           )}
         </div>
       ) : (
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1.2fr", gap: 20 }}>
+        <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1.2fr", gap: 20 }}>
           {/* Left: services selector */}
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Client info */}
@@ -2081,7 +2208,7 @@ function QuotesView() {
             {/* Package Selector */}
             <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
               <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Πακέτο Υπηρεσίας</div>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
+              <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
                 {[
                   { id: "landing", label: "Landing Page", name: "Landing Page", price: 250 },
                   { id: "website", label: "Corporate Site", name: "Κατασκευή Ιστοσελίδας", price: 350 },
@@ -2241,6 +2368,8 @@ function QuotesView() {
 export function AdminPage() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [activeSection, setActiveSection] = useState("dashboard");
+  const isMobile = useIsMobile();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   // Persist session and clean up old mock cache
   useEffect(() => {
@@ -2291,24 +2420,93 @@ export function AdminPage() {
     <div
       style={{
         display: "flex",
+        flexDirection: isMobile ? "column" : "row",
         minHeight: "100vh",
         background: "#0d1117",
         fontFamily: "'DM Sans', sans-serif",
       }}
     >
-      <Sidebar active={activeSection} setActive={setActiveSection} onLogout={handleLogout} />
+      {/* Backdrop overlay for mobile sidebar drawer */}
+      {isMobile && menuOpen && (
+        <div
+          onClick={() => setMenuOpen(false)}
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0, 0, 0, 0.5)",
+            backdropFilter: "blur(4px)",
+            zIndex: 90,
+          }}
+        />
+      )}
 
-      <main style={{ flex: 1, padding: "40px 48px", overflowY: "auto" }}>
-        {/* Top bar */}
-        <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 32, gap: 12 }}>
-          <button style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "8px 12px", cursor: "pointer", color: "rgba(255,255,255,0.5)", display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
-            <Bell size={15} /> Ειδοποιήσεις
+      {/* Sticky Mobile Header */}
+      {isMobile && (
+        <header
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 80,
+            height: 60,
+            background: "#0A0F1E",
+            borderBottom: "1px solid rgba(201,168,76,0.15)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 16px",
+          }}
+        >
+          <button
+            onClick={() => setMenuOpen(true)}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#C9A84C",
+              cursor: "pointer",
+              display: "flex",
+              alignItems: "center",
+              padding: 8,
+            }}
+          >
+            <Menu size={24} />
           </button>
-          <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "8px 14px" }}>
-            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#C9A84C", fontWeight: 700 }}>A</div>
-            <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>Admin</span>
+          
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <Globe size={18} color="#C9A84C" />
+            <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: 13, fontFamily: "'Playfair Display', serif", letterSpacing: "0.05em" }}>ALTUS ADMIN</span>
           </div>
-        </div>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#C9A84C", fontWeight: 700 }}>A</div>
+          </div>
+        </header>
+      )}
+
+      <Sidebar
+        active={activeSection}
+        setActive={setActiveSection}
+        onLogout={handleLogout}
+        isMobile={isMobile}
+        isOpen={menuOpen}
+        onClose={() => setMenuOpen(false)}
+      />
+
+      <main style={{ flex: 1, padding: isMobile ? "24px 16px" : "40px 48px", overflowY: "auto" }}>
+        {/* Top bar - Desktop only */}
+        {!isMobile && (
+          <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 32, gap: 12 }}>
+            <button style={{ background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "8px 12px", cursor: "pointer", color: "rgba(255,255,255,0.5)", display: "flex", alignItems: "center", gap: 6, fontSize: 13 }}>
+              <Bell size={15} /> Ειδοποιήσεις
+            </button>
+            <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "8px 14px" }}>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#C9A84C", fontWeight: 700 }}>A</div>
+              <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>Admin</span>
+            </div>
+          </div>
+        )}
 
         {renderContent()}
       </main>
