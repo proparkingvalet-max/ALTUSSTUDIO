@@ -82,12 +82,16 @@ export function QuoteEstimator() {
     const compLabel = complexity === "basic" ? "Βασικό" : complexity === "medium" ? "Μεσαίο (έως 10 σελίδες)" : "Premium / Large Scale";
     const selectedAddsList = addons.filter((a) => selectedAddons.includes(a.id)).map((a) => a.nameEl).join(", ");
 
+    const totalCost = calculateTotal();
+    const qId = "Q" + Math.floor(1000 + Math.random() * 9000);
+    const dateToday = new Date().toLocaleDateString("el-GR");
+
     const payload = {
       name,
       email,
       phone,
       service: `Προσφορά: ${typeLabel}`,
-      message: `Αυτόματη εκτίμηση κόστους: €${calculateTotal()}
+      message: `Αυτόματη εκτίμηση κόστους: €${totalCost}
 --
 Τύπος: ${typeLabel}
 Πολυπλοκότητα: ${compLabel}
@@ -97,34 +101,69 @@ export function QuoteEstimator() {
       status: "new"
     };
 
+    const quotePayload = {
+      id: qId,
+      client: name,
+      email: email,
+      phone: phone || "",
+      date: dateToday,
+      total: totalCost,
+      status: "pending",
+      items: [
+        {
+          name: `${typeLabel} (${compLabel})`,
+          price: basePrices[projectType || "website"] + complexityPrices[complexity || "basic"],
+          qty: 1
+        },
+        ...addons
+          .filter((a) => selectedAddons.includes(a.id))
+          .map((a) => ({
+            name: a.nameEl,
+            price: a.price,
+            qty: 1
+          }))
+      ],
+      note: `Υποβλήθηκε από τον Κοστολογητή στις δημόσιες σελίδες.`
+    };
+
+    const saveToLocalStorage = () => {
+      try {
+        const existingMessagesRaw = localStorage.getItem("altus_messages");
+        const existingMessages = existingMessagesRaw ? JSON.parse(existingMessagesRaw) : [];
+        const newMessage = { id: Date.now(), ...payload };
+        localStorage.setItem("altus_messages", JSON.stringify([newMessage, ...existingMessages]));
+
+        const existingQuotesRaw = localStorage.getItem("altus_quotes");
+        const existingQuotes = existingQuotesRaw ? JSON.parse(existingQuotesRaw) : [];
+        localStorage.setItem("altus_quotes", JSON.stringify([quotePayload, ...existingQuotes]));
+
+        window.dispatchEvent(new Event("storage"));
+      } catch (err) {
+        console.error("Failed to save estimator quote lead locally:", err);
+      }
+    };
+
     if (isSupabaseConfigured && supabase) {
       supabase
         .from("messages")
         .insert([payload])
-        .then(({ error }) => {
-          if (error) {
-            console.error("Error submitting quote lead to Supabase:", error);
-          }
-          setSending(false);
-          setSubmitted(true);
+        .then(({ error: msgError }) => {
+          if (msgError) console.error("Error submitting quote lead to Supabase:", msgError);
+          
+          supabase
+            .from("quotes")
+            .insert([quotePayload])
+            .then(({ error: quoteError }) => {
+              if (quoteError) console.error("Error submitting quote details to Supabase:", quoteError);
+              
+              saveToLocalStorage();
+              setSending(false);
+              setSubmitted(true);
+            });
         });
     } else {
       setTimeout(() => {
-        try {
-          const existingMessagesRaw = localStorage.getItem("altus_messages");
-          const existingMessages = existingMessagesRaw ? JSON.parse(existingMessagesRaw) : [];
-          
-          const newMessage = {
-            id: Date.now(),
-            ...payload
-          };
-          
-          const updatedMessages = [newMessage, ...existingMessages];
-          localStorage.setItem("altus_messages", JSON.stringify(updatedMessages));
-        } catch (err) {
-          console.error("Failed to save estimator quote lead:", err);
-        }
-        
+        saveToLocalStorage();
         setSending(false);
         setSubmitted(true);
       }, 1200);

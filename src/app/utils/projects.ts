@@ -63,6 +63,46 @@ export const defaultProjects: Project[] = [
   },
 ];
 
+export function mapSupabaseProject(p: any): Project {
+  let img = p.img || "";
+  let gallery = Array.isArray(p.gallery) ? p.gallery : [];
+  
+  // Fallbacks for default projects if they contain the Unsplash placeholder or are empty
+  if (p.id === "project-1") {
+    if (!img || img.includes("unsplash.com/photo-1506015391300-4802dc74de2e")) {
+      img = ppHero;
+    }
+    if (gallery.length === 0 || (gallery.length === 1 && gallery[0].includes("unsplash.com/photo-1506015391300-4802dc74de2e"))) {
+      gallery = [ppHero, ppBooking, ppMarina];
+    }
+  } else if (p.id === "project-2") {
+    if (!img) img = eshopPreview;
+    if (gallery.length === 0) gallery = [eshopPreview, eshopProduct];
+  } else if (p.id === "project-3") {
+    if (!img) img = resortPreview;
+    if (gallery.length === 0) gallery = [resortPreview, resortBooking];
+  }
+
+  let liveUrl = p.live_url || p.liveUrl || "";
+  if (!liveUrl && p.id === "project-1") {
+    liveUrl = "https://proparkingvalet.gr";
+  }
+
+  return {
+    id: p.id,
+    name: p.name || p.title || "Unnamed Project",
+    category: p.category || "Website",
+    tags: Array.isArray(p.tags) ? p.tags : [],
+    year: p.year || "",
+    description: p.description || "",
+    img: img,
+    results: p.results || "",
+    isLive: p.is_live !== undefined ? !!p.is_live : !!p.isLive,
+    gallery: gallery,
+    liveUrl: liveUrl,
+  };
+}
+
 export function getProjects(): Project[] {
   // Async background sync with Supabase if configured
   if (isSupabaseConfigured && supabase) {
@@ -71,22 +111,53 @@ export function getProjects(): Project[] {
       .select("*")
       .then(({ data, error }) => {
         if (!error && data) {
-          const mapped = data.map((p: any) => ({
-            id: p.id,
-            name: p.name,
-            category: p.category,
-            tags: p.tags || [],
-            year: p.year || "",
-            description: p.description || "",
-            img: p.img || "",
-            results: p.results || "",
-            isLive: !!p.is_live,
-            gallery: p.gallery || [],
-            liveUrl: p.live_url || "",
-          }));
-          localStorage.setItem("altus_projects", JSON.stringify(mapped));
+          const mapped = data.map(mapSupabaseProject);
+          
+          // Merge with current local projects to avoid deleting unsynced ones
+          const localStored = localStorage.getItem("altus_projects");
+          let currentList = defaultProjects;
+          if (localStored) {
+            try {
+              const parsed = JSON.parse(localStored);
+              if (Array.isArray(parsed)) currentList = parsed;
+            } catch (e) {}
+          }
+          
+          const merged = [...mapped];
+          const missingInDb: Project[] = [];
+          for (const localProj of currentList) {
+            if (!mapped.some((dbP) => dbP.id === localProj.id)) {
+              merged.push(localProj);
+              missingInDb.push(localProj);
+            }
+          }
+
+          localStorage.setItem("altus_projects", JSON.stringify(merged));
           // Notify components list to re-render
           window.dispatchEvent(new Event("storage"));
+
+          if (missingInDb.length > 0) {
+            const dbPayload = missingInDb.map((p) => ({
+              id: p.id,
+              name: p.name,
+              category: p.category,
+              tags: p.tags || [],
+              year: p.year || "",
+              description: p.description || "",
+              img: p.img && !p.img.startsWith("data:") && !p.img.startsWith("blob:") ? p.img : "",
+              results: p.results || "",
+              is_live: p.isLive,
+              gallery: p.gallery || [],
+              live_url: p.liveUrl || "",
+            }));
+
+            supabase
+              .from("projects")
+              .insert(dbPayload)
+              .then(({ error }) => {
+                if (error) console.error("Error syncing missing projects to Supabase:", error);
+              });
+          }
         }
       });
   }
@@ -99,17 +170,29 @@ export function getProjects(): Project[] {
   try {
     const parsed = JSON.parse(stored);
     if (Array.isArray(parsed)) {
-      const hasProParking = parsed.some(p => p.name === "PRO Parking Valet" || p.title === "PRO Parking Valet");
-      if (!hasProParking) {
-        localStorage.setItem("altus_projects", JSON.stringify(defaultProjects));
-        return defaultProjects;
-      }
-
       return parsed.map((p: any) => {
+        let img = p.img || "";
+        let gallery = Array.isArray(p.gallery) ? p.gallery : [];
+        if (p.id === "project-1") {
+          if (!img || img.includes("unsplash.com/photo-1506015391300-4802dc74de2e")) {
+            img = ppHero;
+          }
+          if (gallery.length === 0 || (gallery.length === 1 && gallery[0].includes("unsplash.com/photo-1506015391300-4802dc74de2e"))) {
+            gallery = [ppHero, ppBooking, ppMarina];
+          }
+        } else if (p.id === "project-2") {
+          if (!img) img = eshopPreview;
+          if (gallery.length === 0) gallery = [eshopPreview, eshopProduct];
+        } else if (p.id === "project-3") {
+          if (!img) img = resortPreview;
+          if (gallery.length === 0) gallery = [resortPreview, resortBooking];
+        }
+
         let liveUrl = p.liveUrl || "";
-        if (!liveUrl && (p.name === "PRO Parking Valet" || p.title === "PRO Parking Valet")) {
+        if (!liveUrl && p.id === "project-1") {
           liveUrl = "https://proparkingvalet.gr";
         }
+
         return {
           id: p.id || "project-" + Math.random(),
           name: p.name || p.title || "Unnamed Project",
@@ -117,10 +200,10 @@ export function getProjects(): Project[] {
           tags: Array.isArray(p.tags) ? p.tags : [],
           year: p.year || "",
           description: p.description || "",
-          img: p.img || "",
+          img: img,
           results: p.results || "",
-          isLive: !!p.isLive,
-          gallery: Array.isArray(p.gallery) ? p.gallery : [],
+          isLive: p.isLive !== undefined ? !!p.isLive : !!p.is_live,
+          gallery: gallery,
           liveUrl: liveUrl,
         };
       });
@@ -143,7 +226,7 @@ export function saveProjects(projects: Project[]): void {
       tags: p.tags || [],
       year: p.year || "",
       description: p.description || "",
-      img: p.img || "",
+      img: p.img && !p.img.startsWith("data:") && !p.img.startsWith("blob:") ? p.img : "",
       results: p.results || "",
       is_live: p.isLive,
       gallery: p.gallery || [],
@@ -160,3 +243,4 @@ export function saveProjects(projects: Project[]): void {
       });
   }
 }
+

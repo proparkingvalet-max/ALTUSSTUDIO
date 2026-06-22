@@ -10,6 +10,29 @@ import { CustomCursor } from "./CustomCursor";
 import { MaintenancePage } from "./MaintenancePage";
 import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
 
+function getDeviceType() {
+  const ua = navigator.userAgent;
+  if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(ua)) {
+    return "Tablet";
+  }
+  if (/Mobile|iP(hone|od)|Android|BlackBerry|IEMobile|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/i.test(ua)) {
+    return "Mobile";
+  }
+  return "Desktop";
+}
+
+function getReferrer() {
+  const ref = document.referrer;
+  if (!ref) return "Direct";
+  try {
+    const url = new URL(ref);
+    if (url.hostname === window.location.hostname) return "Internal";
+    return url.hostname;
+  } catch (e) {
+    return "Other";
+  }
+}
+
 export function Root() {
   const { pathname } = useLocation();
   const [scrollProgress, setScrollProgress] = useState(0);
@@ -89,18 +112,39 @@ export function Root() {
     window.scrollTo({ top: 0, behavior: "instant" });
   }, [pathname]);
 
-  // 3. Track real page views in Supabase (skip admin routes & admin sessions)
+  // 3. Track real page views in Supabase & localStorage (skip admin routes & admin sessions)
   useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) return;
     if (isAdmin) return; // Don't count admin previews
     if (pathname.startsWith("/admin")) return; // Don't count admin page
 
-    supabase
-      .from("page_views")
-      .insert({ path: pathname, date: new Date().toISOString().split("T")[0] })
-      .then(({ error }) => {
-        if (error) console.warn("Page view tracking error:", error.message);
+    const device = getDeviceType();
+    const referrer = getReferrer();
+    const date = new Date().toISOString().split("T")[0];
+    const viewPayload = { path: pathname, date, device, referrer };
+
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("page_views")
+        .insert(viewPayload)
+        .then(({ error }) => {
+          if (error) console.warn("Page view tracking error:", error.message);
+        });
+    }
+
+    // Fallback/Testing cache always logged locally
+    try {
+      const cached = localStorage.getItem("altus_page_views");
+      const list = cached ? JSON.parse(cached) : [];
+      list.push({
+        id: "view-" + Date.now() + Math.random().toString(36).substr(2, 9),
+        created_at: new Date().toISOString(),
+        ...viewPayload
       });
+      if (list.length > 1000) list.shift();
+      localStorage.setItem("altus_page_views", JSON.stringify(list));
+    } catch (e) {
+      console.warn("Failed to write page view to localStorage:", e);
+    }
   }, [pathname, isAdmin]);
 
   useEffect(() => {

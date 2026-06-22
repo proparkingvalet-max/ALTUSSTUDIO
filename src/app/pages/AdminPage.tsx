@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { getProjects, saveProjects, Project } from "@/app/utils/projects";
+import { getProjects, saveProjects, mapSupabaseProject, Project } from "@/app/utils/projects";
 import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
 import { useIsMobile } from "@/app/components/ui/use-mobile";
 import {
@@ -410,19 +410,7 @@ function DashboardView() {
         .order("created_at", { ascending: false })
         .then(({ data, error }) => {
           if (!error && data) {
-            const mapped = data.map((p: any) => ({
-              id: p.id,
-              name: p.name,
-              category: p.category,
-              tags: p.tags || [],
-              year: p.year || "",
-              description: p.description || "",
-              img: p.img || "",
-              results: p.results || "",
-              isLive: !!p.is_live,
-              gallery: p.gallery || [],
-              liveUrl: p.live_url || "",
-            }));
+            const mapped = data.map(mapSupabaseProject);
             setProjects(mapped);
             localStorage.setItem("altus_projects", JSON.stringify(mapped));
           } else {
@@ -927,19 +915,7 @@ function ProjectsView() {
         .order("created_at", { ascending: false })
         .then(({ data, error }) => {
           if (!error && data) {
-            const mapped = data.map((p: any) => ({
-              id: p.id,
-              name: p.name,
-              category: p.category,
-              tags: p.tags || [],
-              year: p.year || "",
-              description: p.description || "",
-              img: p.img || "",
-              results: p.results || "",
-              isLive: !!p.is_live,
-              gallery: p.gallery || [],
-              liveUrl: p.live_url || "",
-            }));
+            const mapped = data.map(mapSupabaseProject);
             setProjects(mapped);
             localStorage.setItem("altus_projects", JSON.stringify(mapped));
           } else {
@@ -1408,26 +1384,32 @@ function AnalyticsView() {
   const isMobile = useIsMobile();
   const [views, setViews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [timeframe, setTimeframe] = useState<"7days" | "30days" | "all">("30days");
 
   useEffect(() => {
-    if (!isSupabaseConfigured || !supabase) {
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("page_views")
+        .select("*")
+        .order("created_at", { ascending: true })
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setViews(data);
+            localStorage.setItem("altus_page_views", JSON.stringify(data));
+          } else {
+            console.error("Failed to load page views from Supabase:", error);
+            const raw = localStorage.getItem("altus_page_views");
+            if (raw) setViews(JSON.parse(raw));
+          }
+          setLoading(false);
+        });
+    } else {
+      const raw = localStorage.getItem("altus_page_views");
+      if (raw) {
+        setViews(JSON.parse(raw));
+      }
       setLoading(false);
-      return;
     }
-    // Fetch last 30 days of page views
-    const from = new Date();
-    from.setDate(from.getDate() - 29);
-    const fromStr = from.toISOString().split("T")[0];
-
-    supabase
-      .from("page_views")
-      .select("date, path")
-      .gte("date", fromStr)
-      .order("date", { ascending: true })
-      .then(({ data }) => {
-        setViews(data || []);
-        setLoading(false);
-      });
   }, []);
 
   const today = new Date().toISOString().split("T")[0];
@@ -1436,7 +1418,41 @@ function AnalyticsView() {
   const totalMonth = views.filter((v) => v.date?.startsWith(thisMonth)).length;
   const totalToday = views.filter((v) => v.date === today).length;
 
-  // Build last 7 days bar chart
+  const filteredViews = useMemo(() => {
+    if (timeframe === "all") return views;
+    
+    const limitDate = new Date();
+    if (timeframe === "7days") {
+      limitDate.setDate(limitDate.getDate() - 7);
+    } else if (timeframe === "30days") {
+      limitDate.setDate(limitDate.getDate() - 30);
+    }
+    const limitStr = limitDate.toISOString().split("T")[0];
+    return views.filter(v => v.date >= limitStr);
+  }, [views, timeframe]);
+
+  const totalFiltered = filteredViews.length || 1;
+  const desktopCount = filteredViews.filter(v => v.device === "Desktop").length;
+  const mobileCount = filteredViews.filter(v => v.device === "Mobile").length;
+  const tabletCount = filteredViews.filter(v => v.device === "Tablet").length;
+
+  const desktopPercent = Math.round((desktopCount / totalFiltered) * 100);
+  const mobilePercent = Math.round((mobileCount / totalFiltered) * 100);
+  const tabletPercent = Math.round((tabletCount / totalFiltered) * 100);
+
+  const refCounts: Record<string, number> = {};
+  filteredViews.forEach(v => {
+    const ref = v.referrer || "Direct";
+    refCounts[ref] = (refCounts[ref] || 0) + 1;
+  });
+  const topReferrers = Object.entries(refCounts)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  const topRefVal = topReferrers[0]?.[0] || "Direct";
+  const periodViews = filteredViews.length;
+
+  // Build last 7 days bar chart (always absolute daily counts for recent context)
   const last7: { label: string; date: string; count: number }[] = [];
   for (let i = 6; i >= 0; i--) {
     const d = new Date();
@@ -1447,9 +1463,9 @@ function AnalyticsView() {
   }
   const maxCount = Math.max(...last7.map((d) => d.count), 1);
 
-  // Top pages
+  // Top pages (based on period)
   const pathCounts: Record<string, number> = {};
-  views.forEach((v) => {
+  filteredViews.forEach((v) => {
     const p = v.path || "/";
     pathCounts[p] = (pathCounts[p] || 0) + 1;
   });
@@ -1459,9 +1475,36 @@ function AnalyticsView() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 24 }}>
-        Στατιστικά
-      </h1>
+      <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", gap: 16, marginBottom: 24 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", margin: 0 }}>
+          Στατιστικά
+        </h1>
+        {/* Timeframe Filter Buttons */}
+        <div style={{ display: "flex", gap: 8 }}>
+          {[
+            { id: "7days", label: "7 Ημέρες" },
+            { id: "30days", label: "30 Ημέρες" },
+            { id: "all", label: "Όλα" }
+          ].map(t => (
+            <button
+              key={t.id}
+              onClick={() => setTimeframe(t.id as any)}
+              style={{
+                padding: "8px 14px",
+                borderRadius: 8,
+                border: `1px solid ${timeframe === t.id ? "#C9A84C" : "rgba(255,255,255,0.1)"}`,
+                background: timeframe === t.id ? "rgba(201,168,76,0.1)" : "transparent",
+                color: timeframe === t.id ? "#C9A84C" : "rgba(255,255,255,0.45)",
+                cursor: "pointer",
+                fontSize: 12,
+                fontWeight: timeframe === t.id ? 600 : 400
+              }}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+      </div>
 
       {loading ? (
         <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>
@@ -1471,20 +1514,22 @@ function AnalyticsView() {
       ) : (
         <>
           {/* Summary Cards */}
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 16, marginBottom: 20 }}>
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr 1fr", gap: 16, marginBottom: 20 }}>
             {[
               { label: "Σελιδοπροβολές Μήνα", value: totalMonth.toLocaleString("el-GR"), icon: Eye, color: "#C9A84C" },
               { label: "Σελιδοπροβολές Σήμερα", value: totalToday.toLocaleString("el-GR"), icon: TrendingUp, color: "#22c55e" },
+              { label: "Σύνολο Περιόδου", value: periodViews.toLocaleString("el-GR"), icon: BarChart2, color: "#3b82f6" },
+              { label: "Κορυφαία Πηγή", value: topRefVal, icon: Globe, color: "#a855f7" },
             ].map((s) => {
               const Icon = s.icon;
               return (
-                <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: isMobile ? "16px 20px" : "24px 28px", display: "flex", alignItems: "center", gap: 16 }}>
-                  <div style={{ width: 48, height: 48, borderRadius: 12, background: `${s.color}18`, display: "flex", alignItems: "center", justifyContent: "center" }}>
-                    <Icon size={22} color={s.color} />
+                <div key={s.label} style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: isMobile ? "16px 20px" : "20px 24px", display: "flex", alignItems: "center", gap: 16 }}>
+                  <div style={{ width: 44, height: 44, borderRadius: 12, background: `${s.color}18`, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+                    <Icon size={20} color={s.color} />
                   </div>
-                  <div>
-                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, marginBottom: 4 }}>{s.label}</div>
-                    <div style={{ color: "#fff", fontSize: 28, fontWeight: 700 }}>{s.value}</div>
+                  <div style={{ minWidth: 0 }}>
+                    <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginBottom: 4, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.label}</div>
+                    <div style={{ color: "#fff", fontSize: 20, fontWeight: 700, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{s.value}</div>
                   </div>
                 </div>
               );
@@ -1519,24 +1564,81 @@ function AnalyticsView() {
             )}
           </div>
 
-          {/* Top Pages */}
-          <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: isMobile ? 16 : 28 }}>
-            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Top Σελίδες</div>
-            {topPages.length === 0 ? (
-              <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 14, textAlign: "center", padding: "16px 0" }}>Δεν υπάρχουν δεδομένα ακόμα</div>
-            ) : (
-              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
-                {topPages.map(([path, count]) => (
-                  <div key={path} style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                    <div style={{ flex: 1, color: "#fff", fontSize: 14, fontFamily: "monospace" }}>{path}</div>
-                    <div style={{ width: 120, height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 999, overflow: "hidden" }}>
-                      <div style={{ width: `${(count / (topPages[0]?.[1] || 1)) * 100}%`, height: "100%", background: "#C9A84C", borderRadius: 999 }} />
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20 }}>
+            {/* Top Pages */}
+            <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: isMobile ? 16 : 28 }}>
+              <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Top Σελίδες</div>
+              {topPages.length === 0 ? (
+                <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 14, textAlign: "center", padding: "16px 0" }}>Δεν υπάρχουν δεδομένα ακόμα</div>
+              ) : (
+                <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                  {topPages.map(([path, count]) => (
+                    <div key={path} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                      <div style={{ flex: 1, color: "#fff", fontSize: 14, fontFamily: "monospace" }}>{path}</div>
+                      <div style={{ width: 120, height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 999, overflow: "hidden" }}>
+                        <div style={{ width: `${(count / (topPages[0]?.[1] || 1)) * 100}%`, height: "100%", background: "#C9A84C", borderRadius: 999 }} />
+                      </div>
+                      <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 13, minWidth: 30, textAlign: "right" }}>{count}</div>
                     </div>
-                    <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 13, minWidth: 30, textAlign: "right" }}>{count}</div>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Devices & Referrers */}
+            <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
+              {/* Devices Card */}
+              <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: isMobile ? 16 : 28 }}>
+                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Συσκευές Χρηστών</div>
+                {filteredViews.length === 0 ? (
+                  <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 14, textAlign: "center" }}>Δεν υπάρχουν δεδομένα</div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+                    {/* Progress bar split */}
+                    <div style={{ display: "flex", height: 16, borderRadius: 8, overflow: "hidden", background: "rgba(255,255,255,0.05)" }}>
+                      <div style={{ width: `${desktopPercent}%`, background: "#C9A84C" }} title={`Desktop: ${desktopPercent}%`} />
+                      <div style={{ width: `${mobilePercent}%`, background: "#3b82f6" }} title={`Mobile: ${mobilePercent}%`} />
+                      <div style={{ width: `${tabletPercent}%`, background: "#22c55e" }} title={`Tablet: ${tabletPercent}%`} />
+                    </div>
+                    {/* Legend */}
+                    <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10, fontSize: 11, color: "rgba(255,255,255,0.6)" }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ width: 10, height: 10, background: "#C9A84C", borderRadius: 2 }} />
+                        <span>💻 Desktop ({desktopPercent}%)</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ width: 10, height: 10, background: "#3b82f6", borderRadius: 2 }} />
+                        <span>📱 Mobile ({mobilePercent}%)</span>
+                      </div>
+                      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                        <span style={{ width: 10, height: 10, background: "#22c55e", borderRadius: 2 }} />
+                        <span>📟 Tablet ({tabletPercent}%)</span>
+                      </div>
+                    </div>
                   </div>
-                ))}
+                )}
               </div>
-            )}
+
+              {/* Referrers Card */}
+              <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: isMobile ? 16 : 28 }}>
+                <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 20 }}>Πηγές Προέλευσης</div>
+                {topReferrers.length === 0 ? (
+                  <div style={{ color: "rgba(255,255,255,0.2)", fontSize: 14, textAlign: "center" }}>Δεν υπάρχουν δεδομένα</div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {topReferrers.map(([ref, count]) => (
+                      <div key={ref} style={{ display: "flex", alignItems: "center", gap: 12 }}>
+                        <div style={{ flex: 1, color: "#fff", fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ref}</div>
+                        <div style={{ width: 120, height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 999, overflow: "hidden", flexShrink: 0 }}>
+                          <div style={{ width: `${(count / (topReferrers[0]?.[1] || 1)) * 100}%`, height: "100%", background: "#C9A84C", borderRadius: 999 }} />
+                        </div>
+                        <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 13, minWidth: 30, textAlign: "right", flexShrink: 0 }}>{count}</div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </>
       )}
@@ -2035,11 +2137,11 @@ const packageDeliverables: Record<string, { titleEl: string; titleEn: string; pr
   }
 };
 
-const savedQuotes: any[] = [];
-
 function QuotesView() {
   const isMobile = useIsMobile();
   const [tab, setTab] = useState<"list" | "new">("list");
+  const [quotes, setQuotes] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const [clientName, setClientName] = useState("");
   const [clientEmail, setClientEmail] = useState("");
   const [clientPhone, setClientPhone] = useState("");
@@ -2047,6 +2149,74 @@ function QuotesView() {
   const [note, setNote] = useState("");
   const [items, setItems] = useState<{ name: string; price: number; qty: number; pkgKey?: string }[]>([]);
   const [printed, setPrinted] = useState(false);
+
+  const fetchQuotes = () => {
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("quotes")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .then(({ data, error }) => {
+          if (!error && data) {
+            setQuotes(data);
+            localStorage.setItem("altus_quotes", JSON.stringify(data));
+          } else {
+            console.error("Failed to load quotes from Supabase:", error);
+            const raw = localStorage.getItem("altus_quotes");
+            if (raw) setQuotes(JSON.parse(raw));
+          }
+          setLoading(false);
+        });
+    } else {
+      const raw = localStorage.getItem("altus_quotes");
+      if (raw) {
+        setQuotes(JSON.parse(raw));
+      }
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchQuotes();
+    window.addEventListener("storage", fetchQuotes);
+    return () => window.removeEventListener("storage", fetchQuotes);
+  }, []);
+
+  const saveQuote = (newQuote: any) => {
+    const updated = [newQuote, ...quotes];
+    setQuotes(updated);
+    localStorage.setItem("altus_quotes", JSON.stringify(updated));
+
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("quotes")
+        .insert([newQuote])
+        .then(({ error }) => {
+          if (error) console.error("Failed to save new quote in Supabase:", error);
+          fetchQuotes();
+        });
+    }
+  };
+
+  const openQuote = (q: any) => {
+    setClientName(q.client || q.name || "");
+    setClientEmail(q.email || "");
+    setClientPhone(q.phone || "");
+    setNote(q.note || "");
+    setItems(q.items || []);
+    
+    if (q.items && q.items.length > 0) {
+      const firstItem = q.items[0].name;
+      if (firstItem.includes("Landing Page")) setSelectedPackage("landing");
+      else if (firstItem.includes("Website") || firstItem.includes("Ιστοσελίδας")) setSelectedPackage("website");
+      else if (firstItem.includes("E-Shop") || firstItem.includes("Κατάστημα")) setSelectedPackage("eshop");
+      else setSelectedPackage(null);
+    } else {
+      setSelectedPackage(null);
+    }
+    
+    setTab("new");
+  };
 
   const addService = (svc: { name: string; price: number }) => {
     setItems((prev) => {
@@ -2065,6 +2235,24 @@ function QuotesView() {
 
   const printQuote = () => {
     if (!clientName) return;
+
+    const qId = "Q" + Math.floor(1000 + Math.random() * 9000);
+    const dateToday = new Date().toLocaleDateString("el-GR");
+
+    const newQuote = {
+      id: qId,
+      client: clientName,
+      email: clientEmail,
+      phone: clientPhone,
+      date: dateToday,
+      total: `€${total}`,
+      status: "accepted",
+      items: items,
+      note: note,
+    };
+
+    saveQuote(newQuote);
+
     const content = `
       <html><head><style>
         body { font-family: 'DM Sans', Arial, sans-serif; padding: 60px; color: #0A0F1E; }
@@ -2082,8 +2270,8 @@ function QuotesView() {
         .gold { color: #C9A84C; }
       </style></head><body>
         <div class="header">
-          <div><div class="logo">ALTUS STUDIO</div><div class="date">Ημ/νία: ${new Date().toLocaleDateString("el-GR")}</div></div>
-          <div style="text-align:right"><div style="font-size:28px;font-weight:700;color:#C9A84C">ΠΡΟΣΦΟΡΑ</div><div style="color:#999;font-size:14px">#Q${Date.now().toString().slice(-4)}</div></div>
+          <div><div class="logo">ALTUS STUDIO</div><div class="date">Ημ/νία: ${newQuote.date}</div></div>
+          <div style="text-align:right"><div style="font-size:28px;font-weight:700;color:#C9A84C">ΠΡΟΣΦΟΡΑ</div><div style="color:#999;font-size:14px">#${newQuote.id}</div></div>
         </div>
         <div class="to">
           <div class="label">Προς</div>
@@ -2145,7 +2333,11 @@ function QuotesView() {
 
       {tab === "list" ? (
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflowX: "auto" }}>
-          {savedQuotes.length === 0 ? (
+          {loading ? (
+            <div style={{ padding: "60px 20px", textAlign: "center", color: "rgba(255,255,255,0.25)" }}>
+              Φόρτωση προσφορών...
+            </div>
+          ) : quotes.length === 0 ? (
             <div style={{ padding: "60px 20px", textAlign: "center", color: "rgba(255,255,255,0.25)" }}>
               <FileText size={40} style={{ marginBottom: 12, opacity: 0.4 }} />
               <p style={{ margin: 0, fontSize: 15 }}>Δεν υπάρχουν ακόμα προσφορές</p>
@@ -2161,7 +2353,7 @@ function QuotesView() {
               </tr>
             </thead>
             <tbody>
-              {savedQuotes.map((q) => (
+              {quotes.map((q) => (
                 <tr key={q.id} style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
@@ -2169,12 +2361,14 @@ function QuotesView() {
                   <td style={{ padding: "14px 20px", color: "#C9A84C", fontWeight: 600, fontSize: 13 }}>{q.id}</td>
                   <td style={{ padding: "14px 20px", color: "#fff", fontSize: 14, fontWeight: 500 }}>{q.client}</td>
                   <td style={{ padding: "14px 20px", color: "rgba(255,255,255,0.4)", fontSize: 13 }}>{q.date}</td>
-                  <td style={{ padding: "14px 20px", color: "#fff", fontWeight: 700, fontSize: 15 }}>{q.total}</td>
-                  <td style={{ padding: "14px 20px" }}>
-                    <span style={{ fontSize: 12, color: quoteStatusColor[q.status], background: `${quoteStatusColor[q.status]}18`, padding: "4px 10px", borderRadius: 999 }}>{quoteStatusLabel[q.status]}</span>
+                  <td style={{ padding: "14px 20px", color: "#fff", fontWeight: 700, fontSize: 15 }}>
+                    {typeof q.total === "number" ? `€${q.total}` : q.total}
                   </td>
                   <td style={{ padding: "14px 20px" }}>
-                    <button onClick={() => setTab("new")} style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.3)", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 4 }}>
+                    <span style={{ fontSize: 12, color: quoteStatusColor[q.status] || "#6b7280", background: `${quoteStatusColor[q.status] || "#6b7280"}18`, padding: "4px 10px", borderRadius: 999 }}>{quoteStatusLabel[q.status] || q.status}</span>
+                  </td>
+                  <td style={{ padding: "14px 20px" }}>
+                    <button onClick={() => openQuote(q)} style={{ background: "transparent", border: "none", color: "#C9A84C", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 4, fontWeight: 600 }}>
                       <FileText size={14} /> Άνοιγμα
                     </button>
                   </td>
@@ -2371,24 +2565,10 @@ export function AdminPage() {
   const isMobile = useIsMobile();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  // Persist session and clean up old mock cache
+  // Persist session
   useEffect(() => {
     const session = localStorage.getItem("altus_admin");
     if (session === "true") setLoggedIn(true);
-
-    // Clear old test/mock data cache from localStorage if it exists
-    const cached = localStorage.getItem("altus_messages");
-    if (cached) {
-      try {
-        const parsed = JSON.parse(cached);
-        if (Array.isArray(parsed) && parsed.some((m: any) => m.name === "Γιώργος Παπαδόπουλος")) {
-          localStorage.removeItem("altus_messages");
-          localStorage.removeItem("altus_projects");
-        }
-      } catch (e) {
-        // ignore
-      }
-    }
   }, []);
 
   const handleLogin = () => {

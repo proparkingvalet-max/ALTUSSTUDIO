@@ -149,8 +149,14 @@ CREATE TABLE IF NOT EXISTS page_views (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     path TEXT NOT NULL DEFAULT '/',
     date DATE NOT NULL DEFAULT CURRENT_DATE,
+    device TEXT DEFAULT 'Desktop',
+    referrer TEXT DEFAULT 'Direct',
     created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- In case table already exists, alter to add device and referrer columns if they don't exist
+ALTER TABLE page_views ADD COLUMN IF NOT EXISTS device TEXT DEFAULT 'Desktop';
+ALTER TABLE page_views ADD COLUMN IF NOT EXISTS referrer TEXT DEFAULT 'Direct';
 
 -- Enable RLS for page_views
 ALTER TABLE page_views ENABLE ROW LEVEL SECURITY;
@@ -170,3 +176,45 @@ CREATE POLICY "Allow page_views select"
 ON page_views FOR SELECT
 TO anon
 USING (true);
+
+
+-- 6. Create Quotes Table (Dynamic Quote History)
+CREATE TABLE IF NOT EXISTS quotes (
+    id TEXT PRIMARY KEY,
+    client TEXT NOT NULL,
+    email TEXT NOT NULL,
+    phone TEXT,
+    date TEXT NOT NULL,
+    total INTEGER NOT NULL,
+    status TEXT DEFAULT 'pending',
+    items JSONB DEFAULT '[]'::jsonb,
+    note TEXT,
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- Enable RLS for quotes
+ALTER TABLE quotes ENABLE ROW LEVEL SECURITY;
+
+-- Drop existing policies if they exist
+DROP POLICY IF EXISTS "Allow anonymous quote inserts" ON quotes;
+DROP POLICY IF EXISTS "Allow quote selects" ON quotes;
+DROP POLICY IF EXISTS "Allow quote updates" ON quotes;
+
+-- Policy to allow anonymous submissions (Insert)
+CREATE POLICY "Allow anonymous quote inserts" 
+ON quotes FOR INSERT 
+TO anon 
+WITH CHECK (true);
+
+-- Policy to allow viewing quotes in the admin panel (Select)
+CREATE POLICY "Allow quote selects" 
+ON quotes FOR SELECT 
+TO anon 
+USING (true);
+
+-- Policy to update quote state in the admin dashboard (Update)
+CREATE POLICY "Allow quote updates" 
+ON quotes FOR UPDATE 
+TO anon 
+USING (true);
+
