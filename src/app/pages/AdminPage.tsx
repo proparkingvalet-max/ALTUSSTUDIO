@@ -2371,6 +2371,7 @@ function QuotesView({
   const [linkedInquiryId, setLinkedInquiryId] = useState<string | null>(null);
   const [previewOpen, setPreviewOpen] = useState(false);
   const [shareOpen, setShareOpen] = useState(false);
+  const [editingQuoteId, setEditingQuoteId] = useState<string | null>(null);
 
   useEffect(() => {
     if (prefilledClient) {
@@ -2776,7 +2777,7 @@ function QuotesView({
       email: clientEmail,
       phone: clientPhone,
       date: dateToday,
-      total: `€${total}`,
+      total: total,
       status: "accepted",
       items: items,
       note: note,
