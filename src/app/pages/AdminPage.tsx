@@ -2984,9 +2984,11 @@ function QuotesView({
   };
 
     if (action === "download") {
-      if (isMobile) {
-        // ── MOBILE: use hidden div, card-layout PDF ──
-        const htmlString = generateMobilePdfHtml(qId, dateToday);
+      // Helper: parse HTML string → inject into hidden div → generate PDF
+      const generatePdfFromHtml = (htmlString: string, filename: string, margins: number | number[]) => {
+        const parser = new DOMParser();
+        const parsed = parser.parseFromString(htmlString, "text/html");
+
         const container = document.createElement("div");
         container.style.position = "fixed";
         container.style.left = "0";
@@ -2996,21 +2998,25 @@ function QuotesView({
         container.style.opacity = "0";
         container.style.pointerEvents = "none";
         container.style.background = "#ffffff";
-        // Parse and inject just the body content to avoid nested html tags
-        const parser = new DOMParser();
-        const parsedDoc = parser.parseFromString(htmlString, "text/html");
-        container.innerHTML = parsedDoc.body.innerHTML;
-        // Also inject styles from the parsed doc
-        parsedDoc.querySelectorAll("style").forEach((s) => {
+        container.style.fontFamily = "'DM Sans', Arial, sans-serif";
+
+        // Inject <style> tags first
+        parsed.querySelectorAll("style").forEach((s) => {
           const styleEl = document.createElement("style");
           styleEl.textContent = s.textContent;
-          container.prepend(styleEl);
+          container.appendChild(styleEl);
         });
+
+        // Inject body content
+        const bodyEl = document.createElement("div");
+        bodyEl.innerHTML = parsed.body.innerHTML;
+        container.appendChild(bodyEl);
+
         document.body.appendChild(container);
 
         const opt = {
-          margin: [10, 8, 10, 8],
-          filename: `Altus_Quote_${newQuote.id}.pdf`,
+          margin: margins,
+          filename: filename,
           image: { type: "jpeg", quality: 0.98 },
           html2canvas: { scale: 2, useCORS: true, logging: false, width: 794 },
           jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
@@ -3022,60 +3028,25 @@ function QuotesView({
           .save()
           .then(() => document.body.removeChild(container))
           .catch((err: any) => {
-            console.error("Mobile PDF error:", err);
+            console.error("PDF error:", err);
             document.body.removeChild(container);
           });
+      };
 
+      if (isMobile) {
+        // ── MOBILE: card-layout PDF ──
+        generatePdfFromHtml(
+          generateMobilePdfHtml(qId, dateToday),
+          `Altus_Quote_${newQuote.id}.pdf`,
+          [10, 8, 10, 8]
+        );
       } else {
-        // ── DESKTOP: iframe srcdoc, A4 table layout ──
-        loadHtml2Pdf()
-          .then(() => {
-            const iframe = document.createElement("iframe");
-            iframe.style.position = "fixed";
-            iframe.style.left = "0";
-            iframe.style.top = "0";
-            iframe.style.width = "794px";
-            iframe.style.height = "1123px";
-            iframe.style.border = "none";
-            iframe.style.zIndex = "-9999";
-            iframe.style.opacity = "0";
-            iframe.style.pointerEvents = "none";
-
-            iframe.onload = () => {
-              const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
-              if (!iframeDoc) {
-                console.error("Iframe document not accessible");
-                document.body.removeChild(iframe);
-                return;
-              }
-
-              iframeDoc.fonts.ready.then(() => {
-                setTimeout(() => {
-                  const opt = {
-                    margin: 10,
-                    filename: `Altus_Quote_${newQuote.id}.pdf`,
-                    image: { type: "jpeg", quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, logging: false },
-                    jsPDF: { unit: "mm", format: "a4", orientation: "portrait" }
-                  };
-
-                  html2pdf()
-                    .from(iframeDoc.body)
-                    .set(opt)
-                    .save()
-                    .then(() => document.body.removeChild(iframe))
-                    .catch((err: any) => {
-                      console.error("PDF generation error:", err);
-                      document.body.removeChild(iframe);
-                    });
-                }, 300);
-              });
-            };
-
-            iframe.srcdoc = generateQuoteHtml(qId, dateToday);
-            document.body.appendChild(iframe);
-          })
-          .catch((err) => console.error("html2pdf failed to load:", err));
+        // ── DESKTOP: A4 full-table PDF ──
+        generatePdfFromHtml(
+          generateQuoteHtml(qId, dateToday),
+          `Altus_Quote_${newQuote.id}.pdf`,
+          10
+        );
       }
     } else {
       // Desktop: window.open + print
