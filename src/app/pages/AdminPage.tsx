@@ -2809,41 +2809,50 @@ function QuotesView({
         .then(() => {
           const iframe = document.createElement("iframe");
           iframe.style.position = "fixed";
-          iframe.style.left = "-9999px";
+          iframe.style.left = "0";
           iframe.style.top = "0";
           iframe.style.width = "794px"; // Standard A4 pixel width at 96 DPI
           iframe.style.height = "1123px";
           iframe.style.border = "none";
+          iframe.style.zIndex = "-9999";
+          iframe.style.opacity = "0";
+          iframe.style.pointerEvents = "none";
+
+          iframe.onload = () => {
+            const iframeDoc = iframe.contentDocument || iframe.contentWindow?.document;
+            if (!iframeDoc) {
+              console.error("Iframe document not accessible");
+              document.body.removeChild(iframe);
+              return;
+            }
+
+            iframeDoc.fonts.ready.then(() => {
+              setTimeout(() => {
+                const opt = {
+                  margin:       10,
+                  filename:     `Altus_Quote_${newQuote.id}.pdf`,
+                  image:        { type: 'jpeg', quality: 0.98 },
+                  html2canvas:  { scale: 2, useCORS: true, logging: false },
+                  jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+                };
+
+                (window as any).html2pdf()
+                  .from(iframeDoc.body)
+                  .set(opt)
+                  .save()
+                  .then(() => {
+                    document.body.removeChild(iframe);
+                  })
+                  .catch((err: any) => {
+                    console.error("PDF generation error:", err);
+                    document.body.removeChild(iframe);
+                  });
+              }, 250);
+            });
+          };
+
+          iframe.srcdoc = generateQuoteHtml(qId, dateToday);
           document.body.appendChild(iframe);
-
-          const doc = iframe.contentDocument || iframe.contentWindow.document;
-          doc.open();
-          doc.write(generateQuoteHtml(qId, dateToday));
-          doc.close();
-
-          iframe.contentWindow.document.fonts.ready.then(() => {
-            setTimeout(() => {
-              const opt = {
-                margin:       10,
-                filename:     `Altus_Quote_${newQuote.id}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true, logging: false },
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-              };
-
-              (window as any).html2pdf()
-                .from(iframe.contentDocument.body)
-                .set(opt)
-                .save()
-                .then(() => {
-                  document.body.removeChild(iframe);
-                })
-                .catch((err: any) => {
-                  console.error("PDF generation error:", err);
-                  document.body.removeChild(iframe);
-                });
-            }, 250);
-          });
         })
         .catch((err) => {
           console.error("html2pdf failed to load:", err);
