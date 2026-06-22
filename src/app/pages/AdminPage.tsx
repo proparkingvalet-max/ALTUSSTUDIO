@@ -2506,10 +2506,23 @@ function QuotesView({
     setClientEmail(q.email || "");
     setClientPhone(q.phone || "");
     setNote(q.note || "");
-    setItems(q.items || []);
+
+    let parsedItems = [];
+    if (q.items) {
+      if (typeof q.items === "string") {
+        try {
+          parsedItems = JSON.parse(q.items);
+        } catch (e) {
+          console.error("Failed to parse q.items string:", e);
+        }
+      } else if (Array.isArray(q.items)) {
+        parsedItems = q.items;
+      }
+    }
+    setItems(parsedItems);
     
-    if (q.items && q.items.length > 0) {
-      const firstItem = q.items[0].name;
+    if (parsedItems && parsedItems.length > 0 && parsedItems[0]?.name) {
+      const firstItem = parsedItems[0].name;
       if (firstItem.includes("Landing Page")) setSelectedPackage("landing");
       else if (firstItem.includes("Website") || firstItem.includes("Ιστοσελίδας")) setSelectedPackage("website");
       else if (firstItem.includes("E-Shop") || firstItem.includes("Κατάστημα")) setSelectedPackage("eshop");
@@ -2518,6 +2531,7 @@ function QuotesView({
       setSelectedPackage(null);
     }
     
+    setTab("new");
   };
 
   const startNewQuote = () => {
@@ -3115,6 +3129,46 @@ function QuotesView({
 
             {isMobile ? (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {/* Save Button */}
+                <button
+                  onClick={() => {
+                    const qId = editingQuoteId || ("Q" + Math.floor(1000 + Math.random() * 9000));
+                    const dateToday = new Date().toLocaleDateString("el-GR");
+                    const newQuote = {
+                      id: qId,
+                      client: clientName,
+                      email: clientEmail,
+                      phone: clientPhone,
+                      date: dateToday,
+                      total: total,
+                      status: "accepted",
+                      items: items,
+                      note: note,
+                    };
+                    saveQuote(newQuote);
+                    setTab("list");
+                  }}
+                  disabled={!clientName || items.length === 0}
+                  style={{
+                    width: "100%",
+                    padding: "13px",
+                    background: clientName && items.length > 0 ? "linear-gradient(135deg, #22c55e, #16a34a)" : "rgba(255,255,255,0.05)",
+                    border: "none",
+                    borderRadius: 12,
+                    color: clientName && items.length > 0 ? "#fff" : "rgba(255,255,255,0.2)",
+                    fontWeight: 700,
+                    fontSize: 14,
+                    cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
+                    transition: "all 0.3s",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8
+                  }}
+                >
+                  <CheckCircle size={16} /> {editingQuoteId ? "Αποθήκευση Αλλαγών" : "Αποθήκευση Προσφοράς"}
+                </button>
+
                 <button
                   onClick={() => printQuote("download")}
                   disabled={!clientName || items.length === 0}
@@ -3163,6 +3217,47 @@ function QuotesView({
               </div>
             ) : (
               <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+                {/* Save Button */}
+                <button
+                  onClick={() => {
+                    const qId = editingQuoteId || ("Q" + Math.floor(1000 + Math.random() * 9000));
+                    const dateToday = new Date().toLocaleDateString("el-GR");
+                    const newQuote = {
+                      id: qId,
+                      client: clientName,
+                      email: clientEmail,
+                      phone: clientPhone,
+                      date: dateToday,
+                      total: total,
+                      status: "accepted",
+                      items: items,
+                      note: note,
+                    };
+                    saveQuote(newQuote);
+                    setTab("list");
+                  }}
+                  disabled={!clientName || items.length === 0}
+                  style={{
+                    width: "100%",
+                    padding: "13px",
+                    background: clientName && items.length > 0 ? "linear-gradient(135deg, #22c55e, #16a34a)" : "rgba(255,255,255,0.05)",
+                    border: "none",
+                    borderRadius: 12,
+                    color: clientName && items.length > 0 ? "#fff" : "rgba(255,255,255,0.2)",
+                    fontWeight: 700,
+                    fontSize: 14,
+                    cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
+                    transition: "all 0.3s",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: 8,
+                    marginBottom: 4
+                  }}
+                >
+                  <CheckCircle size={16} /> {editingQuoteId ? "Αποθήκευση Αλλαγών" : "Αποθήκευση Προσφοράς"}
+                </button>
+
                 {/* Row 1: Preview & Share */}
                 <div style={{ display: "flex", gap: 10 }}>
                   <button
