@@ -2419,6 +2419,20 @@ function QuotesView() {
 
   const total = items.reduce((sum, i) => sum + i.price * i.qty, 0);
 
+  const loadHtml2Pdf = () => {
+    return new Promise<void>((resolve, reject) => {
+      if ((window as any).html2pdf) {
+        resolve();
+        return;
+      }
+      const script = document.createElement("script");
+      script.src = "https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js";
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error("Failed to load html2pdf"));
+      document.head.appendChild(script);
+    });
+  };
+
   const printQuote = () => {
     if (!clientName) return;
 
@@ -2439,65 +2453,167 @@ function QuotesView() {
 
     saveQuote(newQuote);
 
-    const content = `
-      <html><head><style>
-        body { font-family: 'DM Sans', Arial, sans-serif; padding: 60px; color: #0A0F1E; }
-        h1 { font-size: 32px; margin-bottom: 4px; } h2 { font-size: 20px; color: #888; font-weight: 400; margin-bottom: 40px; }
-        .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; }
-        .logo { font-size: 24px; font-weight: 700; letter-spacing: 2px; color: #C9A84C; }
-        .date { color: #888; font-size: 14px; margin-top: 4px; }
-        .to { margin-bottom: 40px; } .label { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 6px; }
-        table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
-        th { text-align: left; padding: 12px 16px; background: #f8f8f5; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; }
-        td { padding: 14px 16px; border-bottom: 1px solid #eee; font-size: 15px; }
-        .total-row { font-weight: 700; font-size: 18px; color: #C9A84C; }
-        .note { background: #f8f8f5; padding: 20px; border-radius: 8px; font-size: 14px; color: #555; margin-top: 20px; }
-        .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #bbb; }
-        .gold { color: #C9A84C; }
-      </style></head><body>
-        <div class="header">
-          <div><div class="logo">ALTUS STUDIO</div><div class="date">Ημ/νία: ${newQuote.date}</div></div>
-          <div style="text-align:right"><div style="font-size:28px;font-weight:700;color:#C9A84C">ΠΡΟΣΦΟΡΑ</div><div style="color:#999;font-size:14px">#${newQuote.id}</div></div>
-        </div>
-        <div class="to">
-          <div class="label">Προς</div>
-          <div style="font-size:18px;font-weight:600">${clientName}</div>
-          <div style="color:#555;font-size:13px;margin-top:2px;">Email: ${clientEmail}</div>
-          ${clientPhone ? `<div style="color:#555;font-size:13px;margin-top:2px;">Τηλ: ${clientPhone}</div>` : ""}
-        </div>
-        <table>
-          <thead><tr><th>Υπηρεσία</th><th style="text-align:right">Τιμή</th><th style="text-align:right">Σύνολο</th></tr></thead>
-          <tbody>
-            ${items.map((i) => {
-              const pk = i.pkgKey || "";
-              const deliv = pk && packageDeliverables[pk]
-                ? `<div style="margin-top:10px;padding:10px 14px;background:#f8f8f5;border-left:3px solid #C9A84C;border-radius:4px;">
-                     <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#C9A84C;margin-bottom:6px;">Αναλυτικά Περιλαμβάνει:</div>
-                     <ul style="margin:0;padding-left:16px;font-size:12px;color:#444;line-height:1.8;">
-                       ${packageDeliverables[pk].items.map(d => `<li>${d}</li>`).join("")}
-                     </ul>
-                   </div>`
-                : "";
-              return `
-                <tr>
-                  <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;">
-                    <div style="font-size:15px;font-weight:700;color:#0A0F1E;">${i.name}</div>
-                    ${deliv}
-                  </td>
-                  <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;white-space:nowrap;">€${i.price} × ${i.qty}</td>
-                  <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;font-weight:700;color:#0A0F1E;white-space:nowrap;">€${i.price * i.qty}</td>
-                </tr>
-              `;
-            }).join("")}
-            <tr><td colspan="2" style="padding:16px;text-align:right;font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:1px;">ΣΥΝΟΛΙΚΟ ΚΟΣΤΟΣ</td><td style="padding:16px;text-align:right;font-size:22px;font-weight:700;color:#C9A84C;">€${total}</td></tr>
-          </tbody>
-        </table>
-        ${note ? `<div class="note"><strong>Σημείωση:</strong> ${note}</div>` : ""}
-        <div class="footer">Altus Studio · info@altusstudio.gr · 6970015447 · altusstudio.gr</div>
-      </body></html>
-    `;
-    const w = window.open("", "_blank");
-    if (w) { w.document.write(content); w.document.close(); w.print(); }
+    if (isMobile) {
+      // Mobile Direct PDF Download
+      loadHtml2Pdf()
+        .then(() => {
+          const element = document.createElement("div");
+          element.style.position = "fixed";
+          element.style.left = "-9999px";
+          element.style.top = "0";
+          element.style.width = "794px"; // Standard A4 pixel width at 96 DPI
+          element.style.background = "#ffffff";
+          element.style.color = "#0A0F1E";
+          
+          element.innerHTML = `
+            <div style="font-family: 'DM Sans', Arial, sans-serif; padding: 40px; color: #0A0F1E; width: 714px; box-sizing: border-box;">
+              <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px;">
+                <div>
+                  <div style="font-size: 24px; font-weight: 700; letter-spacing: 2px; color: #C9A84C;">ALTUS STUDIO</div>
+                  <div style="color: #888; font-size: 14px; margin-top: 4px;">Ημ/νία: ${newQuote.date}</div>
+                </div>
+                <div style="text-align:right">
+                  <div style="font-size:28px;font-weight:700;color:#C9A84C">ΠΡΟΣΦΟΡΑ</div>
+                  <div style="color:#999;font-size:14px">#${newQuote.id}</div>
+                </div>
+              </div>
+              
+              <div style="margin-bottom: 40px;">
+                <div style="font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 6px;">Προς</div>
+                <div style="font-size:18px;font-weight:600">${clientName}</div>
+                <div style="color:#555;font-size:13px;margin-top:2px;">Email: ${clientEmail}</div>
+                ${clientPhone ? `<div style="color:#555;font-size:13px;margin-top:2px;">Τηλ: ${clientPhone}</div>` : ""}
+              </div>
+
+              <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+                <thead>
+                  <tr style="background: #f8f8f5;">
+                    <th style="text-align: left; padding: 12px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; border-bottom: 1px solid #eee;">Υπηρεσία</th>
+                    <th style="text-align: right; padding: 12px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; border-bottom: 1px solid #eee;">Τιμή</th>
+                    <th style="text-align: right; padding: 12px 16px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; border-bottom: 1px solid #eee;">Σύνολο</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${items.map((i) => {
+                    const pk = i.pkgKey || "";
+                    const deliv = pk && packageDeliverables[pk]
+                      ? `<div style="margin-top:10px;padding:10px 14px;background:#f8f8f5;border-left:3px solid #C9A84C;border-radius:4px;text-align:left;">
+                           <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#C9A84C;margin-bottom:6px;">Αναλυτικά Περιλαμβάνει:</div>
+                           <ul style="margin:0;padding-left:16px;font-size:12px;color:#444;line-height:1.8;list-style-type:disc;">
+                             ${packageDeliverables[pk].items.map(d => `<li>${d}</li>`).join("")}
+                           </ul>
+                         </div>`
+                      : "";
+                    return `
+                      <tr>
+                        <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:left;">
+                          <div style="font-size:15px;font-weight:700;color:#0A0F1E;">${i.name}</div>
+                          ${deliv}
+                        </td>
+                        <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;white-space:nowrap;">€${i.price} × ${i.qty}</td>
+                        <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;font-weight:700;color:#0A0F1E;white-space:nowrap;">€${i.price * i.qty}</td>
+                      </tr>
+                    `;
+                  }).join("")}
+                  <tr>
+                    <td colspan="2" style="padding:16px;text-align:right;font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:1px;">ΣΥΝΟΛΙΚΟ ΚΟΣΤΟΣ</td>
+                    <td style="padding:16px;text-align:right;font-size:22px;font-weight:700;color:#C9A84C;">€${total}</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              ${note ? `<div style="background: #f8f8f5; padding: 20px; border-radius: 8px; font-size: 14px; color: #555; margin-top: 20px; text-align:left;"><strong>Σημείωση:</strong> ${note}</div>` : ""}
+              <div style="margin-top: 60px; text-align: center; font-size: 12px; color: #bbb;">Altus Studio · info@altusstudio.gr · 6970015447 · altusstudio.gr</div>
+            </div>
+          `;
+          document.body.appendChild(element);
+
+          const opt = {
+            margin:       10,
+            filename:     `Altus_Quote_${newQuote.id}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2, useCORS: true, logging: false },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+          };
+
+          (window as any).html2pdf()
+            .from(element)
+            .set(opt)
+            .save()
+            .then(() => {
+              document.body.removeChild(element);
+            })
+            .catch((err: any) => {
+              console.error("PDF generation error:", err);
+              document.body.removeChild(element);
+            });
+        })
+        .catch((err) => {
+          console.error("html2pdf failed to load:", err);
+        });
+    } else {
+      // Desktop: window.open + print
+      const content = `
+        <html><head><style>
+          body { font-family: 'DM Sans', Arial, sans-serif; padding: 60px; color: #0A0F1E; }
+          h1 { font-size: 32px; margin-bottom: 4px; } h2 { font-size: 20px; color: #888; font-weight: 400; margin-bottom: 40px; }
+          .header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 50px; }
+          .logo { font-size: 24px; font-weight: 700; letter-spacing: 2px; color: #C9A84C; }
+          .date { color: #888; font-size: 14px; margin-top: 4px; }
+          .to { margin-bottom: 40px; } .label { font-size: 12px; text-transform: uppercase; letter-spacing: 2px; color: #999; margin-bottom: 6px; }
+          table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+          th { text-align: left; padding: 12px 16px; background: #f8f8f5; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: #888; }
+          td { padding: 14px 16px; border-bottom: 1px solid #eee; font-size: 15px; }
+          .total-row { font-weight: 700; font-size: 18px; color: #C9A84C; }
+          .note { background: #f8f8f5; padding: 20px; border-radius: 8px; font-size: 14px; color: #555; margin-top: 20px; }
+          .footer { margin-top: 60px; text-align: center; font-size: 12px; color: #bbb; }
+          .gold { color: #C9A84C; }
+        </style></head><body>
+          <div class="header">
+            <div><div class="logo">ALTUS STUDIO</div><div class="date">Ημ/νία: ${newQuote.date}</div></div>
+            <div style="text-align:right"><div style="font-size:28px;font-weight:700;color:#C9A84C">ΠΡΟΣΦΟΡΑ</div><div style="color:#999;font-size:14px">#${newQuote.id}</div></div>
+          </div>
+          <div class="to">
+            <div class="label">Προς</div>
+            <div style="font-size:18px;font-weight:600">${clientName}</div>
+            <div style="color:#555;font-size:13px;margin-top:2px;">Email: ${clientEmail}</div>
+            ${clientPhone ? `<div style="color:#555;font-size:13px;margin-top:2px;">Τηλ: ${clientPhone}</div>` : ""}
+          </div>
+          <table>
+            <thead><tr><th>Υπηρεσία</th><th style="text-align:right">Τιμή</th><th style="text-align:right">Σύνολο</th></tr></thead>
+            <tbody>
+              ${items.map((i) => {
+                const pk = i.pkgKey || "";
+                const deliv = pk && packageDeliverables[pk]
+                  ? `<div style="margin-top:10px;padding:10px 14px;background:#f8f8f5;border-left:3px solid #C9A84C;border-radius:4px;">
+                       <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#C9A84C;margin-bottom:6px;">Αναλυτικά Περιλαμβάνει:</div>
+                       <ul style="margin:0;padding-left:16px;font-size:12px;color:#444;line-height:1.8;">
+                         ${packageDeliverables[pk].items.map(d => `<li>${d}</li>`).join("")}
+                       </ul>
+                     </div>`
+                  : "";
+                return `
+                  <tr>
+                    <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;">
+                      <div style="font-size:15px;font-weight:700;color:#0A0F1E;">${i.name}</div>
+                      ${deliv}
+                    </td>
+                    <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;white-space:nowrap;">€${i.price} × ${i.qty}</td>
+                    <td style="padding:16px;border-bottom:1px solid #eee;vertical-align:top;text-align:right;font-weight:700;color:#0A0F1E;white-space:nowrap;">€${i.price * i.qty}</td>
+                  </tr>
+                `;
+              }).join("")}
+              <tr><td colspan="2" style="padding:16px;text-align:right;font-size:13px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:1px;">ΣΥΝΟΛΙΚΟ ΚΟΣΤΟΣ</td><td style="padding:16px;text-align:right;font-size:22px;font-weight:700;color:#C9A84C;">€${total}</td></tr>
+            </tbody>
+          </table>
+          ${note ? `<div class="note"><strong>Σημείωση:</strong> ${note}</div>` : ""}
+          <div class="footer">Altus Studio · info@altusstudio.gr · 6970015447 · altusstudio.gr</div>
+        </body></html>
+      `;
+      const w = window.open("", "_blank");
+      if (w) { w.document.write(content); w.document.close(); w.print(); }
+    }
+
     setPrinted(true);
     setTimeout(() => setPrinted(false), 3000);
   };
