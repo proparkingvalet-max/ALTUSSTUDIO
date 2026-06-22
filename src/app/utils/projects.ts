@@ -5,6 +5,11 @@ import resortBooking from "@/assets/resort_booking.png";
 import ppHero from "@/assets/proparking/hero_section.png";
 import ppBooking from "@/assets/proparking/booking_section.png";
 import ppMarina from "@/assets/proparking/marina.jpg";
+import ppAirSea from "@/assets/proparking/air_sea.png";
+import ppContact from "@/assets/proparking/contact_section.png";
+import ppShowroom from "@/assets/proparking/showroom.png";
+import ppSupercar from "@/assets/proparking/supercar.png";
+import ppTheater from "@/assets/proparking/theater.jpg";
 import { supabase, isSupabaseConfigured } from "./supabaseClient";
 
 export interface Project {
@@ -32,7 +37,7 @@ export const defaultProjects: Project[] = [
     img: ppHero,
     results: "Live Project",
     isLive: true,
-    gallery: [ppHero, ppBooking, ppMarina],
+    gallery: [ppHero, ppBooking, ppMarina, ppAirSea, ppContact, ppShowroom, ppSupercar, ppTheater],
     liveUrl: "https://proparkingvalet.gr",
   },
   {
@@ -73,7 +78,7 @@ export function mapSupabaseProject(p: any): Project {
       img = ppHero;
     }
     if (gallery.length === 0 || (gallery.length === 1 && gallery[0].includes("unsplash.com/photo-1506015391300-4802dc74de2e"))) {
-      gallery = [ppHero, ppBooking, ppMarina];
+      gallery = [ppHero, ppBooking, ppMarina, ppAirSea, ppContact, ppShowroom, ppSupercar, ppTheater];
     }
   } else if (p.id === "project-2") {
     if (!img) img = eshopPreview;
@@ -178,7 +183,7 @@ export function getProjects(): Project[] {
             img = ppHero;
           }
           if (gallery.length === 0 || (gallery.length === 1 && gallery[0].includes("unsplash.com/photo-1506015391300-4802dc74de2e"))) {
-            gallery = [ppHero, ppBooking, ppMarina];
+            gallery = [ppHero, ppBooking, ppMarina, ppAirSea, ppContact, ppShowroom, ppSupercar, ppTheater];
           }
         } else if (p.id === "project-2") {
           if (!img) img = eshopPreview;
