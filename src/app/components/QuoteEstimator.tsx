@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, CheckCircle2, ChevronRight, ChevronLeft, Calculator, Laptop, ShoppingCart, Zap, PlusCircle, Check } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
@@ -33,11 +33,11 @@ export function QuoteEstimator() {
   const [sending, setSending] = useState(false);
 
   // Pricing Logic
-  const basePrices = {
+  const [basePrices, setBasePrices] = useState({
     website: 350,
     eshop: 790,
     landing: 250,
-  };
+  });
 
   const complexityPrices: Record<string, number> = {
     basic: 0,
@@ -45,12 +45,70 @@ export function QuoteEstimator() {
     premium: 250,
   };
 
-  const addons: Addon[] = [
+  const [addons, setAddons] = useState<Addon[]>([
     { id: "uiux", nameEl: "Custom UI/UX Σχεδιασμός", nameEn: "Custom UI/UX Design", price: 150, descEl: "Μοναδικό visual mockup πριν τον κώδικα", descEn: "Unique custom visual mockups before coding" },
     { id: "seo", nameEl: "SEO & Google Analytics", nameEn: "SEO & Google Analytics", price: 120, descEl: "Πλήρης βελτιστοποίηση λέξεων-κλειδιών", descEn: "Full speed and keyword optimization" },
     { id: "multilang", nameEl: "Πολυγλωσσικότητα (2 Γλώσσες)", nameEn: "Multi-language (2 Languages)", price: 100, descEl: "Υλοποίηση EL / EN με διακόπτη", descEn: "EL / EN integration with switcher" },
     { id: "support", nameEl: "VIP Συνεχής Υποστήριξη", nameEn: "VIP Ongoing Support", price: 80, descEl: "Μηνιαία υποστήριξη και αναβαθμίσεις", descEn: "Monthly maintenance and updates" },
-  ];
+  ]);
+
+  useEffect(() => {
+    const loadPrices = () => {
+      if (isSupabaseConfigured && supabase) {
+        supabase
+          .from("settings")
+          .select("value")
+          .eq("key", "prices")
+          .maybeSingle()
+          .then(({ data, error }) => {
+            if (!error && data && data.value) {
+              const val = data.value;
+              if (val.landing || val.website || val.eshop) {
+                setBasePrices({
+                  website: val.website ?? 350,
+                  eshop: val.eshop ?? 790,
+                  landing: val.landing ?? 250,
+                });
+              }
+              setAddons(prev => prev.map(a => {
+                const key = a.id;
+                if (val[key] !== undefined) {
+                  return { ...a, price: val[key] };
+                }
+                return a;
+              }));
+            }
+          });
+      } else {
+        const cached = localStorage.getItem("altus_prices");
+        if (cached) {
+          try {
+            const val = JSON.parse(cached);
+            if (val.landing || val.website || val.eshop) {
+              setBasePrices({
+                website: val.website ?? 350,
+                eshop: val.eshop ?? 790,
+                landing: val.landing ?? 250,
+              });
+            }
+            setAddons(prev => prev.map(a => {
+              const key = a.id;
+              if (val[key] !== undefined) {
+                return { ...a, price: val[key] };
+              }
+              return a;
+            }));
+          } catch (e) {
+            console.error(e);
+          }
+        }
+      }
+    };
+
+    loadPrices();
+    window.addEventListener("storage", loadPrices);
+    return () => window.removeEventListener("storage", loadPrices);
+  }, []);
 
   const calculateTotal = () => {
     if (!projectType) return 0;

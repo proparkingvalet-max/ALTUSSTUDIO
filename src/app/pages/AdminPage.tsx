@@ -385,7 +385,7 @@ function DashboardView() {
   const [pageViewsMonth, setPageViewsMonth] = useState<number | null>(null);
   const [pageViewsToday, setPageViewsToday] = useState<number>(0);
 
-  useEffect(() => {
+  const loadData = () => {
     // Fetch messages from Supabase if configured
     if (isSupabaseConfigured && supabase) {
       supabase
@@ -447,6 +447,12 @@ function DashboardView() {
           }
         });
     }
+  };
+
+  useEffect(() => {
+    loadData();
+    window.addEventListener("storage", loadData);
+    return () => window.removeEventListener("storage", loadData);
   }, []);
 
   const recentMessages = messages.slice(0, 3);
@@ -587,7 +593,7 @@ function MessagesView({ onCreateQuote }: { onCreateQuote: (client: { name: strin
   const [reply, setReply] = useState("");
   const [sent, setSent] = useState(false);
 
-  useEffect(() => {
+  const fetchMessages = () => {
     if (isSupabaseConfigured && supabase) {
       supabase
         .from("messages")
@@ -612,6 +618,12 @@ function MessagesView({ onCreateQuote }: { onCreateQuote: (client: { name: strin
         localStorage.setItem("altus_messages", JSON.stringify(mockMessages));
       }
     }
+  };
+
+  useEffect(() => {
+    fetchMessages();
+    window.addEventListener("storage", fetchMessages);
+    return () => window.removeEventListener("storage", fetchMessages);
   }, []);
 
   const saveMessages = (updated: any[]) => {
@@ -1871,6 +1883,15 @@ function SettingsView() {
   const [saved, setSaved] = useState(false);
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [loadingMaintenance, setLoadingMaintenance] = useState(true);
+  const [prices, setPrices] = useState({
+    landing: 250,
+    website: 350,
+    eshop: 790,
+    uiux: 150,
+    seo: 120,
+    multilang: 100,
+    support: 80
+  });
 
   useEffect(() => {
     // Load current maintenance state from Supabase
@@ -1899,6 +1920,18 @@ function SettingsView() {
             if (data.value.email) setEmail(data.value.email);
           }
         });
+
+      // Load prices
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "prices")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data && data.value) {
+            setPrices(prev => ({ ...prev, ...data.value }));
+          }
+        });
     } else {
       setMaintenanceMode(localStorage.getItem("altus_maintenance") === "true");
       setLoadingMaintenance(false);
@@ -1909,6 +1942,15 @@ function SettingsView() {
           const parsed = JSON.parse(cached);
           if (parsed.phone) setViber(parsed.phone);
           if (parsed.email) setEmail(parsed.email);
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      const cachedPrices = localStorage.getItem("altus_prices");
+      if (cachedPrices) {
+        try {
+          setPrices(JSON.parse(cachedPrices));
         } catch (e) {
           console.error(e);
         }
@@ -1932,24 +1974,33 @@ function SettingsView() {
     }
   };
 
-  const save = () => {
+  const save = async () => {
     if (isSupabaseConfigured && supabase) {
-      supabase
-        .from("settings")
-        .upsert({ key: "contact_info", value: { phone: viber, email } })
-        .then(({ error }) => {
-          if (error) {
-            console.error("Failed to save contact info to Supabase:", error);
-            alert("Αποτυχία αποθήκευσης στη βάση δεδομένων Supabase. Παρακαλώ ελέγξτε τη σύνδεση ή τα RLS policies. Σφάλμα: " + (error.message || JSON.stringify(error)));
-          } else {
-            localStorage.setItem("altus_contact_info", JSON.stringify({ phone: viber, email }));
-            window.dispatchEvent(new Event("storage"));
-            setSaved(true);
-            setTimeout(() => setSaved(false), 2000);
-          }
-        });
+      try {
+        const { error: contactError } = await supabase
+          .from("settings")
+          .upsert({ key: "contact_info", value: { phone: viber, email } });
+        
+        if (contactError) throw contactError;
+
+        const { error: pricesError } = await supabase
+          .from("settings")
+          .upsert({ key: "prices", value: prices });
+
+        if (pricesError) throw pricesError;
+
+        localStorage.setItem("altus_contact_info", JSON.stringify({ phone: viber, email }));
+        localStorage.setItem("altus_prices", JSON.stringify(prices));
+        window.dispatchEvent(new Event("storage"));
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+      } catch (error: any) {
+        console.error("Failed to save settings to Supabase:", error);
+        alert("Αποτυχία αποθήκευσης στη βάση δεδομένων Supabase. Σφάλμα: " + (error.message || JSON.stringify(error)));
+      }
     } else {
       localStorage.setItem("altus_contact_info", JSON.stringify({ phone: viber, email }));
+      localStorage.setItem("altus_prices", JSON.stringify(prices));
       window.dispatchEvent(new Event("storage"));
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -1979,6 +2030,54 @@ function SettingsView() {
               />
             </div>
           ))}
+        </div>
+
+        {/* Τιμοκατάλογος Υπηρεσιών */}
+        <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
+          <h3 style={{ color: "#C9A84C", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Τιμοκατάλογος Υπηρεσιών</h3>
+          
+          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20 }}>
+            {/* Packages */}
+            <div>
+              <h4 style={{ color: "#fff", fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Βασικά Πακέτα</h4>
+              {[
+                { label: "Landing Page (€)", key: "landing" },
+                { label: "Corporate Site (€)", key: "website" },
+                { label: "E-Shop (€)", key: "eshop" },
+              ].map((p) => (
+                <div key={p.key} style={{ marginBottom: 14 }}>
+                  <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 5 }}>{p.label}</label>
+                  <input
+                    type="number"
+                    value={prices[p.key as keyof typeof prices]}
+                    onChange={(e) => setPrices({ ...prices, [p.key]: Number(e.target.value) })}
+                    style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                  />
+                </div>
+              ))}
+            </div>
+
+            {/* Addons */}
+            <div>
+              <h4 style={{ color: "#fff", fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Πρόσθετες Υπηρεσίες</h4>
+              {[
+                { label: "Custom UI/UX Σχεδιασμός (€)", key: "uiux" },
+                { label: "SEO & Google Analytics (€)", key: "seo" },
+                { label: "Πολυγλωσσικότητα (€)", key: "multilang" },
+                { label: "VIP Υποστήριξη /μήνα (€)", key: "support" },
+              ].map((p) => (
+                <div key={p.key} style={{ marginBottom: 14 }}>
+                  <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 5 }}>{p.label}</label>
+                  <input
+                    type="number"
+                    value={prices[p.key as keyof typeof prices]}
+                    onChange={(e) => setPrices({ ...prices, [p.key]: Number(e.target.value) })}
+                    style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
 
         {/* Maintenance Mode Toggle */}
@@ -2377,6 +2476,49 @@ function QuotesView({
   const [shareOpen, setShareOpen] = useState(false);
   const [editingQuoteId, setEditingQuoteId] = useState<string | null>(null);
 
+  const [prices, setPrices] = useState({
+    landing: 250,
+    website: 350,
+    eshop: 790,
+    uiux: 150,
+    seo: 120,
+    multilang: 100,
+    support: 80
+  });
+
+  const fetchPrices = () => {
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "prices")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data && data.value) {
+            setPrices(prev => ({ ...prev, ...data.value }));
+          }
+        });
+    } else {
+      const cached = localStorage.getItem("altus_prices");
+      if (cached) {
+        try {
+          setPrices(JSON.parse(cached));
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  };
+
+  const dynamicServiceOptions = [
+    { name: "Κατασκευή Ιστοσελίδας", price: prices.website },
+    { name: "Ανάπτυξη E-Shop", price: prices.eshop },
+    { name: "Landing Page", price: prices.landing },
+    { name: "Εταιρική Ταυτότητα", price: prices.uiux },
+    { name: "SEO & Στατιστικά", price: prices.seo },
+    { name: "Συνεχής Υποστήριξη (μηνιαία)", price: prices.support },
+  ];
+
   useEffect(() => {
     if (prefilledClient) {
       setClientName(prefilledClient.name);
@@ -2438,9 +2580,14 @@ function QuotesView({
   };
 
   useEffect(() => {
+    const handleStorageChange = () => {
+      fetchQuotes();
+      fetchPrices();
+    };
     fetchQuotes();
-    window.addEventListener("storage", fetchQuotes);
-    return () => window.removeEventListener("storage", fetchQuotes);
+    fetchPrices();
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
   }, []);
 
   const saveQuote = (newQuote: any) => {
@@ -3307,9 +3454,9 @@ function QuotesView({
               <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Πακέτο Υπηρεσίας</div>
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
                 {[
-                  { id: "landing", label: "Landing Page", name: "Landing Page", price: 250 },
-                  { id: "website", label: "Corporate Site", name: "Κατασκευή Ιστοσελίδας", price: 350 },
-                  { id: "eshop", label: "E-Shop", name: "Ανάπτυξη E-Shop", price: 790 }
+                  { id: "landing", label: "Landing Page", name: "Landing Page", price: prices.landing },
+                  { id: "website", label: "Corporate Site", name: "Κατασκευή Ιστοσελίδας", price: prices.website },
+                  { id: "eshop", label: "E-Shop", name: "Ανάπτυξη E-Shop", price: prices.eshop }
                 ].map((pkg) => {
                   const isActive = selectedPackage === pkg.id;
                   return (
@@ -3358,7 +3505,7 @@ function QuotesView({
             {/* Service picker */}
             <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
               <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Επίλεξε Επιπλέον Υπηρεσίες</div>
-              {serviceOptions.map((svc) => {
+              {dynamicServiceOptions.map((svc) => {
                 const added = items.some((i) => i.name === svc.name);
                 return (
                   <div key={svc.name} onClick={() => addService(svc)}
@@ -4159,6 +4306,35 @@ export function AdminPage() {
     const session = localStorage.getItem("altus_admin");
     if (session === "true") setLoggedIn(true);
   }, []);
+
+  // Supabase Realtime Subscriptions
+  useEffect(() => {
+    if (!loggedIn || !isSupabaseConfigured || !supabase) return;
+
+    const channel = supabase
+      .channel("realtime-dashboard-sync")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "messages" },
+        () => {
+          console.log("Realtime messages change received");
+          window.dispatchEvent(new Event("storage"));
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "quotes" },
+        () => {
+          console.log("Realtime quotes change received");
+          window.dispatchEvent(new Event("storage"));
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [loggedIn]);
 
   const handleLogin = () => {
     localStorage.setItem("altus_admin", "true");
