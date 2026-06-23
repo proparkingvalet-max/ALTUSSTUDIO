@@ -2983,9 +2983,12 @@ function QuotesView({
       markInquiryStatus(linkedInquiryId, "replied");
     }
 
-    if (action === "download" && isMobile) {
-      // ══ MOBILE: html2pdf with visible container ══
-      const htmlString = generateMobilePdfHtml(qId, dateToday);
+    if (action === "download") {
+      // ══ DIRECT PDF DOWNLOAD (Mobile & Desktop) ══
+      const htmlString = isMobile
+        ? generateMobilePdfHtml(qId, dateToday)
+        : generateQuoteHtml(qId, dateToday);
+
       const parser = new DOMParser();
       const parsed = parser.parseFromString(htmlString, "text/html");
 
@@ -3015,12 +3018,13 @@ function QuotesView({
       // PDF container — visible at z-index BELOW overlay
       // Do NOT use opacity:0 / display:none — html2canvas won't render those!
       const container = document.createElement("div");
+      const containerPadding = isMobile ? "28px 24px" : "40px";
       container.style.cssText = [
         "position:fixed", "left:0", "top:0",
         "width:794px",
         "z-index:2147483646", // Just below overlay
         "background:#ffffff",
-        "padding:28px 24px",
+        `padding:${containerPadding}`,
         "box-sizing:border-box",
         "font-family:'DM Sans',Arial,sans-serif",
         "color:#0A0F1E"
@@ -3055,12 +3059,12 @@ function QuotesView({
               .set(opt)
               .save()
               .then(cleanup)
-              .catch((err: any) => { console.error("Mobile PDF error:", err); cleanup(); });
+              .catch((err: any) => { console.error("PDF download error:", err); cleanup(); });
           });
         });
       });
     } else {
-      // ══ DESKTOP / PRINT: window.open() + print() ══
+      // ══ PRINT: window.open() + print() ══
       // This is the ONLY 100% reliable approach. The browser renders HTML natively
       // and the user saves it as PDF from the print dialog (Ctrl+P → Save as PDF).
       // Triggered by user click so popup blocker won't interfere.
