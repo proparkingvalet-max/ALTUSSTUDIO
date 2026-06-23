@@ -1878,6 +1878,7 @@ function AnalyticsView() {
 // ─── Settings View ─────────────────────────────────────────────────────────────
 
 function SettingsView() {
+  const isMobile = useIsMobile();
   const [viber, setViber] = useState("6970015447");
   const [email, setEmail] = useState("info@altusstudio.gr");
   const [saved, setSaved] = useState(false);
