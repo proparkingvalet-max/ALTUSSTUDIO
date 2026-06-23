@@ -4,6 +4,7 @@ import { Mail, Send, ArrowUpRight, CheckCircle2, Phone } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { BookingCalendar } from "@/app/components/BookingCalendar";
 import { supabase, isSupabaseConfigured, useContactInfo } from "@/app/utils/supabaseClient";
+import { sendTelegramNotification } from "@/app/utils/telegram";
 
 type FormState = "idle" | "sending" | "sent";
 
@@ -34,6 +35,14 @@ export function ContactPage() {
       status: "new"
     };
 
+    // Construct Telegram Notification Message
+    const tgMessage = `✉️ <b>Νέο Μήνυμα Επικοινωνίας</b>\n\n` +
+      `👤 <b>Όνομα:</b> ${payload.name}\n` +
+      `📧 <b>Email:</b> ${payload.email}\n` +
+      `📞 <b>Τηλέφωνο:</b> ${payload.phone || "—"}\n` +
+      `💼 <b>Υπηρεσία:</b> ${payload.service}\n\n` +
+      `📝 <b>Μήνυμα:</b>\n${payload.message}`;
+
     if (isSupabaseConfigured && supabase) {
       supabase
         .from("messages")
@@ -41,6 +50,8 @@ export function ContactPage() {
         .then(({ error }) => {
           if (error) {
             console.error("Error submitting contact to Supabase:", error);
+          } else {
+            sendTelegramNotification(tgMessage);
           }
           setFormState("sent");
           setForm({ name: "", email: "", phone: "", service: "", message: "" });
@@ -58,6 +69,7 @@ export function ContactPage() {
           
           const updatedMessages = [newMessage, ...existingMessages];
           localStorage.setItem("altus_messages", JSON.stringify(updatedMessages));
+          sendTelegramNotification(tgMessage);
         } catch (err) {
           console.error("Failed to save message to localStorage:", err);
         }

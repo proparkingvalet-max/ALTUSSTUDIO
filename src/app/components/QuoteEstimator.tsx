@@ -4,6 +4,7 @@ import { ArrowUpRight, CheckCircle2, ChevronRight, ChevronLeft, Calculator, Lapt
 import { useLanguage } from "@/app/context/LanguageContext";
 import { BookingCalendar } from "./BookingCalendar";
 import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
+import { sendTelegramNotification } from "@/app/utils/telegram";
 
 interface Addon {
   id: string;
@@ -126,6 +127,16 @@ export function QuoteEstimator() {
       note: `Υποβλήθηκε από τον Κοστολογητή στις δημόσιες σελίδες.`
     };
 
+    // Construct Telegram Notification Message
+    const tgMessage = `💰 <b>Νέα Ζήτηση Προσφοράς από Κοστολογητή</b>\n\n` +
+      `👤 <b>Όνομα:</b> ${name}\n` +
+      `📧 <b>Email:</b> ${email}\n` +
+      `📞 <b>Τηλέφωνο:</b> ${phone || "—"}\n\n` +
+      `💻 <b>Τύπος:</b> ${typeLabel}\n` +
+      `⚙️ <b>Μέγεθος:</b> ${compLabel}\n` +
+      `➕ <b>Πρόσθετα:</b> ${selectedAddsList || "Κανένα"}\n\n` +
+      `💵 <b>Σύνολο:</b> €${totalCost}`;
+
     const saveToLocalStorage = () => {
       try {
         const existingMessagesRaw = localStorage.getItem("altus_messages");
@@ -138,6 +149,7 @@ export function QuoteEstimator() {
         localStorage.setItem("altus_quotes", JSON.stringify([quotePayload, ...existingQuotes]));
 
         window.dispatchEvent(new Event("storage"));
+        sendTelegramNotification(tgMessage);
       } catch (err) {
         console.error("Failed to save estimator quote lead locally:", err);
       }

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from "motion/react";
 import { ChevronLeft, ChevronRight, CheckCircle2, Calendar, Clock, User, X } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
+import { sendTelegramNotification } from "@/app/utils/telegram";
 
 interface BookingCalendarProps {
   isModal?: boolean;
@@ -109,6 +110,13 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
       status: "new"
     };
 
+    // Construct Telegram Notification Message
+    const tgMessage = `📅 <b>Νέο Ραντεβού (Call Γνωριμίας)</b>\n\n` +
+      `👤 <b>Όνομα:</b> ${name}\n` +
+      `📧 <b>Email:</b> ${email}\n` +
+      `📞 <b>Τηλέφωνο:</b> ${phone || "—"}\n` +
+      `🕒 <b>Ημερομηνία/Ώρα:</b> ${formattedDate} (${selectedTimeSlot})`;
+
     if (isSupabaseConfigured && supabase) {
       supabase
         .from("messages")
@@ -116,6 +124,8 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
         .then(({ error }) => {
           if (error) {
             console.error("Error submitting booking call to Supabase:", error);
+          } else {
+            sendTelegramNotification(tgMessage);
           }
           setSubmitting(false);
           setSuccess(true);
@@ -133,6 +143,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
 
           const updated = [newBookingLead, ...existingMessages];
           localStorage.setItem("altus_messages", JSON.stringify(updated));
+          sendTelegramNotification(tgMessage);
 
           // Dispatch storage event to alert dashboard
           window.dispatchEvent(new Event("storage"));

@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { MessageSquare, X, Send, Bot, HelpCircle, Check, Loader2 } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
+import { sendTelegramNotification } from "@/app/utils/telegram";
 
 interface Message {
   id: string;
@@ -170,6 +171,11 @@ export function AltusAssistant() {
           status: "new",
         };
 
+        // Construct Telegram Message for Chatbot Lead
+        const tgMessage = `🤖 <b>Νέο Lead από AI Assistant</b>\n\n` +
+          `👤 <b>Στοιχεία:</b> ${contactInput.trim()}\n\n` +
+          `📝 <b>Συνομιλία:</b>\n${transcript}`;
+
         if (isSupabaseConfigured && supabase) {
           supabase
             .from("messages")
@@ -177,6 +183,8 @@ export function AltusAssistant() {
             .then(({ error }) => {
               if (error) {
                 console.error("Error submitting chatbot lead to Supabase:", error);
+              } else {
+                sendTelegramNotification(tgMessage);
               }
               // Dispatch event for Admin dashboard
               window.dispatchEvent(new Event("storage"));
@@ -192,6 +200,7 @@ export function AltusAssistant() {
 
           const updated = [localLead, ...existingMessages];
           localStorage.setItem("altus_messages", JSON.stringify(updated));
+          sendTelegramNotification(tgMessage);
           
           // Dispatch event for Admin dashboard
           window.dispatchEvent(new Event("storage"));
