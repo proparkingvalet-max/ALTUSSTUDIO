@@ -127,7 +127,16 @@ export function Root() {
         .from("page_views")
         .insert(viewPayload)
         .then(({ error }) => {
-          if (error) console.warn("Page view tracking error:", error.message);
+          if (error) {
+            console.warn("Page view tracking error, retrying with basic payload:", error.message);
+            // Fallback for when the device/referrer columns do not exist in the DB schema
+            supabase
+              .from("page_views")
+              .insert({ path: pathname, date })
+              .then(({ error: retryError }) => {
+                if (retryError) console.error("Failed to track page view on retry:", retryError.message);
+              });
+          }
         });
     }
 
