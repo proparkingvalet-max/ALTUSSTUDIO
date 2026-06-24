@@ -41,13 +41,13 @@ export function BlogDetailsPage() {
   const content = lang === "el" ? post.contentEl : post.contentEn;
 
   return (
-    <div className="bg-[#0A0F1E] text-[#F5F5F0] min-h-screen">
+    <div className="bg-[#0D0D11] text-[#F9FAFB] min-h-screen">
       {/* Back button header */}
       <div className="absolute top-28 left-0 right-0 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <Link
             to="/blog"
-            className="inline-flex items-center gap-2 text-[#F5F5F0]/60 hover:text-[#C9A84C] transition-colors group cursor-pointer text-xs tracking-wider uppercase font-medium"
+            className="inline-flex items-center gap-2 text-[#F9FAFB]/60 hover:text-[#DFBA73] transition-colors group cursor-pointer text-xs tracking-wider uppercase font-medium"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
@@ -65,7 +65,7 @@ export function BlogDetailsPage() {
             alt={title}
             className="w-full h-full object-cover opacity-25 filter brightness-70 scale-102"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/60 to-[#0A0F1E]/90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-[#0D0D11]/60 to-[#0D0D11]/90" />
         </div>
 
         <div className="relative max-w-4xl mx-auto px-6 z-10 w-full text-center md:text-left">
@@ -76,11 +76,11 @@ export function BlogDetailsPage() {
           >
             {/* Meta */}
             <div className="flex flex-wrap gap-4 items-center justify-center md:justify-start text-xs text-white/50 mb-6 font-mono">
-              <span className="bg-[#C9A84C]/10 border border-[#C9A84C]/35 px-3 py-1 text-[9px] tracking-wider text-[#C9A84C] uppercase font-semibold">
+              <span className="bg-[#DFBA73]/10 border border-[#DFBA73]/35 px-3 py-1 text-[9px] tracking-wider text-[#DFBA73] uppercase font-semibold">
                 {post.category}
               </span>
               <span className="flex items-center gap-1">
-                <Calendar size={12} className="text-[#C9A84C]/70" />
+                <Calendar size={12} className="text-[#DFBA73]/70" />
                 {new Date(post.date).toLocaleDateString(lang === "el" ? "el-GR" : "en-US", {
                   month: "long",
                   day: "numeric",
@@ -88,7 +88,7 @@ export function BlogDetailsPage() {
                 })}
               </span>
               <span className="flex items-center gap-1">
-                <Clock size={12} className="text-[#C9A84C]/70" />
+                <Clock size={12} className="text-[#DFBA73]/70" />
                 {lang === "el" ? post.readTimeEl : post.readTimeEn}
               </span>
             </div>
@@ -96,7 +96,7 @@ export function BlogDetailsPage() {
             <h1
               className="font-bold leading-tight mb-8"
               style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontSize: "clamp(2rem, 5vw, 3.5rem)",
               }}
             >
@@ -107,7 +107,7 @@ export function BlogDetailsPage() {
       </section>
 
       {/* Main Reading Section */}
-      <section className="py-20 bg-[#F5F5F0] text-[#0A0F1E] relative z-10">
+      <section className="py-20 bg-[#F9FAFB] text-[#0D0D11] relative z-10">
         <div className="max-w-3xl mx-auto px-6">
           <article className="space-y-6">
             {content.map((paragraph, idx) => {
@@ -119,12 +119,12 @@ export function BlogDetailsPage() {
                     initial={{ opacity: 0, y: 15 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="my-10 p-8 border-l-4 border-[#C9A84C] bg-[#C9A84C]/5 relative"
+                    className="my-10 p-8 border-l-4 border-[#DFBA73] bg-[#DFBA73]/5 relative"
                   >
-                    <Quote size={28} className="text-[#C9A84C] mb-4 opacity-40" />
+                    <Quote size={28} className="text-[#DFBA73] mb-4 opacity-40" />
                     <p
-                      className="text-base md:text-lg font-serif italic leading-relaxed text-[#0A0F1E]/80"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
+                      className="text-base md:text-lg font-serif italic leading-relaxed text-[#0D0D11]/80"
+                      style={{ fontFamily: "'Outfit', sans-serif" }}
                     >
                       {paragraph}
                     </p>
@@ -135,7 +135,7 @@ export function BlogDetailsPage() {
               return (
                 <p
                   key={idx}
-                  className="text-base md:text-lg leading-relaxed font-light text-[#0A0F1E]/75"
+                  className="text-base md:text-lg leading-relaxed font-light text-[#0D0D11]/75"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {paragraph}
@@ -152,7 +152,7 @@ export function BlogDetailsPage() {
           <div className="max-w-7xl mx-auto px-6 lg:px-12">
             <h3
               className="text-2xl font-bold font-serif text-center mb-16"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              style={{ fontFamily: "'Outfit', sans-serif" }}
             >
               {lang === "el" ? "Σχετικές Αναλύσεις" : "Related Insights"}
             </h3>
@@ -162,26 +162,26 @@ export function BlogDetailsPage() {
                 <Link
                   key={rPost.id}
                   to={`/blog/${rPost.id}`}
-                  className="group bg-[#0A0F1E] border border-white/6 hover:border-[#C9A84C]/40 p-6 transition-all duration-300 flex flex-col justify-between cursor-pointer"
+                  className="group bg-[#0D0D11] border border-white/6 hover:border-[#DFBA73]/40 p-6 transition-all duration-300 flex flex-col justify-between cursor-pointer"
                 >
                   <div>
-                    <span className="text-[#C9A84C] text-[10px] tracking-widest uppercase font-semibold block mb-3">
+                    <span className="text-[#DFBA73] text-[10px] tracking-widest uppercase font-semibold block mb-3">
                       {rPost.category}
                     </span>
                     <h4
-                      className="text-[#F5F5F0] group-hover:text-[#C9A84C] text-lg font-bold font-serif mb-3 transition-colors line-clamp-2"
-                      style={{ fontFamily: "'Playfair Display', serif" }}
+                      className="text-[#F9FAFB] group-hover:text-[#DFBA73] text-lg font-bold font-serif mb-3 transition-colors line-clamp-2"
+                      style={{ fontFamily: "'Outfit', sans-serif" }}
                     >
                       {lang === "el" ? rPost.titleEl : rPost.titleEn}
                     </h4>
                     <p
-                      className="text-[#F5F5F0]/50 text-xs leading-relaxed font-light line-clamp-2"
+                      className="text-[#F9FAFB]/50 text-xs leading-relaxed font-light line-clamp-2"
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
                     >
                       {lang === "el" ? rPost.excerptEl : rPost.excerptEn}
                     </p>
                   </div>
-                  <div className="mt-6 flex items-center gap-1 text-[#C9A84C] text-[9px] tracking-wider uppercase font-semibold">
+                  <div className="mt-6 flex items-center gap-1 text-[#DFBA73] text-[9px] tracking-wider uppercase font-semibold">
                     <span>{lang === "el" ? "Διαβαστε" : "Read Post"}</span>
                     <ArrowUpRight size={12} />
                   </div>

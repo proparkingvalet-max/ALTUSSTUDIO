@@ -2,34 +2,34 @@
 
 :root {
   --font-size: 16px;
-  --background: #F5F5F0;
-  --foreground: #0A0F1E;
+  --background: #F9FAFB;
+  --foreground: #0D0D11;
   --card: #FFFFFF;
-  --card-foreground: #0A0F1E;
+  --card-foreground: #0D0D11;
   --popover: #FFFFFF;
-  --popover-foreground: #0A0F1E;
-  --primary: #0A0F1E;
-  --primary-foreground: #F5F5F0;
+  --popover-foreground: #0D0D11;
+  --primary: #0D0D11;
+  --primary-foreground: #F9FAFB;
   --secondary: #EAEAE4;
-  --secondary-foreground: #0A0F1E;
+  --secondary-foreground: #0D0D11;
   --muted: #E4E4DE;
   --muted-foreground: #6B6B60;
-  --accent: #C9A84C;
-  --accent-foreground: #0A0F1E;
+  --accent: #DFBA73;
+  --accent-foreground: #0D0D11;
   --destructive: #d4183d;
   --destructive-foreground: #ffffff;
-  --border: rgba(10, 15, 30, 0.12);
+  --border: rgba(13, 13, 17, 0.12);
   --input: transparent;
   --input-background: #EAEAE4;
   --switch-background: #C8C8C0;
   --font-weight-medium: 500;
   --font-weight-normal: 400;
-  --ring: #C9A84C;
-  --navy: #0A0F1E;
-  --navy-light: #141929;
-  --gold: #C9A84C;
-  --gold-light: #D4B76A;
-  --offwhite: #F5F5F0;
+  --ring: #DFBA73;
+  --navy: #0D0D11;
+  --navy-light: #16161C;
+  --gold: #DFBA73;
+  --gold-light: #E6CE93;
+  --offwhite: #F9FAFB;
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -84,6 +84,7 @@
 }
 
 @theme inline {
+  --font-serif: 'Outfit', sans-serif;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-card: var(--card);
@@ -147,7 +148,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    font-family: 'Playfair Display', serif;
+    font-family: 'Outfit', sans-serif;
     font-size: var(--text-2xl);
     font-weight: 700;
     line-height: 1.15;
@@ -190,7 +191,7 @@
   html {
     scroll-behavior: smooth;
     scrollbar-width: thin;
-    scrollbar-color: #C9A84C #0A0F1E;
+    scrollbar-color: #DFBA73 #0D0D11;
   }
 
   /* Premium Custom Gold Scrollbar */
@@ -199,15 +200,15 @@
     height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: #0A0F1E;
+    background: #0D0D11;
   }
   ::-webkit-scrollbar-thumb {
-    background: #C9A84C;
+    background: #DFBA73;
     border-radius: 4px;
-    border: 2px solid #0A0F1E;
+    border: 2px solid #0D0D11;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: #D4B76A;
+    background: #E6CE93;
   }
 
   /* Endless marquee scrolling ticker animation */
@@ -224,88 +225,88 @@
 
 /* Global Light Mode overrides for sections with hardcoded dark styles */
 html.light {
-  background-color: #F5F5F0;
-  color: #0A0F1E;
+  background-color: #F9FAFB;
+  color: #0D0D11;
 }
 
-html.light .bg-\[\#0A0F1E\] {
-  background-color: #F5F5F0 !important;
+html.light .bg-\[\#0D0D11\] {
+  background-color: #F9FAFB !important;
 }
 
-html.light .bg-\[\#0C142B\] {
+html.light .bg-\[\#14141A\] {
   background-color: #FFFFFF !important;
 }
 
-html.light .text-\[\#F5F5F0\] {
-  color: #0A0F1E !important;
+html.light .text-\[\#F9FAFB\] {
+  color: #0D0D11 !important;
 }
 
-html.light .text-\[\#F5F5F0\]\/50 {
-  color: rgba(10, 15, 30, 0.5) !important;
+html.light .text-\[\#F9FAFB\]\/50 {
+  color: rgba(13, 13, 17, 0.5) !important;
 }
 
-html.light .text-\[\#F5F5F0\]\/60 {
-  color: rgba(10, 15, 30, 0.6) !important;
+html.light .text-\[\#F9FAFB\]\/60 {
+  color: rgba(13, 13, 17, 0.6) !important;
 }
 
-html.light .text-\[\#F5F5F0\]\/70 {
-  color: rgba(10, 15, 30, 0.7) !important;
+html.light .text-\[\#F9FAFB\]\/70 {
+  color: rgba(13, 13, 17, 0.7) !important;
 }
 
-html.light .text-\[\#F5F5F0\]\/80 {
-  color: rgba(10, 15, 30, 0.8) !important;
+html.light .text-\[\#F9FAFB\]\/80 {
+  color: rgba(13, 13, 17, 0.8) !important;
 }
 
 html.light .border-white\/5 {
-  border-color: rgba(10, 15, 30, 0.08) !important;
+  border-color: rgba(13, 13, 17, 0.08) !important;
 }
 
 html.light .border-white\/10 {
-  border-color: rgba(10, 15, 30, 0.12) !important;
+  border-color: rgba(13, 13, 17, 0.12) !important;
 }
 
 html.light .border-white\/15 {
-  border-color: rgba(10, 15, 30, 0.15) !important;
+  border-color: rgba(13, 13, 17, 0.15) !important;
 }
 
 html.light .border-white\/20 {
-  border-color: rgba(10, 15, 30, 0.2) !important;
+  border-color: rgba(13, 13, 17, 0.2) !important;
 }
 
 html.light .bg-white\/5 {
-  background-color: rgba(10, 15, 30, 0.05) !important;
-  color: #0A0F1E !important;
+  background-color: rgba(13, 13, 17, 0.05) !important;
+  color: #0D0D11 !important;
 }
 
 html.light .bg-white\/5:hover {
-  background-color: rgba(10, 15, 30, 0.08) !important;
+  background-color: rgba(13, 13, 17, 0.08) !important;
 }
 
 html.light .hover\:bg-white\/10:hover {
-  background-color: rgba(10, 15, 30, 0.1) !important;
+  background-color: rgba(13, 13, 17, 0.1) !important;
 }
 
 html.light .bg-white\/2 {
-  background-color: rgba(10, 15, 30, 0.02) !important;
+  background-color: rgba(13, 13, 17, 0.02) !important;
 }
 
 html.light .hover\:bg-white\/5:hover {
-  background-color: rgba(10, 15, 30, 0.05) !important;
+  background-color: rgba(13, 13, 17, 0.05) !important;
 }
 
 html.light .border-white\/25 {
-  border-color: rgba(10, 15, 30, 0.15) !important;
+  border-color: rgba(13, 13, 17, 0.15) !important;
 }
 
 html.light .bg-black\/20 {
-  background-color: rgba(10, 15, 30, 0.03) !important;
+  background-color: rgba(13, 13, 17, 0.03) !important;
 }
 
 html.light input, html.light select, html.light textarea {
-  color: #0A0F1E !important;
+  color: #0D0D11 !important;
 }
 
 html.light .bg-white\/10 {
-  background-color: rgba(10, 15, 30, 0.08) !important;
+  background-color: rgba(13, 13, 17, 0.08) !important;
 }
 

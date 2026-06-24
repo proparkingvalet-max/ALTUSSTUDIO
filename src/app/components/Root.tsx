@@ -166,8 +166,8 @@ export function Root() {
 
   if (loadingMaintenance) {
     return (
-      <div className="min-h-screen bg-[#0A0F1E] flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-[#C9A84C]/40 border-t-[#C9A84C] rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#0D0D11] flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-[#DFBA73]/40 border-t-[#DFBA73] rounded-full animate-spin" />
       </div>
     );
   }
@@ -192,9 +192,9 @@ export function Root() {
           bottom: 24,
           left: 24,
           zIndex: 99999,
-          background: "rgba(10, 15, 30, 0.95)",
+          background: "rgba(13, 13, 17, 0.95)",
           backdropFilter: "blur(8px)",
-          border: "1px solid rgba(201, 168, 76, 0.3)",
+          border: "1px solid rgba(223, 186, 115, 0.3)",
           borderRadius: 16,
           padding: "10px 20px",
           display: "flex",
@@ -222,7 +222,7 @@ export function Root() {
         <Link
           to="/admin"
           style={{
-            color: "#C9A84C",
+            color: "#DFBA73",
             fontSize: 13,
             fontWeight: 700,
             textDecoration: "none",
@@ -232,7 +232,7 @@ export function Root() {
             transition: "color 0.2s"
           }}
           onMouseEnter={(e) => (e.currentTarget.style.color = "#ebd083")}
-          onMouseLeave={(e) => (e.currentTarget.style.color = "#C9A84C")}
+          onMouseLeave={(e) => (e.currentTarget.style.color = "#DFBA73")}
         >
           <span>Dashboard</span>
           <span style={{ fontSize: 12 }}>→</span>
@@ -244,11 +244,11 @@ export function Root() {
   return (
     <ThemeProvider>
       <LanguageProvider>
-        <div className="min-h-screen bg-[#F5F5F0]">
+        <div className="min-h-screen bg-[#F9FAFB]">
           <CustomCursor />
           {/* Global Scroll Progress Bar */}
           <div
-            className="fixed top-0 left-0 h-[3px] bg-[#C9A84C] z-[9999] transition-all duration-75 ease-out"
+            className="fixed top-0 left-0 h-[3px] bg-[#DFBA73] z-[9999] transition-all duration-75 ease-out"
             style={{ width: `${scrollProgress}%` }}
           />
           <Navbar />

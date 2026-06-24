@@ -216,26 +216,26 @@ export function AltusAssistant() {
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen((prev) => !prev)}
-        className="relative w-14 h-14 bg-[#0A0F1E] border border-[#C9A84C]/40 hover:border-[#C9A84C] text-[#C9A84C] rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(201,168,76,0.3)] hover:shadow-[0_0_20px_rgba(201,168,76,0.5)] transition-all duration-300 cursor-pointer group"
+        className="relative w-14 h-14 bg-[#0D0D11] border border-[#DFBA73]/40 hover:border-[#DFBA73] text-[#DFBA73] rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(223, 186, 115,0.3)] hover:shadow-[0_0_20px_rgba(223, 186, 115,0.5)] transition-all duration-300 cursor-pointer group"
       >
-        <span className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-[#C9A84C] to-[#D4B76A] opacity-20 group-hover:opacity-40 blur transition-opacity duration-300 animate-pulse" />
+        <span className="absolute -inset-0.5 rounded-full bg-gradient-to-r from-[#DFBA73] to-[#E6CE93] opacity-20 group-hover:opacity-40 blur transition-opacity duration-300 animate-pulse" />
         {isOpen ? <X size={22} className="relative z-10" /> : <MessageSquare size={22} className="relative z-10" />}
       </button>
 
       {/* Chat Window (Glassmorphic Pane) */}
       {isOpen && (
         <div
-          className="absolute bottom-18 right-0 w-[350px] sm:w-[380px] h-[500px] bg-[#0A0F1E]/95 border border-[#C9A84C]/25 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-md flex flex-col overflow-hidden transition-all duration-300"
+          className="absolute bottom-18 right-0 w-[350px] sm:w-[380px] h-[500px] bg-[#0D0D11]/95 border border-[#DFBA73]/25 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.6)] backdrop-blur-md flex flex-col overflow-hidden transition-all duration-300"
           style={{ fontFamily: "'DM Sans', sans-serif" }}
         >
           {/* Header */}
-          <div className="p-4 bg-gradient-to-r from-[#0C142B] to-[#0A0F1E] border-b border-white/5 flex items-center justify-between">
+          <div className="p-4 bg-gradient-to-r from-[#14141A] to-[#0D0D11] border-b border-white/5 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-full bg-[#C9A84C]/15 border border-[#C9A84C]/30 flex items-center justify-center">
-                <Bot size={18} className="text-[#C9A84C]" />
+              <div className="w-9 h-9 rounded-full bg-[#DFBA73]/15 border border-[#DFBA73]/30 flex items-center justify-center">
+                <Bot size={18} className="text-[#DFBA73]" />
               </div>
               <div>
-                <h5 className="text-[#F5F5F0] text-sm font-semibold tracking-wide">Altus AI Assistant</h5>
+                <h5 className="text-[#F9FAFB] text-sm font-semibold tracking-wide">Altus AI Assistant</h5>
                 <span className="text-[#4CAF50] text-[10px] flex items-center gap-1">
                   <span className="w-1.5 h-1.5 rounded-full bg-[#4CAF50] inline-block animate-ping" />
                   {lang === "el" ? "Συνδεδεμένος" : "Online"}
@@ -244,7 +244,7 @@ export function AltusAssistant() {
             </div>
             <button
               onClick={() => setIsOpen(false)}
-              className="text-[#F5F5F0]/50 hover:text-white transition-colors cursor-pointer"
+              className="text-[#F9FAFB]/50 hover:text-white transition-colors cursor-pointer"
             >
               <X size={18} />
             </button>
@@ -260,8 +260,8 @@ export function AltusAssistant() {
                 <div
                   className={`max-w-[80%] p-3.5 rounded-2xl text-sm leading-relaxed ${
                     msg.sender === "user"
-                      ? "bg-[#C9A84C] text-[#0A0F1E] rounded-tr-none font-medium"
-                      : "bg-white/5 border border-white/10 text-[#F5F5F0]/90 rounded-tl-none font-light"
+                      ? "bg-[#DFBA73] text-[#0D0D11] rounded-tr-none font-medium"
+                      : "bg-white/5 border border-white/10 text-[#F9FAFB]/90 rounded-tl-none font-light"
                   }`}
                 >
                   {msg.text}
@@ -271,8 +271,8 @@ export function AltusAssistant() {
 
             {isTyping && (
               <div className="flex justify-start">
-                <div className="bg-white/5 border border-white/10 text-[#F5F5F0]/50 p-3 rounded-2xl rounded-tl-none flex items-center gap-1.5">
-                  <Loader2 size={14} className="animate-spin text-[#C9A84C]" />
+                <div className="bg-white/5 border border-white/10 text-[#F9FAFB]/50 p-3 rounded-2xl rounded-tl-none flex items-center gap-1.5">
+                  <Loader2 size={14} className="animate-spin text-[#DFBA73]" />
                   <span className="text-xs font-mono">typing...</span>
                 </div>
               </div>
@@ -284,7 +284,7 @@ export function AltusAssistant() {
           {/* Quick Prompts Options */}
           {!isWaitingForContact && !leadSubmitted && (
             <div className="p-3 border-t border-white/5 bg-black/10 space-y-1.5 shrink-0">
-              <p className="text-[#C9A84C]/50 text-[10px] uppercase tracking-wider font-semibold px-1 flex items-center gap-1">
+              <p className="text-[#DFBA73]/50 text-[10px] uppercase tracking-wider font-semibold px-1 flex items-center gap-1">
                 <HelpCircle size={10} />
                 {lang === "el" ? "Επιλέξτε ερώτηση:" : "Select a question:"}
               </p>
@@ -294,7 +294,7 @@ export function AltusAssistant() {
                     key={p.id}
                     onClick={() => handlePromptClick(p.label, p.botReply, p.triggerContact)}
                     disabled={isTyping}
-                    className="w-full text-left p-2.5 bg-white/2 hover:bg-white/5 border border-white/5 hover:border-[#C9A84C]/35 rounded-lg text-xs text-[#F5F5F0]/80 hover:text-white transition-all duration-200 cursor-pointer disabled:opacity-50"
+                    className="w-full text-left p-2.5 bg-white/2 hover:bg-white/5 border border-white/5 hover:border-[#DFBA73]/35 rounded-lg text-xs text-[#F9FAFB]/80 hover:text-white transition-all duration-200 cursor-pointer disabled:opacity-50"
                   >
                     {p.label}
                   </button>
@@ -307,7 +307,7 @@ export function AltusAssistant() {
           {isWaitingForContact && (
             <form
               onSubmit={handleContactSubmit}
-              className="p-3 border-t border-white/5 bg-[#0C142B] flex gap-2 shrink-0 items-center"
+              className="p-3 border-t border-white/5 bg-[#14141A] flex gap-2 shrink-0 items-center"
             >
               <input
                 type="text"
@@ -315,11 +315,11 @@ export function AltusAssistant() {
                 onChange={(e) => setContactInput(e.target.value)}
                 placeholder={lang === "el" ? "Email ή Τηλέφωνο..." : "Email or Phone..."}
                 required
-                className="flex-1 px-3 py-2.5 bg-black/40 border border-white/10 rounded-lg text-[#F5F5F0] text-xs outline-none focus:border-[#C9A84C]/50"
+                className="flex-1 px-3 py-2.5 bg-black/40 border border-white/10 rounded-lg text-[#F9FAFB] text-xs outline-none focus:border-[#DFBA73]/50"
               />
               <button
                 type="submit"
-                className="p-2.5 bg-[#C9A84C] hover:bg-[#D4B76A] text-[#0A0F1E] rounded-lg transition-colors cursor-pointer"
+                className="p-2.5 bg-[#DFBA73] hover:bg-[#E6CE93] text-[#0D0D11] rounded-lg transition-colors cursor-pointer"
               >
                 <Send size={14} />
               </button>

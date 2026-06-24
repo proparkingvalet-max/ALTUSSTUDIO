@@ -70,18 +70,18 @@ export function CustomCursor() {
     <>
       {/* Outer Ring */}
       <motion.div
-        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-[#C9A84C]/40 pointer-events-none z-[99999] -translate-x-1/2 -translate-y-1/2 hidden lg:block"
+        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-[#DFBA73]/40 pointer-events-none z-[99999] -translate-x-1/2 -translate-y-1/2 hidden lg:block"
         style={{
           x: ringX,
           y: ringY,
           scale: isHovered ? 1.6 : 1,
-          backgroundColor: isHovered ? "rgba(201, 168, 76, 0.08)" : "transparent",
-          borderColor: isHovered ? "#C9A84C" : "rgba(201, 168, 76, 0.4)",
+          backgroundColor: isHovered ? "rgba(223, 186, 115, 0.08)" : "transparent",
+          borderColor: isHovered ? "#DFBA73" : "rgba(223, 186, 115, 0.4)",
         }}
       />
       {/* Inner Dot */}
       <motion.div
-        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-[#C9A84C] pointer-events-none z-[99999] -translate-x-1/2 -translate-y-1/2 hidden lg:block"
+        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-[#DFBA73] pointer-events-none z-[99999] -translate-x-1/2 -translate-y-1/2 hidden lg:block"
         style={{
           x: dotX,
           y: dotY,

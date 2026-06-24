@@ -42,12 +42,12 @@ export function Navbar() {
   }, [location.pathname]);
 
   const navBg = scrolled
-    ? "bg-[#0A0F1E]/95 backdrop-blur-md shadow-lg shadow-black/20"
+    ? "bg-[#0D0D11]/95 backdrop-blur-md shadow-lg shadow-black/20"
     : isVisualDark
     ? "bg-transparent"
-    : "bg-[#F5F5F0]/95 backdrop-blur-md shadow-sm shadow-black/5";
+    : "bg-[#F9FAFB]/95 backdrop-blur-md shadow-sm shadow-black/5";
 
-  const textColor = isVisualDark || scrolled ? "text-[#F5F5F0]" : "text-[#0A0F1E]";
+  const textColor = isVisualDark || scrolled ? "text-[#F9FAFB]" : "text-[#0D0D11]";
   const activeLogo = theme === "light" && !scrolled ? logoDark : altusLogo;
 
   return (
@@ -66,12 +66,12 @@ export function Navbar() {
             <Link
               key={link.to}
               to={link.to}
-              className={`${textColor} text-sm tracking-wider uppercase transition-all duration-300 relative group hover:text-[#C9A84C]`}
+              className={`${textColor} text-sm tracking-wider uppercase transition-all duration-300 relative group hover:text-[#DFBA73]`}
               style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 400, letterSpacing: "0.1em" }}
             >
               {link.label}
               <span
-                className={`absolute -bottom-0.5 left-0 h-px bg-[#C9A84C] transition-all duration-300 ${
+                className={`absolute -bottom-0.5 left-0 h-px bg-[#DFBA73] transition-all duration-300 ${
                   location.pathname === link.to ? "w-full" : "w-0 group-hover:w-full"
                 }`}
               />
@@ -81,7 +81,7 @@ export function Navbar() {
           {/* Language Toggle */}
           <div
             className="flex items-center gap-0 rounded-full border overflow-hidden"
-            style={{ borderColor: isVisualDark || scrolled ? "rgba(255,255,255,0.15)" : "rgba(10,15,30,0.15)" }}
+            style={{ borderColor: isVisualDark || scrolled ? "rgba(255,255,255,0.15)" : "rgba(13, 13, 17,0.15)" }}
           >
             {(["el", "en"] as const).map((l) => (
               <button
@@ -95,8 +95,8 @@ export function Navbar() {
                   fontFamily: "'DM Sans', sans-serif",
                   letterSpacing: "0.1em",
                   textTransform: "uppercase",
-                  background: lang === l ? "#C9A84C" : "transparent",
-                  color: lang === l ? "#0A0F1E" : (isVisualDark || scrolled ? "rgba(255,255,255,0.5)" : "rgba(10,15,30,0.4)"),
+                  background: lang === l ? "#DFBA73" : "transparent",
+                  color: lang === l ? "#0D0D11" : (isVisualDark || scrolled ? "rgba(255,255,255,0.5)" : "rgba(13, 13, 17,0.4)"),
                   border: "none",
                   cursor: "pointer",
                 }}
@@ -111,8 +111,8 @@ export function Navbar() {
             onClick={toggleTheme}
             className={`p-2 rounded-full border transition-all duration-300 cursor-pointer ${
               isVisualDark || scrolled
-                ? "border-white/10 text-[#F5F5F0] hover:bg-white/5"
-                : "border-black/10 text-[#0A0F1E] hover:bg-black/5"
+                ? "border-white/10 text-[#F9FAFB] hover:bg-white/5"
+                : "border-black/10 text-[#0D0D11] hover:bg-black/5"
             }`}
             title={theme === "dark" ? "Light Mode" : "Dark Mode"}
           >
@@ -121,7 +121,7 @@ export function Navbar() {
 
           <Link
             to="/contact"
-            className="px-6 py-2.5 bg-[#C9A84C] text-[#0A0F1E] text-sm tracking-wider uppercase hover:bg-[#D4B76A] transition-colors duration-300"
+            className="px-6 py-2.5 bg-[#DFBA73] text-[#0D0D11] text-sm tracking-wider uppercase hover:bg-[#E6CE93] transition-colors duration-300"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.1em" }}
           >
             {t("nav.cta")}
@@ -130,7 +130,7 @@ export function Navbar() {
 
         {/* Mobile: lang toggle + theme toggle + hamburger */}
         <div className="md:hidden flex items-center gap-3">
-          <div className="flex items-center rounded-full overflow-hidden border" style={{ borderColor: isVisualDark || scrolled ? "rgba(255,255,255,0.15)" : "rgba(10,15,30,0.15)" }}>
+          <div className="flex items-center rounded-full overflow-hidden border" style={{ borderColor: isVisualDark || scrolled ? "rgba(255,255,255,0.15)" : "rgba(13, 13, 17,0.15)" }}>
             {(["el", "en"] as const).map((l) => (
               <button
                 key={l}
@@ -139,8 +139,8 @@ export function Navbar() {
                   padding: "4px 10px",
                   fontSize: 10,
                   fontWeight: lang === l ? 700 : 400,
-                  background: lang === l ? "#C9A84C" : "transparent",
-                  color: lang === l ? "#0A0F1E" : (isVisualDark || scrolled ? "rgba(255,255,255,0.5)" : "rgba(10,15,30,0.4)"),
+                  background: lang === l ? "#DFBA73" : "transparent",
+                  color: lang === l ? "#0D0D11" : (isVisualDark || scrolled ? "rgba(255,255,255,0.5)" : "rgba(13, 13, 17,0.4)"),
                   border: "none",
                   cursor: "pointer",
                   textTransform: "uppercase",
@@ -158,8 +158,8 @@ export function Navbar() {
             onClick={toggleTheme}
             className={`p-2 rounded-full border transition-all duration-300 cursor-pointer ${
               isVisualDark || scrolled
-                ? "border-white/10 text-[#F5F5F0] hover:bg-white/5"
-                : "border-black/10 text-[#0A0F1E] hover:bg-black/5"
+                ? "border-white/10 text-[#F9FAFB] hover:bg-white/5"
+                : "border-black/10 text-[#0D0D11] hover:bg-black/5"
             }`}
             title={theme === "dark" ? "Light Mode" : "Dark Mode"}
           >
@@ -179,7 +179,7 @@ export function Navbar() {
       <div
         className={`md:hidden transition-all duration-500 overflow-hidden ${
           menuOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-        } bg-[#0A0F1E] border-t border-white/10`}
+        } bg-[#0D0D11] border-t border-white/10`}
       >
         <div className="px-6 py-8 flex flex-col gap-6">
           {navLinks.map((link) => (
@@ -187,7 +187,7 @@ export function Navbar() {
               key={link.to}
               to={link.to}
               className={`text-base tracking-wider uppercase transition-colors ${
-                location.pathname === link.to ? "text-[#C9A84C]" : "text-[#F5F5F0] hover:text-[#C9A84C]"
+                location.pathname === link.to ? "text-[#DFBA73]" : "text-[#F9FAFB] hover:text-[#DFBA73]"
               }`}
               style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.12em" }}
             >
@@ -196,7 +196,7 @@ export function Navbar() {
           ))}
           <Link
             to="/contact"
-            className="mt-2 px-6 py-3 bg-[#C9A84C] text-[#0A0F1E] text-sm tracking-wider uppercase text-center hover:bg-[#D4B76A] transition-colors"
+            className="mt-2 px-6 py-3 bg-[#DFBA73] text-[#0D0D11] text-sm tracking-wider uppercase text-center hover:bg-[#E6CE93] transition-colors"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}
           >
             {t("nav.ctaMobile")}

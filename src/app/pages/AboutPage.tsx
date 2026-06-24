@@ -44,7 +44,7 @@ export function AboutPage() {
   const philosophyItems = (t("aboutPage.philosophy.items") as unknown as { title: string; desc: string }[]) || [];
 
   return (
-    <div className="bg-[#0A0F1E] text-[#F5F5F0]">
+    <div className="bg-[#0D0D11] text-[#F9FAFB]">
       {/* Hero Section */}
       <section className="pt-44 pb-28 relative overflow-hidden">
         {/* Geometric decorations */}
@@ -67,9 +67,9 @@ export function AboutPage() {
             className="max-w-3xl"
           >
             <div className="inline-flex items-center gap-3 mb-6 justify-center lg:justify-start">
-              <div className="w-8 h-px bg-[#C9A84C]" />
+              <div className="w-8 h-px bg-[#DFBA73]" />
               <span
-                className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+                className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {t("aboutPage.hero.label")}
@@ -78,18 +78,18 @@ export function AboutPage() {
             <h1
               className="leading-[1.1] mb-8"
               style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
                 fontWeight: 700,
               }}
             >
               {t("aboutPage.hero.heading1")}{" "}
-              <em style={{ fontStyle: "italic", color: "#C9A84C" }}>
+              <em style={{ fontStyle: "italic", color: "#DFBA73" }}>
                 {t("aboutPage.hero.heading2")}
               </em>
             </h1>
             <p
-              className="text-[#F5F5F0]/60 text-lg md:text-xl font-light leading-relaxed"
+              className="text-[#F9FAFB]/60 text-lg md:text-xl font-light leading-relaxed"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {t("aboutPage.hero.sub")}
@@ -99,18 +99,18 @@ export function AboutPage() {
       </section>
 
       {/* Philosophy Section */}
-      <section className="py-24 bg-[#F5F5F0] text-[#0A0F1E]">
+      <section className="py-24 bg-[#F9FAFB] text-[#0D0D11]">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center mb-16">
             <span
-              className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase mb-3 block"
+              className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase mb-3 block"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {t("home.about.label")}
             </span>
             <h2
               className="text-3xl md:text-4xl font-bold"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              style={{ fontFamily: "'Outfit', sans-serif" }}
             >
               {t("aboutPage.philosophy.title")}
             </h2>
@@ -126,19 +126,19 @@ export function AboutPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: i * 0.15 }}
-                  className="bg-white border border-[#0A0F1E]/5 p-10 hover:shadow-[0_20px_50px_rgba(10,15,30,0.06)] hover:border-[#C9A84C]/20 transition-all duration-300 relative group"
+                  className="bg-white border border-[#0D0D11]/5 p-10 hover:shadow-[0_20px_50px_rgba(13, 13, 17,0.06)] hover:border-[#DFBA73]/20 transition-all duration-300 relative group"
                 >
-                  <div className="w-12 h-12 rounded-full border border-[#0A0F1E]/10 flex items-center justify-center mb-6 group-hover:border-[#C9A84C] transition-colors">
-                    <Icon size={20} className="text-[#C9A84C]" />
+                  <div className="w-12 h-12 rounded-full border border-[#0D0D11]/10 flex items-center justify-center mb-6 group-hover:border-[#DFBA73] transition-colors">
+                    <Icon size={20} className="text-[#DFBA73]" />
                   </div>
                   <h3
                     className="text-xl font-semibold mb-4"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
+                    style={{ fontFamily: "'Outfit', sans-serif" }}
                   >
                     {item.title}
                   </h3>
                   <p
-                    className="text-[#0A0F1E]/60 text-sm leading-relaxed"
+                    className="text-[#0D0D11]/60 text-sm leading-relaxed"
                     style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                   >
                     {item.desc}
@@ -155,14 +155,14 @@ export function AboutPage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <div className="text-center mb-20">
             <span
-              className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase mb-3 block"
+              className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase mb-3 block"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {t("aboutPage.team.title")}
             </span>
             <h2
               className="text-3xl md:text-4xl font-bold font-serif"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              style={{ fontFamily: "'Outfit', sans-serif" }}
             >
               {t("aboutPage.team.title") === "Our Team" ? "The Minds Behind Altus" : "Οι Άνθρωποι της Altus"}
             </h2>
@@ -176,27 +176,27 @@ export function AboutPage() {
                 whileInView={{ opacity: 1, scale: 1 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: i * 0.12 }}
-                className="bg-[#141929] border border-white/6 hover:border-[#C9A84C]/45 transition-all duration-300 p-8 flex flex-col justify-between group"
+                className="bg-[#1C1C24] border border-white/6 hover:border-[#DFBA73]/45 transition-all duration-300 p-8 flex flex-col justify-between group"
               >
                 <div>
                   {/* Monogram placeholder */}
-                  <div className="w-16 h-16 rounded-full border border-white/10 bg-[#0A0F1E] flex items-center justify-center text-[#C9A84C] text-lg font-bold font-serif mb-8 group-hover:shadow-[0_0_20px_rgba(201,168,76,0.3)] transition-all">
+                  <div className="w-16 h-16 rounded-full border border-white/10 bg-[#0D0D11] flex items-center justify-center text-[#DFBA73] text-lg font-bold font-serif mb-8 group-hover:shadow-[0_0_20px_rgba(223, 186, 115,0.3)] transition-all">
                     {member.initials}
                   </div>
                   <h3
-                    className="text-lg font-semibold text-[#F5F5F0]"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
+                    className="text-lg font-semibold text-[#F9FAFB]"
+                    style={{ fontFamily: "'Outfit', sans-serif" }}
                   >
                     {t("nav.about") === "About" ? member.nameEn : member.name}
                   </h3>
                   <p
-                    className="text-[#C9A84C] text-xs tracking-wider uppercase mt-1 mb-6 font-medium"
+                    className="text-[#DFBA73] text-xs tracking-wider uppercase mt-1 mb-6 font-medium"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
                     {t(`aboutPage.team.roles.${member.roleKey}`)}
                   </p>
                   <p
-                    className="text-[#F5F5F0]/50 text-sm leading-relaxed font-light"
+                    className="text-[#F9FAFB]/50 text-sm leading-relaxed font-light"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
                     {t("nav.about") === "About" ? member.descEn : member.descEl}
@@ -209,18 +209,18 @@ export function AboutPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-24 bg-[#F5F5F0] text-[#0A0F1E] text-center">
+      <section className="py-24 bg-[#F9FAFB] text-[#0D0D11] text-center">
         <div className="max-w-3xl mx-auto px-6">
           <h2
             className="text-3xl md:text-5xl font-bold mb-6 leading-tight"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            style={{ fontFamily: "'Outfit', sans-serif" }}
           >
             {t("nav.about") === "About" 
               ? "Let's turn your vision into digital reality" 
               : "Ας μετατρέψουμε το όραμά σας σε ψηφιακή πραγματικότητα"}
           </h2>
           <p
-            className="text-[#0A0F1E]/55 text-sm md:text-base max-w-xl mx-auto mb-10 leading-relaxed"
+            className="text-[#0D0D11]/55 text-sm md:text-base max-w-xl mx-auto mb-10 leading-relaxed"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
           >
             {t("nav.about") === "About"
@@ -229,7 +229,7 @@ export function AboutPage() {
           </p>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-3 px-10 py-5 bg-[#0A0F1E] text-[#F5F5F0] text-sm tracking-wider uppercase hover:bg-[#141929] transition-all group"
+            className="inline-flex items-center gap-3 px-10 py-5 bg-[#0D0D11] text-[#F9FAFB] text-sm tracking-wider uppercase hover:bg-[#1C1C24] transition-all group"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.12em" }}
           >
             {t("home.cta.btn")}

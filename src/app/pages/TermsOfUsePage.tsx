@@ -7,7 +7,7 @@ export function TermsOfUsePage() {
   }, []);
 
   return (
-    <div className="bg-[#0A0F1E] text-[#F5F5F0] min-h-screen pt-40 pb-24">
+    <div className="bg-[#0D0D11] text-[#F9FAFB] min-h-screen pt-40 pb-24">
       <div className="absolute inset-0 pointer-events-none opacity-[0.03] select-none">
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
           <defs>
@@ -26,32 +26,32 @@ export function TermsOfUsePage() {
           transition={{ duration: 0.7 }}
         >
           <div className="flex items-center gap-4 mb-6">
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#DFBA73]" />
             <span
-              className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+              className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Νομικά Έγγραφα
             </span>
           </div>
           <h1
-            className="text-[#F5F5F0] mb-12"
+            className="text-[#F9FAFB] mb-12"
             style={{
-              fontFamily: "'Playfair Display', serif",
+              fontFamily: "'Outfit', sans-serif",
               fontSize: "clamp(2.5rem, 5vw, 4rem)",
               fontWeight: 700,
               lineHeight: 1.1,
             }}
           >
-            Όροι <em style={{ fontStyle: "italic", color: "#C9A84C" }}>Χρήσης</em>
+            Όροι <em style={{ fontStyle: "italic", color: "#DFBA73" }}>Χρήσης</em>
           </h1>
 
           <div
-            className="space-y-8 text-[#F5F5F0]/80 leading-relaxed font-light text-sm md:text-base"
+            className="space-y-8 text-[#F9FAFB]/80 leading-relaxed font-light text-sm md:text-base"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             <section className="space-y-4">
-              <h2 className="text-[#C9A84C] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h2 className="text-[#DFBA73] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 1. Αποδοχή Όρων
               </h2>
               <p>
@@ -60,7 +60,7 @@ export function TermsOfUsePage() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-[#C9A84C] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h2 className="text-[#DFBA73] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 2. Παροχή Υπηρεσιών
               </h2>
               <p>
@@ -69,7 +69,7 @@ export function TermsOfUsePage() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-[#C9A84C] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h2 className="text-[#DFBA73] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 3. Πνευματική Ιδιοκτησία
               </h2>
               <p>
@@ -78,7 +78,7 @@ export function TermsOfUsePage() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-[#C9A84C] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h2 className="text-[#DFBA73] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 4. Περιορισμός Ευθύνης
               </h2>
               <p>
@@ -87,7 +87,7 @@ export function TermsOfUsePage() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-[#C9A84C] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h2 className="text-[#DFBA73] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 5. Σύνδεσμοι προς Τρίτους
               </h2>
               <p>
@@ -96,7 +96,7 @@ export function TermsOfUsePage() {
             </section>
 
             <section className="space-y-4">
-              <h2 className="text-[#C9A84C] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <h2 className="text-[#DFBA73] text-lg md:text-xl font-semibold" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 6. Τροποποιήσεις Όρων
               </h2>
               <p>

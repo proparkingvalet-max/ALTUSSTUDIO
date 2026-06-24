@@ -88,7 +88,7 @@ export function ContactPage() {
   ];
 
   return (
-    <div className="bg-[#0A0F1E]">
+    <div className="bg-[#0D0D11]">
       {/* Hero */}
       <section className="pt-40 pb-20 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
@@ -104,21 +104,21 @@ export function ContactPage() {
         <div className="relative max-w-7xl mx-auto px-6 lg:px-12">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7 }}>
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-8 h-px bg-[#C9A84C]" />
-              <span className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              <div className="w-8 h-px bg-[#DFBA73]" />
+              <span className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 {t("contact.hero.label")}
               </span>
             </div>
             <h1
-              className="text-[#F5F5F0] max-w-2xl"
-              style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2.5rem, 5vw, 4.5rem)", fontWeight: 700, lineHeight: 1.1 }}
+              className="text-[#F9FAFB] max-w-2xl"
+              style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(2.5rem, 5vw, 4.5rem)", fontWeight: 700, lineHeight: 1.1 }}
             >
               {t("contact.hero.heading1")}
               <br />
-              <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("contact.hero.heading2")}</em>
+              <em style={{ fontStyle: "italic", color: "#DFBA73" }}>{t("contact.hero.heading2")}</em>
             </h1>
             <p
-              className="text-[#F5F5F0]/50 mt-6 max-w-md"
+              className="text-[#F9FAFB]/50 mt-6 max-w-md"
               style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "1.05rem", lineHeight: 1.8 }}
             >
               {t("contact.hero.sub")}
@@ -128,14 +128,14 @@ export function ContactPage() {
       </section>
 
       {/* Main content */}
-      <section className="bg-[#F5F5F0]">
+      <section className="bg-[#F9FAFB]">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 py-24 grid grid-cols-1 lg:grid-cols-12 gap-16">
           {/* Left — info */}
           <div className="lg:col-span-4 space-y-12">
             <div>
               <h2
-                className="text-[#0A0F1E] mb-8"
-                style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.6rem", fontWeight: 700 }}
+                className="text-[#0D0D11] mb-8"
+                style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1.6rem", fontWeight: 700 }}
               >
                 {t("contact.info.email")} & {t("contact.info.phone")}
               </h2>
@@ -146,14 +146,14 @@ export function ContactPage() {
                   { Icon: Send, label: "Telegram", value: "@altus_studio" },
                 ].map(({ Icon, label, value }) => (
                   <div key={label} className="flex items-start gap-4">
-                    <div className="w-10 h-10 border border-[#0A0F1E]/15 flex items-center justify-center shrink-0">
-                      <Icon size={16} className="text-[#C9A84C]" />
+                    <div className="w-10 h-10 border border-[#0D0D11]/15 flex items-center justify-center shrink-0">
+                      <Icon size={16} className="text-[#DFBA73]" />
                     </div>
                     <div>
-                      <p className="text-[#0A0F1E]/40 text-xs tracking-widest uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      <p className="text-[#0D0D11]/40 text-xs tracking-widest uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         {label}
                       </p>
-                      <p className="text-[#0A0F1E] mt-0.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      <p className="text-[#0D0D11] mt-0.5" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         {value}
                       </p>
                     </div>
@@ -162,26 +162,26 @@ export function ContactPage() {
               </div>
             </div>
 
-            <div className="border-t border-[#0A0F1E]/10 pt-10">
+            <div className="border-t border-[#0D0D11]/10 pt-10">
               <p
-                className="text-[#0A0F1E]/40 text-xs tracking-widest uppercase mb-6"
+                className="text-[#0D0D11]/40 text-xs tracking-widest uppercase mb-6"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {t("contact.info.hours")}
               </p>
-              <p style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.3rem", fontWeight: 700, color: "#C9A84C" }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1.3rem", fontWeight: 700, color: "#DFBA73" }}>
                 {t("contact.info.hoursVal")}
               </p>
-              <p className="text-[#0A0F1E]/55 mt-2 text-sm" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}>
+              <p className="text-[#0D0D11]/55 mt-2 text-sm" style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}>
                 {t("contact.info.response")}
               </p>
             </div>
 
-            <div className="bg-[#0A0F1E] p-8">
-              <p className="text-[#C9A84C] text-xs tracking-[0.25em] uppercase mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+            <div className="bg-[#0D0D11] p-8">
+              <p className="text-[#DFBA73] text-xs tracking-[0.25em] uppercase mb-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 &lt; 24h
               </p>
-              <p className="text-[#F5F5F0]" style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.1rem", fontWeight: 600 }}>
+              <p className="text-[#F9FAFB]" style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1.1rem", fontWeight: 600 }}>
                 {t("contact.info.response")}
               </p>
             </div>
@@ -190,14 +190,14 @@ export function ContactPage() {
           {/* Right — form */}
           <div className="lg:col-span-8">
             {/* Tab selector */}
-            <div className="flex gap-6 border-b border-[#0A0F1E]/10 pb-4 mb-8">
+            <div className="flex gap-6 border-b border-[#0D0D11]/10 pb-4 mb-8">
               <button
                 type="button"
                 onClick={() => setActiveTab("message")}
                 className={`pb-2 text-sm tracking-wider uppercase font-semibold transition-all border-b-2 cursor-pointer ${
                   activeTab === "message"
-                    ? "border-[#C9A84C] text-[#0A0F1E] font-bold"
-                    : "border-transparent text-[#0A0F1E]/40 hover:text-[#0A0F1E]/60"
+                    ? "border-[#DFBA73] text-[#0D0D11] font-bold"
+                    : "border-transparent text-[#0D0D11]/40 hover:text-[#0D0D11]/60"
                 }`}
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
@@ -208,8 +208,8 @@ export function ContactPage() {
                 onClick={() => setActiveTab("booking")}
                 className={`pb-2 text-sm tracking-wider uppercase font-semibold transition-all border-b-2 cursor-pointer ${
                   activeTab === "booking"
-                    ? "border-[#C9A84C] text-[#0A0F1E] font-bold"
-                    : "border-transparent text-[#0A0F1E]/40 hover:text-[#0A0F1E]/60"
+                    ? "border-[#DFBA73] text-[#0D0D11] font-bold"
+                    : "border-transparent text-[#0D0D11]/40 hover:text-[#0D0D11]/60"
                 }`}
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
@@ -224,10 +224,10 @@ export function ContactPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   className="h-full flex flex-col items-center justify-center text-center py-24"
                 >
-                  <CheckCircle2 size={48} className="text-[#C9A84C] mb-6" />
+                  <CheckCircle2 size={48} className="text-[#DFBA73] mb-6" />
                   <h3
-                    className="text-[#0A0F1E] mb-4"
-                    style={{ fontFamily: "'Playfair Display', serif", fontSize: "2rem", fontWeight: 700 }}
+                    className="text-[#0D0D11] mb-4"
+                    style={{ fontFamily: "'Outfit', sans-serif", fontSize: "2rem", fontWeight: 700 }}
                   >
                     {t("contact.form.success")}
                   </h3>
@@ -243,7 +243,7 @@ export function ContactPage() {
                       <div key={id} className="group">
                         <label
                           htmlFor={id}
-                          className="block text-[#0A0F1E]/50 text-xs tracking-widest uppercase mb-2"
+                          className="block text-[#0D0D11]/50 text-xs tracking-widest uppercase mb-2"
                           style={{ fontFamily: "'DM Sans', sans-serif" }}
                         >
                           {label}
@@ -255,7 +255,7 @@ export function ContactPage() {
                           placeholder={placeholder}
                           value={form[id as keyof typeof form]}
                           onChange={(e) => setForm((f) => ({ ...f, [id]: e.target.value }))}
-                          className="w-full bg-transparent border-b border-[#0A0F1E]/20 focus:border-[#C9A84C] pb-3 pt-1 text-[#0A0F1E] outline-none placeholder-[#0A0F1E]/25 transition-colors duration-300"
+                          className="w-full bg-transparent border-b border-[#0D0D11]/20 focus:border-[#DFBA73] pb-3 pt-1 text-[#0D0D11] outline-none placeholder-[#0D0D11]/25 transition-colors duration-300"
                           style={{ fontFamily: "'DM Sans', sans-serif" }}
                         />
                       </div>
@@ -265,7 +265,7 @@ export function ContactPage() {
                   {/* Phone + Service */}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div className="group">
-                      <label className="block text-[#0A0F1E]/50 text-xs tracking-widest uppercase mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      <label className="block text-[#0D0D11]/50 text-xs tracking-widest uppercase mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         {t("contact.form.phone")}
                       </label>
                       <input
@@ -273,18 +273,18 @@ export function ContactPage() {
                         placeholder="69XXXXXXXX"
                         value={form.phone}
                         onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))}
-                        className="w-full bg-transparent border-b border-[#0A0F1E]/20 focus:border-[#C9A84C] pb-3 pt-1 text-[#0A0F1E] outline-none placeholder-[#0A0F1E]/25 transition-colors duration-300"
+                        className="w-full bg-transparent border-b border-[#0D0D11]/20 focus:border-[#DFBA73] pb-3 pt-1 text-[#0D0D11] outline-none placeholder-[#0D0D11]/25 transition-colors duration-300"
                         style={{ fontFamily: "'DM Sans', sans-serif" }}
                       />
                     </div>
                     <div className="group">
-                      <label className="block text-[#0A0F1E]/50 text-xs tracking-widest uppercase mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      <label className="block text-[#0D0D11]/50 text-xs tracking-widest uppercase mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                         {t("contact.form.service")}
                       </label>
                       <select
                         value={form.service}
                         onChange={(e) => setForm((f) => ({ ...f, service: e.target.value }))}
-                        className="w-full bg-transparent border-b border-[#0A0F1E]/20 focus:border-[#C9A84C] pb-3 pt-1 text-[#0A0F1E] outline-none transition-colors duration-300"
+                        className="w-full bg-transparent border-b border-[#0D0D11]/20 focus:border-[#DFBA73] pb-3 pt-1 text-[#0D0D11] outline-none transition-colors duration-300"
                         style={{ fontFamily: "'DM Sans', sans-serif" }}
                       >
                         <option value="">{t("contact.form.selectService")}</option>
@@ -295,7 +295,7 @@ export function ContactPage() {
 
                   {/* Message */}
                   <div>
-                    <label className="block text-[#0A0F1E]/50 text-xs tracking-widest uppercase mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                    <label className="block text-[#0D0D11]/50 text-xs tracking-widest uppercase mb-2" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                       {t("contact.form.message")} *
                     </label>
                     <textarea
@@ -304,7 +304,7 @@ export function ContactPage() {
                       placeholder={t("contact.form.messagePlaceholder")}
                       value={form.message}
                       onChange={(e) => setForm((f) => ({ ...f, message: e.target.value }))}
-                      className="w-full bg-transparent border-b border-[#0A0F1E]/20 focus:border-[#C9A84C] pb-3 pt-1 text-[#0A0F1E] outline-none placeholder-[#0A0F1E]/25 resize-none transition-colors duration-300"
+                      className="w-full bg-transparent border-b border-[#0D0D11]/20 focus:border-[#DFBA73] pb-3 pt-1 text-[#0D0D11] outline-none placeholder-[#0D0D11]/25 resize-none transition-colors duration-300"
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
                     />
                   </div>
@@ -312,12 +312,12 @@ export function ContactPage() {
                   <button
                     type="submit"
                     disabled={formState === "sending"}
-                    className="group flex items-center gap-3 px-10 py-5 bg-[#C9A84C] text-[#0A0F1E] text-sm tracking-wider uppercase hover:bg-[#D4B76A] disabled:opacity-70 transition-all duration-300 cursor-pointer"
+                    className="group flex items-center gap-3 px-10 py-5 bg-[#DFBA73] text-[#0D0D11] text-sm tracking-wider uppercase hover:bg-[#E6CE93] disabled:opacity-70 transition-all duration-300 cursor-pointer"
                     style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, letterSpacing: "0.12em" }}
                   >
                     {formState === "sending" ? (
                       <>
-                        <div className="w-4 h-4 border-2 border-[#0A0F1E]/40 border-t-[#0A0F1E] rounded-full animate-spin" />
+                        <div className="w-4 h-4 border-2 border-[#0D0D11]/40 border-t-[#0D0D11] rounded-full animate-spin" />
                         {t("contact.form.sending")}
                       </>
                     ) : (

@@ -172,13 +172,13 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
   today.setHours(0, 0, 0, 0);
 
   const containerClasses = isModal
-    ? "bg-[#0A0F1E] border border-white/10 p-8 md:p-12 shadow-2xl relative max-w-lg w-full max-h-[90vh] overflow-y-auto"
-    : "bg-white border border-[#0A0F1E]/8 p-8 md:p-12 shadow-sm text-[#0A0F1E] w-full";
+    ? "bg-[#0D0D11] border border-white/10 p-8 md:p-12 shadow-2xl relative max-w-lg w-full max-h-[90vh] overflow-y-auto"
+    : "bg-white border border-[#0D0D11]/8 p-8 md:p-12 shadow-sm text-[#0D0D11] w-full";
 
-  const textPrimary = isModal ? "text-[#F5F5F0]" : "text-[#0A0F1E]";
-  const textMuted = isModal ? "text-[#F5F5F0]/50" : "text-[#0A0F1E]/55";
-  const borderCol = isModal ? "border-white/10" : "border-[#0A0F1E]/10";
-  const cardBg = isModal ? "bg-[#111827]/60 border-white/8" : "bg-white border-[#0A0F1E]/8";
+  const textPrimary = isModal ? "text-[#F9FAFB]" : "text-[#0D0D11]";
+  const textMuted = isModal ? "text-[#F9FAFB]/50" : "text-[#0D0D11]/55";
+  const borderCol = isModal ? "border-white/10" : "border-[#0D0D11]/10";
+  const cardBg = isModal ? "bg-[#111827]/60 border-white/8" : "bg-white border-[#0D0D11]/8";
 
   return (
     <div className={isModal ? "fixed inset-0 z-[99999] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm" : "w-full"}>
@@ -186,7 +186,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
         {isModal && onClose && (
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-[#F5F5F0]/50 hover:text-white cursor-pointer"
+            className="absolute top-4 right-4 text-[#F9FAFB]/50 hover:text-white cursor-pointer"
             aria-label={t("booking.close")}
           >
             <X size={20} />
@@ -203,7 +203,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
             >
               {/* Header */}
               <div className="mb-8">
-                <h3 className={`${textPrimary} text-2xl font-bold font-serif mb-2`} style={{ fontFamily: "'Playfair Display', serif" }}>
+                <h3 className={`${textPrimary} text-2xl font-bold font-serif mb-2`} style={{ fontFamily: "'Outfit', sans-serif" }}>
                   {t("booking.title")}
                 </h3>
                 <p className={`${textMuted} text-xs leading-relaxed`}>
@@ -213,15 +213,15 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
 
               {/* Progress Steps */}
               <div className={`flex items-center gap-2 mb-8 border-b ${borderCol} pb-4 text-xs font-medium`}>
-                <span className={step === 1 ? "text-[#C9A84C]" : textMuted}>
+                <span className={step === 1 ? "text-[#DFBA73]" : textMuted}>
                   {lang === "el" ? "1. Ημερομηνία" : "1. Date"}
                 </span>
                 <ChevronRight size={12} className={textMuted} />
-                <span className={step === 2 ? "text-[#C9A84C]" : textMuted}>
+                <span className={step === 2 ? "text-[#DFBA73]" : textMuted}>
                   {lang === "el" ? "2. Ώρα" : "2. Time"}
                 </span>
                 <ChevronRight size={12} className={textMuted} />
-                <span className={step === 3 ? "text-[#C9A84C]" : textMuted}>
+                <span className={step === 3 ? "text-[#DFBA73]" : textMuted}>
                   {lang === "el" ? "3. Στοιχεία" : "3. Info"}
                 </span>
               </div>
@@ -237,14 +237,14 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                       <button
                         onClick={prevMonth}
                         type="button"
-                        className={`p-2 border ${borderCol} hover:text-[#C9A84C] cursor-pointer`}
+                        className={`p-2 border ${borderCol} hover:text-[#DFBA73] cursor-pointer`}
                       >
                         <ChevronLeft size={16} />
                       </button>
                       <button
                         onClick={nextMonth}
                         type="button"
-                        className={`p-2 border ${borderCol} hover:text-[#C9A84C] cursor-pointer`}
+                        className={`p-2 border ${borderCol} hover:text-[#DFBA73] cursor-pointer`}
                       >
                         <ChevronRight size={16} />
                       </button>
@@ -281,12 +281,12 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                           onClick={() => handleDateSelect(day)}
                           className={`aspect-square text-xs font-mono transition-all border flex items-center justify-center cursor-pointer ${
                             isSelected
-                              ? "bg-[#C9A84C] text-[#0A0F1E] border-[#C9A84C] font-bold"
+                              ? "bg-[#DFBA73] text-[#0D0D11] border-[#DFBA73] font-bold"
                               : isDisabled
                               ? "opacity-20 cursor-not-allowed border-transparent"
                               : isModal
-                              ? "border-white/5 hover:border-[#C9A84C] text-[#F5F5F0]"
-                              : "border-[#0A0F1E]/5 hover:border-[#C9A84C] text-[#0A0F1E]"
+                              ? "border-white/5 hover:border-[#DFBA73] text-[#F9FAFB]"
+                              : "border-[#0D0D11]/5 hover:border-[#DFBA73] text-[#0D0D11]"
                           }`}
                         >
                           {day}
@@ -301,7 +301,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
               {step === 2 && (
                 <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
                   <div className="flex items-center gap-2 mb-6">
-                    <Calendar size={14} className="text-[#C9A84C]" />
+                    <Calendar size={14} className="text-[#DFBA73]" />
                     <span className={`${textPrimary} text-xs font-medium`}>
                       {selectedDate?.toLocaleDateString(lang === "el" ? "el-GR" : "en-US", {
                         weekday: "short",
@@ -321,10 +321,10 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                           onClick={() => setSelectedTimeSlot(slot)}
                           className={`p-3 text-xs font-mono text-center border cursor-pointer transition-all ${
                             isSelected
-                              ? "bg-[#C9A84C] text-[#0A0F1E] border-[#C9A84C] font-bold"
+                              ? "bg-[#DFBA73] text-[#0D0D11] border-[#DFBA73] font-bold"
                               : isModal
-                              ? "border-white/10 text-white/80 hover:border-[#C9A84C]"
-                              : "border-[#0A0F1E]/10 text-[#0A0F1E] hover:border-[#C9A84C]"
+                              ? "border-white/10 text-white/80 hover:border-[#DFBA73]"
+                              : "border-[#0D0D11]/10 text-[#0D0D11] hover:border-[#DFBA73]"
                           }`}
                         >
                           {slot}
@@ -337,7 +337,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                     <button
                       type="button"
                       onClick={() => setStep(1)}
-                      className={`px-4 py-2 border ${borderCol} ${textPrimary} hover:text-[#C9A84C] text-xs uppercase tracking-wider cursor-pointer`}
+                      className={`px-4 py-2 border ${borderCol} ${textPrimary} hover:text-[#DFBA73] text-xs uppercase tracking-wider cursor-pointer`}
                     >
                       {t("booking.back")}
                     </button>
@@ -345,7 +345,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                       type="button"
                       disabled={!selectedTimeSlot}
                       onClick={() => setStep(3)}
-                      className="px-6 py-2 bg-[#C9A84C] text-[#0A0F1E] hover:bg-[#D4B76A] disabled:opacity-50 text-xs font-bold uppercase tracking-wider cursor-pointer"
+                      className="px-6 py-2 bg-[#DFBA73] text-[#0D0D11] hover:bg-[#E6CE93] disabled:opacity-50 text-xs font-bold uppercase tracking-wider cursor-pointer"
                     >
                       {t("booking.next")}
                     </button>
@@ -358,7 +358,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                 <motion.div initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }}>
                   <div className="flex flex-col gap-2 mb-6 p-4 bg-white/2 border border-white/5 rounded-sm">
                     <div className="flex items-center gap-2 text-xs">
-                      <Calendar size={12} className="text-[#C9A84C]" />
+                      <Calendar size={12} className="text-[#DFBA73]" />
                       <span className={textPrimary}>
                         {selectedDate?.toLocaleDateString(lang === "el" ? "el-GR" : "en-US", {
                           weekday: "short",
@@ -368,7 +368,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                       </span>
                     </div>
                     <div className="flex items-center gap-2 text-xs">
-                      <Clock size={12} className="text-[#C9A84C]" />
+                      <Clock size={12} className="text-[#DFBA73]" />
                       <span className={textPrimary}>{selectedTimeSlot}</span>
                     </div>
                   </div>
@@ -384,7 +384,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="John Doe"
-                        className={`w-full bg-transparent border-b ${borderCol} focus:border-[#C9A84C] pb-2 text-sm ${textPrimary} outline-none`}
+                        className={`w-full bg-transparent border-b ${borderCol} focus:border-[#DFBA73] pb-2 text-sm ${textPrimary} outline-none`}
                       />
                     </div>
                     <div>
@@ -397,7 +397,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="john@company.com"
-                        className={`w-full bg-transparent border-b ${borderCol} focus:border-[#C9A84C] pb-2 text-sm ${textPrimary} outline-none`}
+                        className={`w-full bg-transparent border-b ${borderCol} focus:border-[#DFBA73] pb-2 text-sm ${textPrimary} outline-none`}
                       />
                     </div>
                     <div>
@@ -409,7 +409,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                         value={phone}
                         onChange={(e) => setPhone(e.target.value)}
                         placeholder="+30 697..."
-                        className={`w-full bg-transparent border-b ${borderCol} focus:border-[#C9A84C] pb-2 text-sm ${textPrimary} outline-none`}
+                        className={`w-full bg-transparent border-b ${borderCol} focus:border-[#DFBA73] pb-2 text-sm ${textPrimary} outline-none`}
                       />
                     </div>
 
@@ -417,18 +417,18 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
                       <button
                         type="button"
                         onClick={() => setStep(2)}
-                        className={`px-4 py-2 border ${borderCol} ${textPrimary} hover:text-[#C9A84C] text-xs uppercase tracking-wider cursor-pointer`}
+                        className={`px-4 py-2 border ${borderCol} ${textPrimary} hover:text-[#DFBA73] text-xs uppercase tracking-wider cursor-pointer`}
                       >
                         {t("booking.back")}
                       </button>
                       <button
                         type="submit"
                         disabled={submitting}
-                        className="px-6 py-3 bg-[#C9A84C] text-[#0A0F1E] hover:bg-[#D4B76A] disabled:opacity-50 text-xs font-bold uppercase tracking-wider cursor-pointer flex items-center gap-1.5"
+                        className="px-6 py-3 bg-[#DFBA73] text-[#0D0D11] hover:bg-[#E6CE93] disabled:opacity-50 text-xs font-bold uppercase tracking-wider cursor-pointer flex items-center gap-1.5"
                       >
                         {submitting ? (
                           <>
-                            <div className="w-3 h-3 border border-[#0A0F1E] border-t-transparent animate-spin rounded-full" />
+                            <div className="w-3 h-3 border border-[#0D0D11] border-t-transparent animate-spin rounded-full" />
                             {lang === "el" ? "Κράτηση..." : "Booking..."}
                           </>
                         ) : (
@@ -447,8 +447,8 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
               animate={{ opacity: 1, scale: 1 }}
               className="text-center py-8 flex flex-col items-center"
             >
-              <CheckCircle2 size={48} className="text-[#C9A84C] mb-6 animate-pulse" />
-              <h3 className={`${textPrimary} text-2xl font-bold font-serif mb-4`} style={{ fontFamily: "'Playfair Display', serif" }}>
+              <CheckCircle2 size={48} className="text-[#DFBA73] mb-6 animate-pulse" />
+              <h3 className={`${textPrimary} text-2xl font-bold font-serif mb-4`} style={{ fontFamily: "'Outfit', sans-serif" }}>
                 {t("booking.successTitle")}
               </h3>
               <p className={`${textMuted} text-sm max-w-xs mb-8 leading-relaxed`}>
@@ -457,7 +457,7 @@ export function BookingCalendar({ isModal = false, onClose, initialService }: Bo
               {isModal && onClose && (
                 <button
                   onClick={onClose}
-                  className="px-8 py-3 bg-[#C9A84C] text-[#0A0F1E] hover:bg-[#D4B76A] font-bold text-xs uppercase tracking-wider cursor-pointer"
+                  className="px-8 py-3 bg-[#DFBA73] text-[#0D0D11] hover:bg-[#E6CE93] font-bold text-xs uppercase tracking-wider cursor-pointer"
                 >
                   {t("booking.close")}
                 </button>

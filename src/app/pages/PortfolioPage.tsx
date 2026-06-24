@@ -41,7 +41,7 @@ export function PortfolioPage() {
   });
 
   return (
-    <div className="bg-[#0A0F1E]">
+    <div className="bg-[#0D0D11]">
       {/* Hero */}
       <section className="pt-40 pb-20 relative overflow-hidden">
         <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
@@ -61,18 +61,18 @@ export function PortfolioPage() {
             transition={{ duration: 0.7 }}
           >
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-8 h-px bg-[#C9A84C]" />
+              <div className="w-8 h-px bg-[#DFBA73]" />
               <span
-                className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+                className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 Portfolio
               </span>
             </div>
             <h1
-              className="text-[#F5F5F0]"
+              className="text-[#F9FAFB]"
               style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
                 fontWeight: 700,
                 lineHeight: 1.1,
@@ -80,7 +80,7 @@ export function PortfolioPage() {
             >
               {t("portfolio.hero.heading1")}
               <br />
-              <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("portfolio.hero.heading2")}</em>
+              <em style={{ fontStyle: "italic", color: "#DFBA73" }}>{t("portfolio.hero.heading2")}</em>
             </h1>
           </motion.div>
         </div>
@@ -98,8 +98,8 @@ export function PortfolioPage() {
               }}
               className={`px-6 py-2 text-xs tracking-wider uppercase transition-all duration-300 ${
                 activeCategory === cat
-                  ? "bg-[#C9A84C] text-[#0A0F1E]"
-                  : "border border-white/15 text-[#F5F5F0]/50 hover:border-white/30 hover:text-[#F5F5F0]"
+                  ? "bg-[#DFBA73] text-[#0D0D11]"
+                  : "border border-white/15 text-[#F9FAFB]/50 hover:border-white/30 hover:text-[#F9FAFB]"
               }`}
               style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.1em" }}
             >
@@ -112,13 +112,13 @@ export function PortfolioPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="flex items-center gap-2 bg-[#C9A84C]/10 border border-[#C9A84C]/30 px-4 py-2 text-xs text-[#C9A84C]"
+            className="flex items-center gap-2 bg-[#DFBA73]/10 border border-[#DFBA73]/30 px-4 py-2 text-xs text-[#DFBA73]"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
-            <span>Tag: <strong className="text-[#F5F5F0]">{selectedTag}</strong></span>
+            <span>Tag: <strong className="text-[#F9FAFB]">{selectedTag}</strong></span>
             <button
               onClick={() => setSelectedTag(null)}
-              className="ml-2 text-[#F5F5F0]/40 hover:text-[#F5F5F0] font-bold cursor-pointer text-sm leading-none"
+              className="ml-2 text-[#F9FAFB]/40 hover:text-[#F9FAFB] font-bold cursor-pointer text-sm leading-none"
               aria-label="Clear tag"
             >
               ×
@@ -139,7 +139,7 @@ export function PortfolioPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
                 transition={{ duration: 0.4 }}
-                className="relative group cursor-pointer bg-[#0A0F1E]"
+                className="relative group cursor-pointer bg-[#0D0D11]"
                 onMouseEnter={() => setHovered(i)}
                 onMouseLeave={() => setHovered(null)}
                 onClick={() => navigate(`/portfolio/${project.id}`)}
@@ -150,11 +150,11 @@ export function PortfolioPage() {
                     alt={project.name}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/20 to-transparent group-hover:from-[#0A0F1E]/95 transition-all duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-[#0D0D11]/20 to-transparent group-hover:from-[#0D0D11]/95 transition-all duration-500" />
                   
                   {/* Live Project Badge */}
                   {project.isLive && (
-                    <div className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-[#0A0F1E]/80 backdrop-blur-md border border-emerald-500/30 px-3 py-1.5 rounded-full">
+                    <div className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-[#0D0D11]/80 backdrop-blur-md border border-emerald-500/30 px-3 py-1.5 rounded-full">
                       <span className="relative flex h-2 w-2">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                         <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -182,8 +182,8 @@ export function PortfolioPage() {
                         }}
                         className={`px-3 py-1 border text-xs tracking-wide cursor-pointer transition-all duration-300 ${
                           selectedTag === tag
-                            ? "bg-[#C9A84C] border-[#C9A84C] text-[#0A0F1E] font-medium"
-                            : "border-white/20 text-[#F5F5F0]/70 hover:border-[#C9A84C] hover:text-[#C9A84C]"
+                            ? "bg-[#DFBA73] border-[#DFBA73] text-[#0D0D11] font-medium"
+                            : "border-white/20 text-[#F9FAFB]/70 hover:border-[#DFBA73] hover:text-[#DFBA73]"
                         }`}
                         style={{ fontFamily: "'DM Sans', sans-serif" }}
                       >
@@ -195,14 +195,14 @@ export function PortfolioPage() {
                   <div className="flex items-end justify-between">
                     <div>
                       <p
-                        className="text-[#C9A84C] text-[10px] tracking-[0.3em] uppercase mb-1"
+                        className="text-[#DFBA73] text-[10px] tracking-[0.3em] uppercase mb-1"
                         style={{ fontFamily: "'DM Sans', sans-serif" }}
                       >
                         {project.category} · {project.year}
                       </p>
                       <h3
-                        className="text-[#F5F5F0]"
-                        style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.3rem", fontWeight: 700 }}
+                        className="text-[#F9FAFB]"
+                        style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1.3rem", fontWeight: 700 }}
                       >
                         {project.name}
                       </h3>
@@ -212,8 +212,8 @@ export function PortfolioPage() {
                         hovered === i ? "opacity-100 scale-100" : "opacity-0 scale-90"
                       }`}
                     >
-                      <div className="w-10 h-10 bg-[#C9A84C] flex items-center justify-center">
-                        <ArrowUpRight size={16} className="text-[#0A0F1E]" />
+                      <div className="w-10 h-10 bg-[#DFBA73] flex items-center justify-center">
+                        <ArrowUpRight size={16} className="text-[#0D0D11]" />
                       </div>
                     </div>
                   </div>
@@ -225,13 +225,13 @@ export function PortfolioPage() {
                     } overflow-hidden`}
                   >
                     <p
-                      className="text-[#F5F5F0]/55 text-sm mb-3"
+                      className="text-[#F9FAFB]/55 text-sm mb-3"
                       style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                     >
                       {project.description}
                     </p>
                     <p
-                      className="text-[#C9A84C] text-xs tracking-wider"
+                      className="text-[#DFBA73] text-xs tracking-wider"
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
                     >
                       ↑ {project.results}
@@ -245,17 +245,17 @@ export function PortfolioPage() {
       </div>
 
       {/* CTA */}
-      <section className="py-24 bg-[#F5F5F0] text-center">
+      <section className="py-24 bg-[#F9FAFB] text-center">
         <div className="max-w-2xl mx-auto px-6">
           <h2
-            className="text-[#0A0F1E] mb-6"
-            style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
+            className="text-[#0D0D11] mb-6"
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
           >
             {t("portfolio.cta.heading")}
           </h2>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-2 px-10 py-5 bg-[#0A0F1E] text-[#F5F5F0] text-sm tracking-wider uppercase hover:bg-[#141929] transition-colors duration-300 group"
+            className="inline-flex items-center gap-2 px-10 py-5 bg-[#0D0D11] text-[#F9FAFB] text-sm tracking-wider uppercase hover:bg-[#1C1C24] transition-colors duration-300 group"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.12em" }}
           >
             {t("portfolio.cta.btn")}

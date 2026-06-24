@@ -21,13 +21,13 @@ import { LightboxModal } from "@/app/components/LightboxModal";
 
 function HeroSection({ t }: { t: (k: string) => any }) {
   return (
-    <section className="relative min-h-screen bg-[#0A0F1E] flex items-center overflow-hidden">
+    <section className="relative min-h-screen bg-[#0D0D11] flex items-center overflow-hidden">
       {/* Geometric background */}
       <div className="absolute inset-0 pointer-events-none select-none">
         {/* Large circle accent */}
         <div
           className="absolute top-[-15%] right-[-8%] w-[55vw] h-[55vw] max-w-[800px] max-h-[800px] rounded-full border border-white/5"
-          style={{ background: "radial-gradient(circle at 60% 40%, rgba(201,168,76,0.06) 0%, transparent 70%)" }}
+          style={{ background: "radial-gradient(circle at 60% 40%, rgba(223, 186, 115,0.06) 0%, transparent 70%)" }}
         />
         <div className="absolute top-[-10%] right-[-4%] w-[42vw] h-[42vw] max-w-[600px] max-h-[600px] rounded-full border border-white/5" />
         {/* Grid lines */}
@@ -40,7 +40,7 @@ function HeroSection({ t }: { t: (k: string) => any }) {
           <rect width="100%" height="100%" fill="url(#grid)" />
         </svg>
         {/* Gold accent bar */}
-        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-32 bg-[#C9A84C]" />
+        <div className="absolute left-0 top-1/2 -translate-y-1/2 w-0.5 h-32 bg-[#DFBA73]" />
       </div>
 
       <div className="relative max-w-7xl mx-auto px-6 lg:px-12 pt-32 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
@@ -52,7 +52,7 @@ function HeroSection({ t }: { t: (k: string) => any }) {
             transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
           >
             <p
-              className="text-[#C9A84C] text-xs tracking-[0.35em] uppercase mb-8"
+              className="text-[#DFBA73] text-xs tracking-[0.35em] uppercase mb-8"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               Premium Web Design Studio
@@ -63,15 +63,15 @@ function HeroSection({ t }: { t: (k: string) => any }) {
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.9, delay: 0.1, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[#F5F5F0] leading-[1.08]"
+            className="text-[#F9FAFB] leading-[1.08]"
             style={{
-              fontFamily: "'Playfair Display', serif",
+              fontFamily: "'Outfit', sans-serif",
               fontSize: "clamp(2.8rem, 6vw, 5.5rem)",
               fontWeight: 700,
             }}
           >
             {t("home.hero.headline1")}{" "}
-            <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.hero.headline2")}</em>
+            <em style={{ fontStyle: "italic", color: "#DFBA73" }}>{t("home.hero.headline2")}</em>
             <br />
             {t("home.hero.headline3")}
           </motion.h1>
@@ -80,7 +80,7 @@ function HeroSection({ t }: { t: (k: string) => any }) {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-            className="text-[#F5F5F0]/55 mt-8 max-w-lg leading-relaxed"
+            className="text-[#F9FAFB]/55 mt-8 max-w-lg leading-relaxed"
             style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "1.1rem", fontWeight: 300 }}
           >
             {t("home.hero.sub")}
@@ -94,7 +94,7 @@ function HeroSection({ t }: { t: (k: string) => any }) {
           >
             <Link
               to="/portfolio"
-              className="group px-8 py-4 border border-[#F5F5F0]/30 text-[#F5F5F0] text-sm tracking-wider uppercase hover:border-[#F5F5F0]/70 transition-all duration-300 flex items-center gap-2"
+              className="group px-8 py-4 border border-[#F9FAFB]/30 text-[#F9FAFB] text-sm tracking-wider uppercase hover:border-[#F9FAFB]/70 transition-all duration-300 flex items-center gap-2"
               style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.1em" }}
             >
               {t("home.hero.ctaSub")}
@@ -102,7 +102,7 @@ function HeroSection({ t }: { t: (k: string) => any }) {
             </Link>
             <Link
               to="/contact"
-              className="px-8 py-4 bg-[#C9A84C] text-[#0A0F1E] text-sm tracking-wider uppercase hover:bg-[#D4B76A] hover:shadow-[0_0_25px_rgba(201,168,76,0.4)] transition-all duration-300"
+              className="px-8 py-4 bg-[#DFBA73] text-[#0D0D11] text-sm tracking-wider uppercase hover:bg-[#E6CE93] hover:shadow-[0_0_25px_rgba(223, 186, 115,0.4)] transition-all duration-300"
               style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, letterSpacing: "0.1em" }}
             >
               {t("home.hero.cta")}
@@ -123,13 +123,13 @@ function HeroSection({ t }: { t: (k: string) => any }) {
             ]).map((stat) => (
               <div key={stat.label}>
                 <p
-                  className="text-[#C9A84C]"
-                  style={{ fontFamily: "'Playfair Display', serif", fontSize: "2rem", fontWeight: 700 }}
+                  className="text-[#DFBA73]"
+                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: "2rem", fontWeight: 700 }}
                 >
                   {stat.value}
                 </p>
                 <p
-                  className="text-[#F5F5F0]/40 text-xs tracking-widest uppercase mt-1"
+                  className="text-[#F9FAFB]/40 text-xs tracking-widest uppercase mt-1"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {stat.label}
@@ -148,7 +148,7 @@ function HeroSection({ t }: { t: (k: string) => any }) {
             className="relative"
           >
             {/* Main card */}
-            <div className="bg-[#141929] border border-white/8 overflow-hidden">
+            <div className="bg-[#1C1C24] border border-white/8 overflow-hidden">
               {/* Browser chrome */}
               <div className="bg-[#0D1220] px-4 py-3 flex items-center gap-2 border-b border-white/8">
                 <div className="flex gap-1.5">
@@ -170,7 +170,7 @@ function HeroSection({ t }: { t: (k: string) => any }) {
                 <div className="h-3 bg-white/5 rounded-sm w-full mt-2" />
                 <div className="h-3 bg-white/5 rounded-sm w-4/5" />
                 <div className="flex gap-3 mt-6">
-                  <div className="h-8 bg-[#C9A84C]/70 rounded-sm w-24" />
+                  <div className="h-8 bg-[#DFBA73]/70 rounded-sm w-24" />
                   <div className="h-8 border border-white/15 rounded-sm w-24" />
                 </div>
                 <div className="mt-8 grid grid-cols-3 gap-3">
@@ -181,11 +181,11 @@ function HeroSection({ t }: { t: (k: string) => any }) {
               </div>
             </div>
             {/* Floating accent card */}
-            <div className="absolute -bottom-6 -left-6 bg-[#C9A84C] p-4 text-[#0A0F1E]">
+            <div className="absolute -bottom-6 -left-6 bg-[#DFBA73] p-4 text-[#0D0D11]">
               <p className="text-xs tracking-widest uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                 {t("home.hero.latestProject")}
               </p>
-              <p style={{ fontFamily: "'Playfair Display', serif", fontWeight: 700, fontSize: "1rem" }}>
+              <p style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 700, fontSize: "1rem" }}>
                 proparkingvalet.gr
               </p>
             </div>
@@ -200,7 +200,7 @@ function HeroSection({ t }: { t: (k: string) => any }) {
         transition={{ delay: 1.2 }}
         className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
       >
-        <div className="w-px h-12 bg-gradient-to-b from-transparent to-[#C9A84C]/50 animate-pulse" />
+        <div className="w-px h-12 bg-gradient-to-b from-transparent to-[#DFBA73]/50 animate-pulse" />
       </motion.div>
     </section>
   );
@@ -238,23 +238,23 @@ function ServicesSection() {
   const translatedCards = (t("home.services.cards") as { title: string; description: string; tag: string }[]) || [];
 
   return (
-    <section className="py-32 bg-[#F5F5F0]">
+    <section className="py-32 bg-[#F9FAFB]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
           {/* Label */}
           <div className="lg:col-span-3">
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-8 h-px bg-[#C9A84C]" />
+              <div className="w-8 h-px bg-[#DFBA73]" />
               <span
-                className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+                className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {t("home.services.label")}
               </span>
             </div>
             <h2
-              className="text-[#0A0F1E] leading-tight"
-              style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 700 }}
+              className="text-[#0D0D11] leading-tight"
+              style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 700 }}
             >
               {t("home.services.heading1")}
               <br />
@@ -265,7 +265,7 @@ function ServicesSection() {
           </div>
 
           {/* Cards */}
-          <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-3 gap-px bg-[#0A0F1E]/10">
+          <div className="lg:col-span-9 grid grid-cols-1 md:grid-cols-3 gap-px bg-[#0D0D11]/10">
             {translatedCards.map((service, i) => {
               const Icon = icons[i] || Globe;
               return (
@@ -275,33 +275,33 @@ function ServicesSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className="group bg-[#F5F5F0] p-10 hover:bg-[#0A0F1E] border border-transparent hover:border-[#C9A84C]/20 hover:shadow-[0_20px_50px_rgba(10,15,30,0.3)] transition-all duration-500 cursor-default relative overflow-hidden"
+                  className="group bg-[#F9FAFB] p-10 hover:bg-[#0D0D11] border border-transparent hover:border-[#DFBA73]/20 hover:shadow-[0_20px_50px_rgba(13, 13, 17,0.3)] transition-all duration-500 cursor-default relative overflow-hidden"
                 >
-                  <div className="w-10 h-10 border border-[#0A0F1E]/20 group-hover:border-[#C9A84C]/40 flex items-center justify-center mb-8 transition-colors duration-500">
+                  <div className="w-10 h-10 border border-[#0D0D11]/20 group-hover:border-[#DFBA73]/40 flex items-center justify-center mb-8 transition-colors duration-500">
                     <Icon
                       size={18}
-                      className="text-[#0A0F1E] group-hover:text-[#C9A84C] transition-colors duration-500"
+                      className="text-[#0D0D11] group-hover:text-[#DFBA73] transition-colors duration-500"
                     />
                   </div>
                   <p
-                    className="text-[#C9A84C] text-[10px] tracking-[0.3em] uppercase mb-3"
+                    className="text-[#DFBA73] text-[10px] tracking-[0.3em] uppercase mb-3"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
                     {service.tag}
                   </p>
                   <h3
-                    className="text-[#0A0F1E] group-hover:text-[#F5F5F0] mb-4 transition-colors duration-500"
-                    style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.25rem", fontWeight: 700 }}
+                    className="text-[#0D0D11] group-hover:text-[#F9FAFB] mb-4 transition-colors duration-500"
+                    style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1.25rem", fontWeight: 700 }}
                   >
                     {service.title}
                   </h3>
                   <p
-                    className="text-[#0A0F1E]/55 group-hover:text-[#F5F5F0]/55 text-sm leading-relaxed transition-colors duration-500"
+                    className="text-[#0D0D11]/55 group-hover:text-[#F9FAFB]/55 text-sm leading-relaxed transition-colors duration-500"
                     style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                   >
                     {service.description}
                   </p>
-                  <div className="mt-8 flex items-center gap-2 text-[#C9A84C] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <div className="mt-8 flex items-center gap-2 text-[#DFBA73] opacity-0 group-hover:opacity-100 transition-opacity duration-500">
                     <span className="text-xs tracking-wider uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                       {t("home.about.cta")}
                     </span>
@@ -356,7 +356,7 @@ function WhyUsSection() {
   const translatedItems = (t("home.whyUs.items") as { stat: string; unit: string; title: string; description: string }[]) || [];
 
   return (
-    <section className="py-32 bg-[#0A0F1E] relative overflow-hidden">
+    <section className="py-32 bg-[#0D0D11] relative overflow-hidden">
       {/* Subtle grid */}
       <div className="absolute inset-0 pointer-events-none opacity-[0.03]">
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -372,21 +372,21 @@ function WhyUsSection() {
       <div className="relative max-w-7xl mx-auto px-6 lg:px-12">
         <div className="text-center mb-20">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#DFBA73]" />
             <span
-              className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+              className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {t("home.whyUs.label")}
             </span>
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#DFBA73]" />
           </div>
           <h2
-            className="text-[#F5F5F0]"
-            style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
+            className="text-[#F9FAFB]"
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
           >
             {t("home.whyUs.heading1")}{" "}
-            <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.whyUs.heading2")}</em>
+            <em style={{ fontStyle: "italic", color: "#DFBA73" }}>{t("home.whyUs.heading2")}</em>
           </h2>
         </div>
 
@@ -400,31 +400,31 @@ function WhyUsSection() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: i * 0.1 }}
-                className="bg-[#0A0F1E] p-10 group hover:bg-[#141929] border border-transparent hover:border-[#C9A84C]/10 hover:shadow-[0_0_30px_rgba(201,168,76,0.05)] transition-all duration-300"
+                className="bg-[#0D0D11] p-10 group hover:bg-[#1C1C24] border border-transparent hover:border-[#DFBA73]/10 hover:shadow-[0_0_30px_rgba(223, 186, 115,0.05)] transition-all duration-300"
               >
-                <Icon size={20} className="text-[#C9A84C] mb-6" />
+                <Icon size={20} className="text-[#DFBA73] mb-6" />
                 <div className="mb-6">
                   <span
-                    className="text-[#F5F5F0]"
-                    style={{ fontFamily: "'Playfair Display', serif", fontSize: "3rem", fontWeight: 700, lineHeight: 1 }}
+                    className="text-[#F9FAFB]"
+                    style={{ fontFamily: "'Outfit', sans-serif", fontSize: "3rem", fontWeight: 700, lineHeight: 1 }}
                   >
                     {v.stat}
                   </span>
                   <span
-                    className="text-[#C9A84C] ml-1"
+                    className="text-[#DFBA73] ml-1"
                     style={{ fontFamily: "'DM Sans', sans-serif", fontSize: "1rem" }}
                   >
                     {v.unit}
                   </span>
                 </div>
                 <h3
-                  className="text-[#F5F5F0] mb-3"
-                  style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.1rem", fontWeight: 600 }}
+                  className="text-[#F9FAFB] mb-3"
+                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1.1rem", fontWeight: 600 }}
                 >
                   {v.title}
                 </h3>
                 <p
-                  className="text-[#F5F5F0]/40 text-sm leading-relaxed"
+                  className="text-[#F9FAFB]/40 text-sm leading-relaxed"
                   style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
                 >
                   {v.description}
@@ -472,23 +472,23 @@ function ProcessSection() {
   const translatedSteps = (t("home.process.steps") as { num: string; title: string; subtitle: string; desc: string }[]) || [];
 
   return (
-    <section className="py-32 bg-[#F5F5F0] relative overflow-hidden">
+    <section className="py-32 bg-[#F9FAFB] relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         {/* Section Header */}
         <div className="text-center mb-24">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#DFBA73]" />
             <span
-              className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+              className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {t("home.process.label")}
             </span>
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#DFBA73]" />
           </div>
           <h2
-            className="text-[#0A0F1E]"
-            style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
+            className="text-[#0D0D11]"
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
           >
             {t("home.process.heading")}
           </h2>
@@ -497,7 +497,7 @@ function ProcessSection() {
         {/* Desktop Timeline (Horizontal) */}
         <div className="hidden lg:grid grid-cols-4 gap-8 relative">
           {/* Connector Line */}
-          <div className="absolute top-1/2 left-0 right-0 h-px bg-[#0A0F1E]/10 -translate-y-1/2 z-0" />
+          <div className="absolute top-1/2 left-0 right-0 h-px bg-[#0D0D11]/10 -translate-y-1/2 z-0" />
 
           {translatedSteps.map((s, i) => (
             <motion.div
@@ -506,13 +506,13 @@ function ProcessSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15 }}
-              className="relative z-10 bg-[#F5F5F0] group flex flex-col items-center text-center px-4"
+              className="relative z-10 bg-[#F9FAFB] group flex flex-col items-center text-center px-4"
             >
               {/* Stepper Node */}
-              <div className="w-16 h-16 rounded-full border border-[#0A0F1E]/15 group-hover:border-[#C9A84C] bg-[#F5F5F0] flex items-center justify-center mb-6 transition-all duration-500 group-hover:shadow-[0_0_30px_rgba(201,168,76,0.25)] relative">
+              <div className="w-16 h-16 rounded-full border border-[#0D0D11]/15 group-hover:border-[#DFBA73] bg-[#F9FAFB] flex items-center justify-center mb-6 transition-all duration-500 group-hover:shadow-[0_0_30px_rgba(223, 186, 115,0.25)] relative">
                 <span
-                  className="text-[#0A0F1E] group-hover:text-[#C9A84C] font-semibold text-lg transition-colors duration-500"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
+                  className="text-[#0D0D11] group-hover:text-[#DFBA73] font-semibold text-lg transition-colors duration-500"
+                  style={{ fontFamily: "'Outfit', sans-serif" }}
                 >
                   {s.num}
                 </span>
@@ -520,19 +520,19 @@ function ProcessSection() {
 
               {/* Text */}
               <span
-                className="text-[#C9A84C] text-[10px] tracking-[0.25em] uppercase mb-2 font-medium"
+                className="text-[#DFBA73] text-[10px] tracking-[0.25em] uppercase mb-2 font-medium"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {s.subtitle}
               </span>
               <h3
-                className="text-[#0A0F1E] text-base font-bold mb-3"
-                style={{ fontFamily: "'Playfair Display', serif" }}
+                className="text-[#0D0D11] text-base font-bold mb-3"
+                style={{ fontFamily: "'Outfit', sans-serif" }}
               >
                 {s.title}
               </h3>
               <p
-                className="text-[#0A0F1E]/55 text-xs leading-relaxed font-light"
+                className="text-[#0D0D11]/55 text-xs leading-relaxed font-light"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {s.desc}
@@ -544,7 +544,7 @@ function ProcessSection() {
         {/* Mobile Timeline (Vertical) */}
         <div className="lg:hidden space-y-12 relative pl-8">
           {/* Connector Line (Vertical) */}
-          <div className="absolute top-4 bottom-4 left-4 w-px bg-[#0A0F1E]/10" />
+          <div className="absolute top-4 bottom-4 left-4 w-px bg-[#0D0D11]/10" />
 
           {translatedSteps.map((s, i) => (
             <motion.div
@@ -556,10 +556,10 @@ function ProcessSection() {
               className="relative group"
             >
               {/* Stepper Node (Left Floating) */}
-              <div className="absolute -left-12 top-0 w-8 h-8 rounded-full border border-[#0A0F1E]/15 bg-[#F5F5F0] flex items-center justify-center transition-colors duration-500 group-hover:border-[#C9A84C]">
+              <div className="absolute -left-12 top-0 w-8 h-8 rounded-full border border-[#0D0D11]/15 bg-[#F9FAFB] flex items-center justify-center transition-colors duration-500 group-hover:border-[#DFBA73]">
                 <span
-                  className="text-[#0A0F1E] group-hover:text-[#C9A84C] text-xs font-bold"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
+                  className="text-[#0D0D11] group-hover:text-[#DFBA73] text-xs font-bold"
+                  style={{ fontFamily: "'Outfit', sans-serif" }}
                 >
                   {s.num}
                 </span>
@@ -568,19 +568,19 @@ function ProcessSection() {
               {/* Content */}
               <div>
                 <span
-                  className="text-[#C9A84C] text-[9px] tracking-[0.2em] uppercase mb-1 block font-medium"
+                  className="text-[#DFBA73] text-[9px] tracking-[0.2em] uppercase mb-1 block font-medium"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {s.subtitle}
                 </span>
                 <h3
-                  className="text-[#0A0F1E] text-base font-bold mb-2"
-                  style={{ fontFamily: "'Playfair Display', serif" }}
+                  className="text-[#0D0D11] text-base font-bold mb-2"
+                  style={{ fontFamily: "'Outfit', sans-serif" }}
                 >
                   {s.title}
                 </h3>
                 <p
-                  className="text-[#0A0F1E]/60 text-xs leading-relaxed font-light"
+                  className="text-[#0D0D11]/60 text-xs leading-relaxed font-light"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {s.desc}
@@ -600,7 +600,7 @@ function AboutSection() {
   const { t } = useLanguage();
 
   return (
-    <section className="py-32 bg-[#0A0F1E] relative overflow-hidden border-t border-white/5">
+    <section className="py-32 bg-[#0D0D11] relative overflow-hidden border-t border-white/5">
       {/* Abstract gold dust background effect */}
       <div className="absolute inset-0 pointer-events-none select-none opacity-[0.02]">
         <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
@@ -623,25 +623,25 @@ function AboutSection() {
             transition={{ duration: 0.8 }}
           >
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-8 h-px bg-[#C9A84C]" />
+              <div className="w-8 h-px bg-[#DFBA73]" />
               <span
-                className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+                className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {t("home.about.label")}
               </span>
             </div>
             <h2
-              className="text-[#F5F5F0] leading-tight"
+              className="text-[#F9FAFB] leading-tight"
               style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontSize: "clamp(2rem, 4vw, 3rem)",
                 fontWeight: 700,
               }}
             >
               {t("home.about.heading1")}{" "}
               <br />
-              <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.about.heading2")}</em>,
+              <em style={{ fontStyle: "italic", color: "#DFBA73" }}>{t("home.about.heading2")}</em>,
               <br />
               {t("home.about.heading3")}
             </h2>
@@ -658,29 +658,29 @@ function AboutSection() {
             className="space-y-6"
           >
             <p
-              className="text-[#F5F5F0]/85 text-base md:text-lg leading-relaxed font-light"
+              className="text-[#F9FAFB]/85 text-base md:text-lg leading-relaxed font-light"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {t("home.about.p1")}
             </p>
             <p
-              className="text-[#F5F5F0]/50 text-sm leading-relaxed"
+              className="text-[#F9FAFB]/50 text-sm leading-relaxed"
               style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300 }}
             >
               {t("home.about.p2")}
             </p>
             {/* Signature style */}
             <div className="pt-6 flex items-center gap-4">
-              <div className="w-10 h-10 rounded-full border border-[#C9A84C]/30 flex items-center justify-center bg-[#C9A84C]/5">
-                <span className="text-[#C9A84C] font-semibold text-sm" style={{ fontFamily: "'Playfair Display', serif" }}>
+              <div className="w-10 h-10 rounded-full border border-[#DFBA73]/30 flex items-center justify-center bg-[#DFBA73]/5">
+                <span className="text-[#DFBA73] font-semibold text-sm" style={{ fontFamily: "'Outfit', sans-serif" }}>
                   AS
                 </span>
               </div>
               <div>
-                <p className="text-[#F5F5F0] text-sm font-semibold" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <p className="text-[#F9FAFB] text-sm font-semibold" style={{ fontFamily: "'Outfit', sans-serif" }}>
                   {t("home.about.team")}
                 </p>
-                <p className="text-[#C9A84C] text-[10px] tracking-widest uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                <p className="text-[#DFBA73] text-[10px] tracking-widest uppercase" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                   {t("home.about.location")}
                 </p>
               </div>
@@ -715,22 +715,22 @@ function PortfolioSection() {
   }, []);
 
   return (
-    <section className="py-32 bg-[#F5F5F0]">
+    <section className="py-32 bg-[#F9FAFB]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-8 mb-16">
           <div>
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-8 h-px bg-[#C9A84C]" />
+              <div className="w-8 h-px bg-[#DFBA73]" />
               <span
-                className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+                className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {t("home.portfolio.label")}
               </span>
             </div>
             <h2
-              className="text-[#0A0F1E]"
-              style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
+              className="text-[#0D0D11]"
+              style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
             >
               {t("home.portfolio.heading1")}{" "}
               <em style={{ fontStyle: "italic" }}>{t("home.portfolio.heading2")}</em>
@@ -738,7 +738,7 @@ function PortfolioSection() {
           </div>
           <Link
             to="/portfolio"
-            className="group flex items-center gap-2 text-[#0A0F1E] text-sm tracking-wider uppercase border-b border-[#0A0F1E]/30 pb-0.5 hover:border-[#C9A84C] hover:text-[#C9A84C] transition-all duration-300"
+            className="group flex items-center gap-2 text-[#0D0D11] text-sm tracking-wider uppercase border-b border-[#0D0D11]/30 pb-0.5 hover:border-[#DFBA73] hover:text-[#DFBA73] transition-all duration-300"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {t("home.portfolio.viewAll")}
@@ -754,7 +754,7 @@ function PortfolioSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.12 }}
-              className="relative aspect-[4/3] overflow-hidden cursor-pointer group border border-[#0A0F1E]/5 bg-[#0D1220]"
+              className="relative aspect-[4/3] overflow-hidden cursor-pointer group border border-[#0D0D11]/5 bg-[#0D1220]"
               onMouseEnter={() => setHovered(i)}
               onMouseLeave={() => setHovered(null)}
               onClick={() => navigate(`/portfolio/${project.id}`)}
@@ -765,11 +765,11 @@ function PortfolioSection() {
                 className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 group-hover:blur-[2px]"
               />
               {/* Dark glassmorphic overlay on hover */}
-              <div className="absolute inset-0 bg-[#0A0F1E]/40 group-hover:bg-[#0A0F1E]/85 group-hover:backdrop-blur-[4px] transition-all duration-500" />
+              <div className="absolute inset-0 bg-[#0D0D11]/40 group-hover:bg-[#0D0D11]/85 group-hover:backdrop-blur-[4px] transition-all duration-500" />
               
               {/* Live Project Badge */}
               {project.isLive && (
-                <div className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-[#0A0F1E]/80 backdrop-blur-md border border-emerald-500/30 px-3 py-1.5 rounded-full">
+                <div className="absolute top-4 right-4 z-10 flex items-center gap-2 bg-[#0D0D11]/80 backdrop-blur-md border border-emerald-500/30 px-3 py-1.5 rounded-full">
                   <span className="relative flex h-2 w-2">
                     <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -790,7 +790,7 @@ function PortfolioSection() {
                 >
                   <p
                     className="text-xs tracking-[0.25em] uppercase mb-2 font-medium"
-                    style={{ fontFamily: "'DM Sans', sans-serif", color: "#C9A84C" }}
+                    style={{ fontFamily: "'DM Sans', sans-serif", color: "#DFBA73" }}
                   >
                     {project.category} {project.tags && project.tags.length > 0 ? `· ${project.tags[0]}` : ""}
                   </p>
@@ -798,15 +798,15 @@ function PortfolioSection() {
 
                 {/* Title */}
                 <h3
-                  className="text-[#F5F5F0] transition-transform duration-500 transform group-hover:-translate-y-1"
-                  style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.5rem", fontWeight: 700 }}
+                  className="text-[#F9FAFB] transition-transform duration-500 transform group-hover:-translate-y-1"
+                  style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1.5rem", fontWeight: 700 }}
                 >
                   {project.name}
                 </h3>
 
                 {/* CTA Link inside Card */}
                 <div
-                  className={`flex items-center gap-2 mt-4 text-[#C9A84C] transition-all duration-500 transform ${
+                  className={`flex items-center gap-2 mt-4 text-[#DFBA73] transition-all duration-500 transform ${
                     hovered === i ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
                   }`}
                 >
@@ -824,7 +824,7 @@ function PortfolioSection() {
         <div className="mt-16 text-center">
           <Link
             to="/portfolio"
-            className="inline-flex items-center gap-3 px-10 py-5 border border-[#0A0F1E]/20 text-[#0A0F1E] text-sm tracking-wider uppercase hover:bg-[#0A0F1E] hover:text-[#F5F5F0] hover:border-[#0A0F1E] transition-all duration-500 group"
+            className="inline-flex items-center gap-3 px-10 py-5 border border-[#0D0D11]/20 text-[#0D0D11] text-sm tracking-wider uppercase hover:bg-[#0D0D11] hover:text-[#F9FAFB] hover:border-[#0D0D11] transition-all duration-500 group"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.12em" }}
           >
             {t("home.portfolio.viewAllProjects")}
@@ -879,25 +879,25 @@ function TestimonialsSection() {
   const translatedTestimonials = (t("home.testimonials.items") as { quote: string; name: string; role: string }[]) || [];
 
   return (
-    <section className="py-32 bg-[#0A0F1E]">
+    <section className="py-32 bg-[#0D0D11]">
       <div className="max-w-7xl mx-auto px-6 lg:px-12">
         <div className="text-center mb-20">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#DFBA73]" />
             <span
-              className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+              className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {t("home.testimonials.label")}
             </span>
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#DFBA73]" />
           </div>
           <h2
-            className="text-[#F5F5F0]"
-            style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
+            className="text-[#F9FAFB]"
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
           >
             {t("home.testimonials.heading1")}{" "}
-            <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.testimonials.heading2")}</em> {t("home.testimonials.heading3")}
+            <em style={{ fontStyle: "italic", color: "#DFBA73" }}>{t("home.testimonials.heading2")}</em> {t("home.testimonials.heading3")}
           </h2>
         </div>
 
@@ -909,28 +909,28 @@ function TestimonialsSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6, delay: i * 0.15 }}
-              className="bg-[#141929] border border-white/6 p-10 relative"
+              className="bg-[#1C1C24] border border-white/6 p-10 relative"
             >
               <Quote
                 size={32}
-                className="text-[#C9A84C] mb-6 opacity-80"
+                className="text-[#DFBA73] mb-6 opacity-80"
                 fill="currentColor"
               />
               <p
-                className="text-[#F5F5F0]/75 leading-relaxed mb-8"
+                className="text-[#F9FAFB]/75 leading-relaxed mb-8"
                 style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "0.95rem" }}
               >
                 "{t.quote}"
               </p>
               <div className="border-t border-white/8 pt-6">
                 <p
-                  className="text-[#F5F5F0]"
-                  style={{ fontFamily: "'Playfair Display', serif", fontWeight: 600, fontSize: "1rem" }}
+                  className="text-[#F9FAFB]"
+                  style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 600, fontSize: "1rem" }}
                 >
                   {t.name}
                 </p>
                 <p
-                  className="text-[#C9A84C]/70 text-xs tracking-wider mt-1"
+                  className="text-[#DFBA73]/70 text-xs tracking-wider mt-1"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >
                   {t.role}
@@ -952,25 +952,25 @@ function FAQSection() {
   const translatedFaqs = (t("home.faq.items") as { q: string; a: string }[]) || [];
 
   return (
-    <section className="py-32 bg-[#0A0F1E] relative overflow-hidden border-t border-white/5">
+    <section className="py-32 bg-[#0D0D11] relative overflow-hidden border-t border-white/5">
       <div className="max-w-4xl mx-auto px-6">
         {/* Section Header */}
         <div className="text-center mb-20">
           <div className="flex items-center justify-center gap-4 mb-4">
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#DFBA73]" />
             <span
-              className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+              className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {t("home.faq.label")}
             </span>
-            <div className="w-8 h-px bg-[#C9A84C]" />
+            <div className="w-8 h-px bg-[#DFBA73]" />
           </div>
           <h2
-            className="text-[#F5F5F0]"
-            style={{ fontFamily: "'Playfair Display', serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
+            className="text-[#F9FAFB]"
+            style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 700 }}
           >
-            {t("home.faq.heading1")} <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.faq.heading2")}</em>
+            {t("home.faq.heading1")} <em style={{ fontStyle: "italic", color: "#DFBA73" }}>{t("home.faq.heading2")}</em>
           </h2>
         </div>
 
@@ -981,19 +981,19 @@ function FAQSection() {
             return (
               <div
                 key={i}
-                className="border border-white/10 bg-[#141929] transition-all duration-300 rounded-sm"
+                className="border border-white/10 bg-[#1C1C24] transition-all duration-300 rounded-sm"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : i)}
                   className="w-full py-6 px-8 flex items-center justify-between text-left focus:outline-none"
                 >
                   <span
-                    className="text-[#F5F5F0] text-sm md:text-base font-semibold pr-4"
-                    style={{ fontFamily: "'Playfair Display', serif" }}
+                    className="text-[#F9FAFB] text-sm md:text-base font-semibold pr-4"
+                    style={{ fontFamily: "'Outfit', sans-serif" }}
                   >
                     {faq.q}
                   </span>
-                  <span className={`text-[#C9A84C] text-xl transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}>
+                  <span className={`text-[#DFBA73] text-xl transition-transform duration-300 ${isOpen ? "rotate-45" : ""}`}>
                     +
                   </span>
                 </button>
@@ -1007,7 +1007,7 @@ function FAQSection() {
                       className="overflow-hidden"
                     >
                       <div
-                        className="pb-6 px-8 text-[#F5F5F0]/60 text-xs md:text-sm leading-relaxed font-light border-t border-white/5 pt-4"
+                        className="pb-6 px-8 text-[#F9FAFB]/60 text-xs md:text-sm leading-relaxed font-light border-t border-white/5 pt-4"
                         style={{ fontFamily: "'DM Sans', sans-serif" }}
                       >
                         {faq.a}
@@ -1030,13 +1030,13 @@ function CTASection() {
   const { t } = useLanguage();
 
   return (
-    <section className="py-32 bg-[#F5F5F0] relative overflow-hidden">
+    <section className="py-32 bg-[#F9FAFB] relative overflow-hidden">
       <div className="absolute inset-0 pointer-events-none">
         <div
           className="absolute inset-0"
           style={{
             background:
-              "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(201,168,76,0.06) 0%, transparent 70%)",
+              "radial-gradient(ellipse 80% 60% at 50% 50%, rgba(223, 186, 115,0.06) 0%, transparent 70%)",
           }}
         />
       </div>
@@ -1048,15 +1048,15 @@ function CTASection() {
           transition={{ duration: 0.8 }}
         >
           <p
-            className="text-[#C9A84C] text-xs tracking-[0.35em] uppercase mb-6"
+            className="text-[#DFBA73] text-xs tracking-[0.35em] uppercase mb-6"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {t("home.cta.label")}
           </p>
           <h2
-            className="text-[#0A0F1E] mb-8"
+            className="text-[#0D0D11] mb-8"
             style={{
-              fontFamily: "'Playfair Display', serif",
+              fontFamily: "'Outfit', sans-serif",
               fontSize: "clamp(2.2rem, 5vw, 4rem)",
               fontWeight: 700,
               lineHeight: 1.1,
@@ -1065,17 +1065,17 @@ function CTASection() {
             {t("home.cta.heading1")}
             <br />
             {t("home.cta.heading2")}{" "}
-            <em style={{ fontStyle: "italic", color: "#C9A84C" }}>{t("home.cta.heading3")}</em>{t("home.cta.heading4")}
+            <em style={{ fontStyle: "italic", color: "#DFBA73" }}>{t("home.cta.heading3")}</em>{t("home.cta.heading4")}
           </h2>
           <p
-            className="text-[#0A0F1E]/55 max-w-xl mx-auto mb-12"
+            className="text-[#0D0D11]/55 max-w-xl mx-auto mb-12"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 300, fontSize: "1.05rem" }}
           >
             {t("home.cta.sub")}
           </p>
           <Link
             to="/contact"
-            className="inline-flex items-center gap-3 px-10 py-5 bg-[#0A0F1E] text-[#F5F5F0] text-sm tracking-wider uppercase hover:bg-[#141929] transition-colors duration-300 group"
+            className="inline-flex items-center gap-3 px-10 py-5 bg-[#0D0D11] text-[#F9FAFB] text-sm tracking-wider uppercase hover:bg-[#1C1C24] transition-colors duration-300 group"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.12em" }}
           >
             {t("home.cta.btn")}
@@ -1103,21 +1103,21 @@ function LogoWallSection() {
   const doubleLogos = [...logos, ...logos, ...logos];
 
   return (
-    <section className="py-12 bg-[#0A0F1E] border-y border-white/5 overflow-hidden">
+    <section className="py-12 bg-[#0D0D11] border-y border-white/5 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6 mb-4 text-center">
-        <p className="text-[#C9A84C]/60 text-[9px] tracking-[0.25em] uppercase font-semibold">
+        <p className="text-[#DFBA73]/60 text-[9px] tracking-[0.25em] uppercase font-semibold">
           TRUSTED BY ELITE BRANDS & BUSINESSES
         </p>
       </div>
       <div className="relative w-full flex overflow-x-hidden">
         {/* Gradients to hide edges */}
-        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#0A0F1E] to-transparent z-10 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#0A0F1E] to-transparent z-10 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#0D0D11] to-transparent z-10 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#0D0D11] to-transparent z-10 pointer-events-none" />
 
         <div className="animate-marquee flex items-center gap-16 py-4">
           {doubleLogos.map((logo, idx) => (
             <div key={idx} className="flex flex-col items-center justify-center min-w-[150px] opacity-35 hover:opacity-100 hover:scale-105 transition-all duration-300 select-none group">
-              <span className="text-[#F5F5F0] text-sm font-bold tracking-[0.15em] font-serif uppercase group-hover:text-[#C9A84C] transition-colors">
+              <span className="text-[#F9FAFB] text-sm font-bold tracking-[0.15em] font-serif uppercase group-hover:text-[#DFBA73] transition-colors">
                 {logo.name}
               </span>
               <span className="text-white/40 text-[8px] tracking-widest mt-1 block">

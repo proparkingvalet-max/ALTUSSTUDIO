@@ -39,7 +39,7 @@ export function BlogPage() {
   });
 
   return (
-    <div className="bg-[#0A0F1E] text-[#F5F5F0] min-h-screen">
+    <div className="bg-[#0D0D11] text-[#F9FAFB] min-h-screen">
       {/* Hero Section */}
       <section className="pt-44 pb-20 relative overflow-hidden">
         {/* Subtle grid */}
@@ -61,9 +61,9 @@ export function BlogPage() {
             transition={{ duration: 0.7 }}
           >
             <div className="flex items-center gap-4 mb-6">
-              <div className="w-8 h-px bg-[#C9A84C]" />
+              <div className="w-8 h-px bg-[#DFBA73]" />
               <span
-                className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase"
+                className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 Insights
@@ -72,14 +72,14 @@ export function BlogPage() {
             <h1
               className="leading-tight"
               style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontSize: "clamp(2.5rem, 5vw, 4.5rem)",
                 fontWeight: 700,
               }}
             >
               {lang === "el" ? "Blog & " : "Blog & "}
               <br />
-              <em style={{ fontStyle: "italic", color: "#C9A84C" }}>
+              <em style={{ fontStyle: "italic", color: "#DFBA73" }}>
                 {lang === "el" ? "Αναλύσεις" : "Insights"}
               </em>
             </h1>
@@ -107,7 +107,7 @@ export function BlogPage() {
                 onClick={() => setActiveCategory(cat)}
                 className={`px-5 py-2 text-[10px] md:text-xs tracking-wider uppercase transition-all duration-300 cursor-pointer ${
                   isActive
-                    ? "bg-[#C9A84C] text-[#0A0F1E] font-semibold"
+                    ? "bg-[#DFBA73] text-[#0D0D11] font-semibold"
                     : "border border-white/10 text-white/50 hover:border-white/20 hover:text-white"
                 }`}
                 style={{ fontFamily: "'DM Sans', sans-serif", letterSpacing: "0.12em" }}
@@ -125,7 +125,7 @@ export function BlogPage() {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={lang === "el" ? "Αναζήτηση άρθρου..." : "Search article..."}
-            className="w-full bg-white/5 border border-white/10 focus:border-[#C9A84C] pl-10 pr-4 py-2.5 text-xs text-[#F5F5F0] placeholder-white/25 outline-none transition-colors"
+            className="w-full bg-white/5 border border-white/10 focus:border-[#DFBA73] pl-10 pr-4 py-2.5 text-xs text-[#F9FAFB] placeholder-white/25 outline-none transition-colors"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           />
           <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-white/25" />
@@ -144,7 +144,7 @@ export function BlogPage() {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.4 }}
-                className="relative group cursor-pointer bg-[#0A0F1E]"
+                className="relative group cursor-pointer bg-[#0D0D11]"
                 onMouseEnter={() => setHoveredIndex(i)}
                 onMouseLeave={() => setHoveredIndex(null)}
                 onClick={() => navigate(`/blog/${post.id}`)}
@@ -156,10 +156,10 @@ export function BlogPage() {
                     alt={lang === "el" ? post.titleEl : post.titleEn}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/20 to-transparent group-hover:from-[#0A0F1E]/95 transition-all duration-500" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-[#0D0D11]/20 to-transparent group-hover:from-[#0D0D11]/95 transition-all duration-500" />
                   
                   {/* Category Pill Tag */}
-                  <span className="absolute top-4 left-4 z-10 bg-[#0A0F1E]/80 backdrop-blur-sm border border-[#C9A84C]/30 px-3 py-1 text-[9px] tracking-wider text-[#C9A84C] uppercase font-semibold"
+                  <span className="absolute top-4 left-4 z-10 bg-[#0D0D11]/80 backdrop-blur-sm border border-[#DFBA73]/30 px-3 py-1 text-[9px] tracking-wider text-[#DFBA73] uppercase font-semibold"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     {post.category}
                   </span>
@@ -171,7 +171,7 @@ export function BlogPage() {
                     {/* Date / Read Time */}
                     <div className="flex gap-4 items-center text-[10px] text-white/40 mb-3 font-mono">
                       <span className="flex items-center gap-1">
-                        <Calendar size={11} className="text-[#C9A84C]/70" />
+                        <Calendar size={11} className="text-[#DFBA73]/70" />
                         {new Date(post.date).toLocaleDateString(lang === "el" ? "el-GR" : "en-US", {
                           month: "short",
                           day: "numeric",
@@ -179,22 +179,22 @@ export function BlogPage() {
                         })}
                       </span>
                       <span className="flex items-center gap-1">
-                        <Clock size={11} className="text-[#C9A84C]/70" />
+                        <Clock size={11} className="text-[#DFBA73]/70" />
                         {lang === "el" ? post.readTimeEl : post.readTimeEn}
                       </span>
                     </div>
 
                     {/* Title */}
                     <h3
-                      className="text-[#F5F5F0] group-hover:text-[#C9A84C] transition-colors line-clamp-2 mb-3"
-                      style={{ fontFamily: "'Playfair Display', serif", fontSize: "1.2rem", fontWeight: 700 }}
+                      className="text-[#F9FAFB] group-hover:text-[#DFBA73] transition-colors line-clamp-2 mb-3"
+                      style={{ fontFamily: "'Outfit', sans-serif", fontSize: "1.2rem", fontWeight: 700 }}
                     >
                       {lang === "el" ? post.titleEl : post.titleEn}
                     </h3>
 
                     {/* Excerpt */}
                     <p
-                      className="text-[#F5F5F0]/50 text-xs leading-relaxed line-clamp-3 font-light mb-6"
+                      className="text-[#F9FAFB]/50 text-xs leading-relaxed line-clamp-3 font-light mb-6"
                       style={{ fontFamily: "'DM Sans', sans-serif" }}
                     >
                       {lang === "el" ? post.excerptEl : post.excerptEn}
@@ -203,7 +203,7 @@ export function BlogPage() {
 
                   {/* Read More link */}
                   <div
-                    className={`flex items-center gap-1.5 text-[#C9A84C] text-[10px] tracking-wider uppercase font-semibold transition-all duration-300 transform ${
+                    className={`flex items-center gap-1.5 text-[#DFBA73] text-[10px] tracking-wider uppercase font-semibold transition-all duration-300 transform ${
                       hoveredIndex === i ? "opacity-100 translate-y-0" : "opacity-0 translate-y-2"
                     }`}
                     style={{ fontFamily: "'DM Sans', sans-serif" }}

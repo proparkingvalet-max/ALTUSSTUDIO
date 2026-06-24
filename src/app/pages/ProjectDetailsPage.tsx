@@ -45,13 +45,13 @@ export function ProjectDetailsPage() {
   if (!project) return null;
 
   return (
-    <div className="bg-[#0A0F1E] text-[#F5F5F0] min-h-screen">
+    <div className="bg-[#0D0D11] text-[#F9FAFB] min-h-screen">
       {/* Back button header */}
       <div className="absolute top-28 left-0 right-0 z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-12">
           <Link
             to="/portfolio"
-            className="inline-flex items-center gap-2 text-[#F5F5F0]/60 hover:text-[#C9A84C] transition-colors group cursor-pointer text-xs tracking-wider uppercase font-medium"
+            className="inline-flex items-center gap-2 text-[#F9FAFB]/60 hover:text-[#DFBA73] transition-colors group cursor-pointer text-xs tracking-wider uppercase font-medium"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" />
@@ -69,7 +69,7 @@ export function ProjectDetailsPage() {
             alt={project.name}
             className="w-full h-full object-cover opacity-35 filter brightness-75 scale-105"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#0A0F1E] via-[#0A0F1E]/60 to-[#0A0F1E]/90" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0D0D11] via-[#0D0D11]/60 to-[#0D0D11]/90" />
         </div>
 
         <div className="relative max-w-7xl mx-auto px-6 lg:px-12 z-10 w-full">
@@ -79,7 +79,7 @@ export function ProjectDetailsPage() {
             transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
           >
             <span
-              className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase mb-4 block"
+              className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase mb-4 block"
               style={{ fontFamily: "'DM Sans', sans-serif" }}
             >
               {project.category} · Case Study
@@ -87,7 +87,7 @@ export function ProjectDetailsPage() {
             <h1
               className="font-bold leading-none mb-8 text-left"
               style={{
-                fontFamily: "'Playfair Display', serif",
+                fontFamily: "'Outfit', sans-serif",
                 fontSize: "clamp(2.5rem, 7vw, 5.5rem)",
               }}
             >
@@ -102,34 +102,34 @@ export function ProjectDetailsPage() {
         <div className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Year */}
           <div className="flex gap-3.5 items-start">
-            <Calendar size={18} className="text-[#C9A84C] shrink-0 mt-0.5" />
+            <Calendar size={18} className="text-[#DFBA73] shrink-0 mt-0.5" />
             <div>
               <p className="text-white/40 text-[10px] tracking-widest uppercase mb-1">{t("projectDetails.year")}</p>
-              <p className="text-[#F5F5F0] text-sm font-medium">{project.year}</p>
+              <p className="text-[#F9FAFB] text-sm font-medium">{project.year}</p>
             </div>
           </div>
 
           {/* Category */}
           <div className="flex gap-3.5 items-start">
-            <Compass size={18} className="text-[#C9A84C] shrink-0 mt-0.5" />
+            <Compass size={18} className="text-[#DFBA73] shrink-0 mt-0.5" />
             <div>
               <p className="text-white/40 text-[10px] tracking-widest uppercase mb-1">{t("projectDetails.category")}</p>
-              <p className="text-[#F5F5F0] text-sm font-medium">{project.category}</p>
+              <p className="text-[#F9FAFB] text-sm font-medium">{project.category}</p>
             </div>
           </div>
 
           {/* Results */}
           <div className="flex gap-3.5 items-start">
-            <LineChart size={18} className="text-[#C9A84C] shrink-0 mt-0.5" />
+            <LineChart size={18} className="text-[#DFBA73] shrink-0 mt-0.5" />
             <div>
               <p className="text-white/40 text-[10px] tracking-widest uppercase mb-1">{t("projectDetails.results")}</p>
-              <p className="text-[#C9A84C] text-sm font-semibold">{project.results}</p>
+              <p className="text-[#DFBA73] text-sm font-semibold">{project.results}</p>
             </div>
           </div>
 
           {/* Live Link */}
           <div className="flex gap-3.5 items-start">
-            <Globe size={18} className="text-[#C9A84C] shrink-0 mt-0.5" />
+            <Globe size={18} className="text-[#DFBA73] shrink-0 mt-0.5" />
             <div>
               <p className="text-white/40 text-[10px] tracking-widest uppercase mb-1">Live URL</p>
               {project.isLive && project.liveUrl ? (
@@ -137,7 +137,7 @@ export function ProjectDetailsPage() {
                   href={project.liveUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-[#F5F5F0] hover:text-[#C9A84C] text-sm font-medium flex items-center gap-1 transition-colors group cursor-pointer"
+                  className="text-[#F9FAFB] hover:text-[#DFBA73] text-sm font-medium flex items-center gap-1 transition-colors group cursor-pointer"
                 >
                   {project.liveUrl.replace("https://", "")}
                   <ArrowUpRight size={13} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
@@ -151,19 +151,19 @@ export function ProjectDetailsPage() {
       </section>
 
       {/* Case Study Details Section */}
-      <section className="py-24 bg-[#F5F5F0] text-[#0A0F1E] relative z-10">
+      <section className="py-24 bg-[#F9FAFB] text-[#0D0D11] relative z-10">
         <div className="max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-16">
           {/* Main narrative */}
           <div className="lg:col-span-8 space-y-12">
             <div>
               <h2
                 className="text-2xl md:text-3xl font-bold mb-6"
-                style={{ fontFamily: "'Playfair Display', serif" }}
+                style={{ fontFamily: "'Outfit', sans-serif" }}
               >
                 {t("projectDetails.challenge")}
               </h2>
               <p
-                className="text-[#0A0F1E]/70 leading-relaxed text-base font-light"
+                className="text-[#0D0D11]/70 leading-relaxed text-base font-light"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {lang === "el"
@@ -175,12 +175,12 @@ export function ProjectDetailsPage() {
             <div>
               <h2
                 className="text-2xl md:text-3xl font-bold mb-6"
-                style={{ fontFamily: "'Playfair Display', serif" }}
+                style={{ fontFamily: "'Outfit', sans-serif" }}
               >
                 {t("projectDetails.solution")}
               </h2>
               <p
-                className="text-[#0A0F1E]/70 leading-relaxed text-base font-light"
+                className="text-[#0D0D11]/70 leading-relaxed text-base font-light"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {project.description}. {lang === "el"
@@ -192,9 +192,9 @@ export function ProjectDetailsPage() {
 
           {/* Sidebar / Technologies */}
           <div className="lg:col-span-4 lg:pl-8">
-            <div className="border border-[#0A0F1E]/10 p-8 bg-white">
+            <div className="border border-[#0D0D11]/10 p-8 bg-white">
               <div className="flex items-center gap-2 mb-6">
-                <Tag size={16} className="text-[#C9A84C]" />
+                <Tag size={16} className="text-[#DFBA73]" />
                 <h3
                   className="text-sm font-bold tracking-widest uppercase"
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
@@ -206,7 +206,7 @@ export function ProjectDetailsPage() {
                 {project.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3.5 py-1.5 border border-[#0A0F1E]/10 text-[#0A0F1E]/70 text-xs tracking-wide hover:border-[#C9A84C] hover:text-[#C9A84C] transition-colors"
+                    className="px-3.5 py-1.5 border border-[#0D0D11]/10 text-[#0D0D11]/70 text-xs tracking-wide hover:border-[#DFBA73] hover:text-[#DFBA73] transition-colors"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
                     {tag}
@@ -224,7 +224,7 @@ export function ProjectDetailsPage() {
           <div className="max-w-7xl mx-auto px-6 lg:px-12">
             <h2
               className="text-2xl md:text-3xl font-bold mb-16 text-center"
-              style={{ fontFamily: "'Playfair Display', serif" }}
+              style={{ fontFamily: "'Outfit', sans-serif" }}
             >
               {t("projectDetails.gallery")}
             </h2>
@@ -236,7 +236,7 @@ export function ProjectDetailsPage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: i * 0.1 }}
-                  className="border border-white/5 overflow-hidden aspect-[16/10] bg-[#141929]"
+                  className="border border-white/5 overflow-hidden aspect-[16/10] bg-[#1C1C24]"
                 >
                   <img
                     src={imgUrl}
@@ -257,14 +257,14 @@ export function ProjectDetailsPage() {
           className="block py-32 bg-[#10162A] text-center border-t border-white/5 relative z-10 group cursor-pointer hover:bg-[#141B33] transition-colors duration-500"
         >
           <span
-            className="text-[#C9A84C] text-xs tracking-[0.3em] uppercase mb-4 block"
+            className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase mb-4 block"
             style={{ fontFamily: "'DM Sans', sans-serif" }}
           >
             {t("projectDetails.nextProject")}
           </span>
           <h2
-            className="text-[#F5F5F0] text-3xl md:text-5xl font-bold font-serif group-hover:text-[#C9A84C] transition-colors inline-flex items-center gap-4"
-            style={{ fontFamily: "'Playfair Display', serif" }}
+            className="text-[#F9FAFB] text-3xl md:text-5xl font-bold font-serif group-hover:text-[#DFBA73] transition-colors inline-flex items-center gap-4"
+            style={{ fontFamily: "'Outfit', sans-serif" }}
           >
             {nextProject.name}
             <ArrowUpRight size={28} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />

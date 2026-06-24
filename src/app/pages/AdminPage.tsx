@@ -54,7 +54,7 @@ const mockMessages: any[] = [];
 const mockProjects: any[] = [];
 
 const stats = [
-  { label: "Επισκέπτες (Μήνας)", value: "1.847", change: "+12%", icon: Eye, color: "#C9A84C" },
+  { label: "Επισκέπτες (Μήνας)", value: "1.847", change: "+12%", icon: Eye, color: "#DFBA73" },
   { label: "Νέα Μηνύματα", value: "4", change: "+2 σήμερα", icon: Mail, color: "#4CAF50" },
   { label: "Ενεργά Projects", value: "2", change: "1 ολοκλ.", icon: FolderOpen, color: "#2196F3" },
   { label: "Ολοκλ. Projects", value: "12", change: "+3 φέτος", icon: CheckCircle, color: "#9C27B0" },
@@ -99,7 +99,7 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
     <div
       style={{
         minHeight: "100vh",
-        background: "linear-gradient(135deg, #0A0F1E 0%, #111827 50%, #0A0F1E 100%)",
+        background: "linear-gradient(135deg, #0D0D11 0%, #111827 50%, #0D0D11 100%)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
@@ -109,13 +109,13 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
       }}
     >
       {/* Decorative orbs */}
-      <div style={{ position: "absolute", top: "10%", left: "5%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(201,168,76,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
-      <div style={{ position: "absolute", bottom: "10%", right: "5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(201,168,76,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", top: "10%", left: "5%", width: 300, height: 300, borderRadius: "50%", background: "radial-gradient(circle, rgba(223, 186, 115,0.08) 0%, transparent 70%)", pointerEvents: "none" }} />
+      <div style={{ position: "absolute", bottom: "10%", right: "5%", width: 400, height: 400, borderRadius: "50%", background: "radial-gradient(circle, rgba(223, 186, 115,0.05) 0%, transparent 70%)", pointerEvents: "none" }} />
 
       <div
         style={{
           background: "rgba(255,255,255,0.03)",
-          border: "1px solid rgba(201,168,76,0.2)",
+          border: "1px solid rgba(223, 186, 115,0.2)",
           borderRadius: 24,
           padding: "56px 48px",
           width: "100%",
@@ -128,8 +128,8 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
         {/* Logo */}
         <div style={{ textAlign: "center", marginBottom: 40 }}>
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 12 }}>
-            <Shield size={28} color="#C9A84C" />
-            <span style={{ fontSize: 22, fontWeight: 700, color: "#C9A84C", fontFamily: "'Playfair Display', serif", letterSpacing: "0.05em" }}>
+            <Shield size={28} color="#DFBA73" />
+            <span style={{ fontSize: 22, fontWeight: 700, color: "#DFBA73", fontFamily: "'Outfit', sans-serif", letterSpacing: "0.05em" }}>
               ALTUS STUDIO
             </span>
           </div>
@@ -176,10 +176,10 @@ function LoginScreen({ onLogin }: { onLogin: () => void }) {
           style={{
             width: "100%",
             padding: "14px",
-            background: "linear-gradient(135deg, #C9A84C, #a8893e)",
+            background: "linear-gradient(135deg, #DFBA73, #a8893e)",
             border: "none",
             borderRadius: 12,
-            color: "#0A0F1E",
+            color: "#0D0D11",
             fontSize: 15,
             fontWeight: 700,
             cursor: "pointer",
@@ -240,8 +240,8 @@ function Sidebar({
         width: 240,
         minHeight: "100vh",
         height: isMobile ? "100vh" : "auto",
-        background: "#0A0F1E",
-        borderRight: "1px solid rgba(201,168,76,0.15)",
+        background: "#0D0D11",
+        borderRight: "1px solid rgba(223, 186, 115,0.15)",
         display: "flex",
         flexDirection: "column",
         padding: "32px 0",
@@ -257,11 +257,11 @@ function Sidebar({
       {/* Logo */}
       <div style={{ padding: "0 24px 32px", borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          <div style={{ width: 36, height: 36, background: "rgba(201,168,76,0.15)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(201,168,76,0.3)" }}>
-            <Globe size={18} color="#C9A84C" />
+          <div style={{ width: 36, height: 36, background: "rgba(223, 186, 115,0.15)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid rgba(223, 186, 115,0.3)" }}>
+            <Globe size={18} color="#DFBA73" />
           </div>
           <div>
-            <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 14, fontFamily: "'Playfair Display', serif", letterSpacing: "0.05em" }}>ALTUS</div>
+            <div style={{ color: "#DFBA73", fontWeight: 700, fontSize: 14, fontFamily: "'Outfit', sans-serif", letterSpacing: "0.05em" }}>ALTUS</div>
             <div style={{ color: "rgba(255,255,255,0.3)", fontSize: 11, letterSpacing: "0.1em" }}>ADMIN PANEL</div>
           </div>
         </div>
@@ -287,15 +287,15 @@ function Sidebar({
                 padding: "11px 14px",
                 borderRadius: 10,
                 border: "none",
-                background: isActive ? "rgba(201,168,76,0.12)" : "transparent",
-                color: isActive ? "#C9A84C" : "rgba(255,255,255,0.45)",
+                background: isActive ? "rgba(223, 186, 115,0.12)" : "transparent",
+                color: isActive ? "#DFBA73" : "rgba(255,255,255,0.45)",
                 cursor: "pointer",
                 textAlign: "left",
                 fontSize: 14,
                 fontWeight: isActive ? 600 : 400,
                 transition: "all 0.2s",
                 marginBottom: 2,
-                borderLeft: isActive ? "3px solid #C9A84C" : "3px solid transparent",
+                borderLeft: isActive ? "3px solid #DFBA73" : "3px solid transparent",
               }}
             >
               <Icon size={17} />
@@ -326,9 +326,9 @@ function Sidebar({
             gap: 12,
             padding: "11px 14px",
             borderRadius: 10,
-            background: "rgba(201,168,76,0.05)",
-            border: "1px solid rgba(201,168,76,0.15)",
-            color: "#C9A84C",
+            background: "rgba(223, 186, 115,0.05)",
+            border: "1px solid rgba(223, 186, 115,0.15)",
+            color: "#DFBA73",
             cursor: "pointer",
             textDecoration: "none",
             fontSize: 14,
@@ -336,8 +336,8 @@ function Sidebar({
             boxSizing: "border-box",
             transition: "all 0.2s",
           }}
-          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.15)"; }}
-          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(201,168,76,0.05)"; }}
+          onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(223, 186, 115,0.15)"; }}
+          onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(223, 186, 115,0.05)"; }}
         >
           <ExternalLink size={17} />
           Προβολή Site
@@ -467,7 +467,7 @@ function DashboardView() {
       label: "Επισκέπτες Μήνα",
       value: pageViewsMonth === null ? "—" : pageViewsMonth.toLocaleString("el-GR"),
       change: pageViewsToday > 0 ? `+${pageViewsToday} σήμερα` : "Σήμερα: 0",
-      icon: Eye, color: "#C9A84C"
+      icon: Eye, color: "#DFBA73"
     },
     { label: "Νέα Μηνύματα", value: newMessagesCount.toString(), change: newMessagesCount > 0 ? `${newMessagesCount} αδιάβαστα` : "Κανένα νέο", icon: Mail, color: "#4CAF50" },
     { label: "Ενεργά Projects", value: activeProjects.toString(), change: `${liveProjects} live`, icon: FolderOpen, color: "#2196F3" },
@@ -477,7 +477,7 @@ function DashboardView() {
   return (
     <div>
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 6 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Outfit', sans-serif", marginBottom: 6 }}>
           Καλωσήρθες 👋
         </h1>
         <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 14 }}>
@@ -522,7 +522,7 @@ function DashboardView() {
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
             <h3 style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>Πρόσφατα Μηνύματα</h3>
-            <Mail size={16} color="#C9A84C" />
+            <Mail size={16} color="#DFBA73" />
           </div>
           {recentMessages.map((msg) => (
             <div
@@ -535,7 +535,7 @@ function DashboardView() {
                 alignItems: "center",
               }}
             >
-              <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(201,168,76,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 14, color: "#C9A84C", fontWeight: 700 }}>
+              <div style={{ width: 36, height: 36, borderRadius: "50%", background: "rgba(223, 186, 115,0.12)", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, fontSize: 14, color: "#DFBA73", fontWeight: 700 }}>
                 {msg.name ? msg.name[0] : "?"}
               </div>
               <div style={{ flex: 1, minWidth: 0 }}>
@@ -553,7 +553,7 @@ function DashboardView() {
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
             <h3 style={{ color: "#fff", fontWeight: 600, fontSize: 15 }}>Ενεργά Projects</h3>
-            <FolderOpen size={16} color="#C9A84C" />
+            <FolderOpen size={16} color="#DFBA73" />
           </div>
           {projects.filter((p) => !p.isLive).map((p) => (
             <div
@@ -702,7 +702,7 @@ function MessagesView({ onCreateQuote }: { onCreateQuote: (client: { name: strin
 
   return (
     <div>
-      <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 24 }}>
+      <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Outfit', sans-serif", marginBottom: 24 }}>
         Μηνύματα
       </h1>
 
@@ -718,8 +718,8 @@ function MessagesView({ onCreateQuote }: { onCreateQuote: (client: { name: strin
                   padding: "16px 20px",
                   borderBottom: "1px solid rgba(255,255,255,0.06)",
                   cursor: "pointer",
-                  background: selected?.id === msg.id ? "rgba(201,168,76,0.08)" : msg.read ? "transparent" : "rgba(255,255,255,0.03)",
-                  borderLeft: selected?.id === msg.id ? "3px solid #C9A84C" : "3px solid transparent",
+                  background: selected?.id === msg.id ? "rgba(223, 186, 115,0.08)" : msg.read ? "transparent" : "rgba(255,255,255,0.03)",
+                  borderLeft: selected?.id === msg.id ? "3px solid #DFBA73" : "3px solid transparent",
                   transition: "all 0.15s",
                 }}
               >
@@ -731,7 +731,7 @@ function MessagesView({ onCreateQuote }: { onCreateQuote: (client: { name: strin
                   {msg.message}
                 </div>
                 <div style={{ display: "flex", gap: 6, alignItems: "center" }}>
-                  <span style={{ fontSize: 11, color: "#C9A84C", background: "rgba(201,168,76,0.1)", padding: "2px 8px", borderRadius: 999 }}>
+                  <span style={{ fontSize: 11, color: "#DFBA73", background: "rgba(223, 186, 115,0.1)", padding: "2px 8px", borderRadius: 999 }}>
                     {msg.service}
                   </span>
                   <span style={{ fontSize: 11, color: statusColor[msg.status], background: `${statusColor[msg.status]}18`, padding: "2px 8px", borderRadius: 999 }}>
@@ -759,7 +759,7 @@ function MessagesView({ onCreateQuote }: { onCreateQuote: (client: { name: strin
                         border: "1px solid rgba(255,255,255,0.08)",
                         borderRadius: 8,
                         padding: "6px 12px",
-                        color: "#C9A84C",
+                        color: "#DFBA73",
                         cursor: "pointer",
                         fontSize: 13,
                         fontWeight: 600,
@@ -774,7 +774,7 @@ function MessagesView({ onCreateQuote }: { onCreateQuote: (client: { name: strin
                   <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "flex-start", gap: isMobile ? 16 : 0 }}>
                     <div>
                       <h2 style={{ color: "#fff", fontSize: 18, fontWeight: 700, marginBottom: 4 }}>{selected.name}</h2>
-                      <a href={`mailto:${selected.email}`} style={{ color: "#C9A84C", fontSize: 13, textDecoration: "none" }}>{selected.email}</a>
+                      <a href={`mailto:${selected.email}`} style={{ color: "#DFBA73", fontSize: 13, textDecoration: "none" }}>{selected.email}</a>
                       <span style={{ color: "rgba(255,255,255,0.3)", fontSize: 13, margin: "0 8px" }}>·</span>
                       <a href={`tel:${selected.phone}`} style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, textDecoration: "none" }}>{selected.phone}</a>
                     </div>
@@ -787,12 +787,12 @@ function MessagesView({ onCreateQuote }: { onCreateQuote: (client: { name: strin
                           inquiryId: selected.id
                         })}
                         style={{
-                          background: "rgba(201,168,76,0.1)",
-                          border: "1px solid rgba(201,168,76,0.2)",
+                          background: "rgba(223, 186, 115,0.1)",
+                          border: "1px solid rgba(223, 186, 115,0.2)",
                           borderRadius: 8,
                           padding: "7px 12px",
                           cursor: "pointer",
-                          color: "#C9A84C",
+                          color: "#DFBA73",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
@@ -877,11 +877,11 @@ function MessagesView({ onCreateQuote }: { onCreateQuote: (client: { name: strin
                       background: sent
                         ? "rgba(34,197,94,0.15)"
                         : reply.trim()
-                          ? "linear-gradient(135deg, #C9A84C, #a8893e)"
+                          ? "linear-gradient(135deg, #DFBA73, #a8893e)"
                           : "rgba(255,255,255,0.06)",
                       border: sent ? "1px solid rgba(34,197,94,0.4)" : "none",
                       borderRadius: 10,
-                      color: sent ? "#22c55e" : reply.trim() ? "#0A0F1E" : "rgba(255,255,255,0.2)",
+                      color: sent ? "#22c55e" : reply.trim() ? "#0D0D11" : "rgba(255,255,255,0.2)",
                       fontWeight: 700,
                       fontSize: 14,
                       cursor: reply.trim() ? "pointer" : "not-allowed",
@@ -1140,7 +1140,7 @@ function ProjectsView() {
     return (
       <div>
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 0, marginBottom: 24 }}>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Outfit', sans-serif" }}>
             {editingProject.id ? "Επεξεργασία Έργου" : "Νέο Έργο"}
           </h1>
           <button
@@ -1179,7 +1179,7 @@ function ProjectsView() {
                 <select
                   value={formCategory}
                   onChange={(e) => setFormCategory(e.target.value)}
-                  style={{ width: "100%", padding: "12px 16px", background: "#0A0F1E", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
+                  style={{ width: "100%", padding: "12px 16px", background: "#0D0D11", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
                 >
                   <option value="Website">Website</option>
                   <option value="E-Shop">E-Shop</option>
@@ -1263,10 +1263,10 @@ function ProjectsView() {
                       style={{
                         display: "inline-block",
                         padding: "8px 16px",
-                        background: "rgba(201,168,76,0.1)",
-                        border: "1px solid rgba(201,168,76,0.3)",
+                        background: "rgba(223, 186, 115,0.1)",
+                        border: "1px solid rgba(223, 186, 115,0.3)",
                         borderRadius: 10,
-                        color: "#C9A84C",
+                        color: "#DFBA73",
                         fontSize: 13,
                         cursor: "pointer",
                         marginRight: 10,
@@ -1380,10 +1380,10 @@ function ProjectsView() {
                     style={{
                       display: "inline-block",
                       padding: "8px 16px",
-                      background: "rgba(201,168,76,0.1)",
-                      border: "1px solid rgba(201,168,76,0.3)",
+                      background: "rgba(223, 186, 115,0.1)",
+                      border: "1px solid rgba(223, 186, 115,0.3)",
                       borderRadius: 10,
-                      color: "#C9A84C",
+                      color: "#DFBA73",
                       fontSize: 13,
                       cursor: "pointer",
                       userSelect: "none"
@@ -1441,7 +1441,7 @@ function ProjectsView() {
                   id="formIsLive"
                   checked={formIsLive}
                   onChange={(e) => setFormIsLive(e.target.checked)}
-                  style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#C9A84C" }}
+                  style={{ width: 18, height: 18, cursor: "pointer", accentColor: "#DFBA73" }}
                 />
                 <label htmlFor="formIsLive" style={{ color: "#fff", fontSize: 14, cursor: "pointer", userSelect: "none" }}>
                   Είναι Live Project (Εμφάνιση πράσινης ένδευξης)
@@ -1467,10 +1467,10 @@ function ProjectsView() {
               onClick={handleSave}
               style={{
                 padding: "14px 28px",
-                background: "linear-gradient(135deg, #C9A84C, #a8893e)",
+                background: "linear-gradient(135deg, #DFBA73, #a8893e)",
                 border: "none",
                 borderRadius: 12,
-                color: "#0A0F1E",
+                color: "#0D0D11",
                 fontWeight: 700,
                 fontSize: 14,
                 cursor: "pointer"
@@ -1501,7 +1501,7 @@ function ProjectsView() {
   return (
     <div>
       <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 0, marginBottom: 24 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Outfit', sans-serif" }}>
           Projects
         </h1>
         <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", gap: 12, alignItems: isMobile ? "stretch" : "center" }}>
@@ -1510,10 +1510,10 @@ function ProjectsView() {
             onClick={openNew}
             style={{
               padding: "8px 16px",
-              background: "linear-gradient(135deg, #C9A84C, #a8893e)",
+              background: "linear-gradient(135deg, #DFBA73, #a8893e)",
               border: "none",
               borderRadius: 8,
-              color: "#0A0F1E",
+              color: "#0D0D11",
               fontWeight: 700,
               cursor: "pointer",
               fontSize: 13,
@@ -1532,9 +1532,9 @@ function ProjectsView() {
                 style={{
                   padding: "8px 16px",
                   borderRadius: 8,
-                  border: `1px solid ${filter === f ? "#C9A84C" : "rgba(255,255,255,0.1)"}`,
-                  background: filter === f ? "rgba(201,168,76,0.1)" : "transparent",
-                  color: filter === f ? "#C9A84C" : "rgba(255,255,255,0.45)",
+                  border: `1px solid ${filter === f ? "#DFBA73" : "rgba(255,255,255,0.1)"}`,
+                  background: filter === f ? "rgba(223, 186, 115,0.1)" : "transparent",
+                  color: filter === f ? "#DFBA73" : "rgba(255,255,255,0.45)",
                   cursor: "pointer",
                   fontSize: 13
                 }}
@@ -1576,7 +1576,7 @@ function ProjectsView() {
                   </div>
                   <div style={{ fontSize: 11, color: "rgba(255,255,255,0.3)", marginTop: 4 }}>{p.year}</div>
                 </td>
-                <td style={{ padding: "16px 20px", color: "#C9A84C", fontSize: 13, fontWeight: 500 }}>{p.results}</td>
+                <td style={{ padding: "16px 20px", color: "#DFBA73", fontSize: 13, fontWeight: 500 }}>{p.results}</td>
                 <td style={{ padding: "16px 20px" }}>
                   <span style={{ fontSize: 12, color: p.isLive ? "#22c55e" : "#6b7280", background: p.isLive ? "#22c55e18" : "#6b728018", padding: "4px 10px", borderRadius: 999 }}>
                     {p.isLive ? "Live" : "Draft"}
@@ -1586,7 +1586,7 @@ function ProjectsView() {
                   <div style={{ display: "flex", gap: 12 }}>
                     <button
                       onClick={() => openEdit(p)}
-                      style={{ background: "transparent", border: "none", color: "#C9A84C", cursor: "pointer", fontSize: 13 }}
+                      style={{ background: "transparent", border: "none", color: "#DFBA73", cursor: "pointer", fontSize: 13 }}
                     >
                       Επεξεργασία
                     </button>
@@ -1705,7 +1705,7 @@ function AnalyticsView() {
   return (
     <div>
       <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", gap: 16, marginBottom: 24 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", margin: 0 }}>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Outfit', sans-serif", margin: 0 }}>
           Στατιστικά
         </h1>
         {/* Timeframe Filter Buttons */}
@@ -1721,9 +1721,9 @@ function AnalyticsView() {
               style={{
                 padding: "8px 14px",
                 borderRadius: 8,
-                border: `1px solid ${timeframe === t.id ? "#C9A84C" : "rgba(255,255,255,0.1)"}`,
-                background: timeframe === t.id ? "rgba(201,168,76,0.1)" : "transparent",
-                color: timeframe === t.id ? "#C9A84C" : "rgba(255,255,255,0.45)",
+                border: `1px solid ${timeframe === t.id ? "#DFBA73" : "rgba(255,255,255,0.1)"}`,
+                background: timeframe === t.id ? "rgba(223, 186, 115,0.1)" : "transparent",
+                color: timeframe === t.id ? "#DFBA73" : "rgba(255,255,255,0.45)",
                 cursor: "pointer",
                 fontSize: 12,
                 fontWeight: timeframe === t.id ? 600 : 400
@@ -1737,7 +1737,7 @@ function AnalyticsView() {
 
       {loading ? (
         <div style={{ textAlign: "center", padding: 60, color: "rgba(255,255,255,0.3)" }}>
-          <div style={{ width: 32, height: 32, border: "2px solid rgba(201,168,76,0.3)", borderTop: "2px solid #C9A84C", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 12px" }} />
+          <div style={{ width: 32, height: 32, border: "2px solid rgba(223, 186, 115,0.3)", borderTop: "2px solid #DFBA73", borderRadius: "50%", animation: "spin 1s linear infinite", margin: "0 auto 12px" }} />
           Φόρτωση στατιστικών...
         </div>
       ) : (
@@ -1745,7 +1745,7 @@ function AnalyticsView() {
           {/* Summary Cards */}
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr 1fr", gap: 16, marginBottom: 20 }}>
             {[
-              { label: "Σελιδοπροβολές Μήνα", value: totalMonth.toLocaleString("el-GR"), icon: Eye, color: "#C9A84C" },
+              { label: "Σελιδοπροβολές Μήνα", value: totalMonth.toLocaleString("el-GR"), icon: Eye, color: "#DFBA73" },
               { label: "Σελιδοπροβολές Σήμερα", value: totalToday.toLocaleString("el-GR"), icon: TrendingUp, color: "#22c55e" },
               { label: "Σύνολο Περιόδου", value: periodViews.toLocaleString("el-GR"), icon: BarChart2, color: "#3b82f6" },
               { label: "Κορυφαία Πηγή", value: topRefVal, icon: Globe, color: "#a855f7" },
@@ -1780,8 +1780,8 @@ function AnalyticsView() {
                     <div style={{
                       width: "100%",
                       background: d.date === today
-                        ? "linear-gradient(180deg, #C9A84C, #a8893e)"
-                        : "rgba(201,168,76,0.3)",
+                        ? "linear-gradient(180deg, #DFBA73, #a8893e)"
+                        : "rgba(223, 186, 115,0.3)",
                       height: `${Math.max((d.count / maxCount) * 110, d.count > 0 ? 4 : 0)}px`,
                       borderRadius: "4px 4px 0 0",
                       transition: "height 0.3s",
@@ -1805,9 +1805,9 @@ function AnalyticsView() {
                     <div key={path} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                       <div style={{ flex: 1, color: "#fff", fontSize: 14, fontFamily: "monospace" }}>{path}</div>
                       <div style={{ width: 120, height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 999, overflow: "hidden" }}>
-                        <div style={{ width: `${(count / (topPages[0]?.[1] || 1)) * 100}%`, height: "100%", background: "#C9A84C", borderRadius: 999 }} />
+                        <div style={{ width: `${(count / (topPages[0]?.[1] || 1)) * 100}%`, height: "100%", background: "#DFBA73", borderRadius: 999 }} />
                       </div>
-                      <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 13, minWidth: 30, textAlign: "right" }}>{count}</div>
+                      <div style={{ color: "#DFBA73", fontWeight: 700, fontSize: 13, minWidth: 30, textAlign: "right" }}>{count}</div>
                     </div>
                   ))}
                 </div>
@@ -1825,14 +1825,14 @@ function AnalyticsView() {
                   <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
                     {/* Progress bar split */}
                     <div style={{ display: "flex", height: 16, borderRadius: 8, overflow: "hidden", background: "rgba(255,255,255,0.05)" }}>
-                      <div style={{ width: `${desktopPercent}%`, background: "#C9A84C" }} title={`Desktop: ${desktopPercent}%`} />
+                      <div style={{ width: `${desktopPercent}%`, background: "#DFBA73" }} title={`Desktop: ${desktopPercent}%`} />
                       <div style={{ width: `${mobilePercent}%`, background: "#3b82f6" }} title={`Mobile: ${mobilePercent}%`} />
                       <div style={{ width: `${tabletPercent}%`, background: "#22c55e" }} title={`Tablet: ${tabletPercent}%`} />
                     </div>
                     {/* Legend */}
                     <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: 10, fontSize: 11, color: "rgba(255,255,255,0.6)" }}>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-                        <span style={{ width: 10, height: 10, background: "#C9A84C", borderRadius: 2 }} />
+                        <span style={{ width: 10, height: 10, background: "#DFBA73", borderRadius: 2 }} />
                         <span>💻 Desktop ({desktopPercent}%)</span>
                       </div>
                       <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
@@ -1859,9 +1859,9 @@ function AnalyticsView() {
                       <div key={ref} style={{ display: "flex", alignItems: "center", gap: 12 }}>
                         <div style={{ flex: 1, color: "#fff", fontSize: 14, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{ref}</div>
                         <div style={{ width: 120, height: 6, background: "rgba(255,255,255,0.06)", borderRadius: 999, overflow: "hidden", flexShrink: 0 }}>
-                          <div style={{ width: `${(count / (topReferrers[0]?.[1] || 1)) * 100}%`, height: "100%", background: "#C9A84C", borderRadius: 999 }} />
+                          <div style={{ width: `${(count / (topReferrers[0]?.[1] || 1)) * 100}%`, height: "100%", background: "#DFBA73", borderRadius: 999 }} />
                         </div>
-                        <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 13, minWidth: 30, textAlign: "right", flexShrink: 0 }}>{count}</div>
+                        <div style={{ color: "#DFBA73", fontWeight: 700, fontSize: 13, minWidth: 30, textAlign: "right", flexShrink: 0 }}>{count}</div>
                       </div>
                     ))}
                   </div>
@@ -2010,14 +2010,14 @@ function SettingsView() {
 
   return (
     <div>
-      <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 24 }}>
+      <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Outfit', sans-serif", marginBottom: 24 }}>
         Ρυθμίσεις
       </h1>
 
       <div style={{ display: "grid", gap: 20 }}>
         {/* Contact Info */}
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-          <h3 style={{ color: "#C9A84C", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Στοιχεία Επικοινωνίας</h3>
+          <h3 style={{ color: "#DFBA73", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Στοιχεία Επικοινωνίας</h3>
           {[
             { label: "Τηλέφωνο Επικοινωνίας", value: viber, onChange: setViber },
             { label: "Email Επικοινωνίας", value: email, onChange: setEmail },
@@ -2035,7 +2035,7 @@ function SettingsView() {
 
         {/* Τιμοκατάλογος Υπηρεσιών */}
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-          <h3 style={{ color: "#C9A84C", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Τιμοκατάλογος Υπηρεσιών</h3>
+          <h3 style={{ color: "#DFBA73", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Τιμοκατάλογος Υπηρεσιών</h3>
           
           <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20 }}>
             {/* Packages */}
@@ -2083,7 +2083,7 @@ function SettingsView() {
 
         {/* Maintenance Mode Toggle */}
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-          <h3 style={{ color: "#C9A84C", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>
+          <h3 style={{ color: "#DFBA73", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>
             Κατάσταση Συντήρησης (Maintenance Mode)
           </h3>
           <p style={{ color: "rgba(255,255,255,0.5)", fontSize: 13, lineHeight: 1.6, marginBottom: 20 }}>
@@ -2100,7 +2100,7 @@ function SettingsView() {
                   width: 50,
                   height: 26,
                   borderRadius: 13,
-                  background: maintenanceMode ? "#C9A84C" : "rgba(255,255,255,0.1)",
+                  background: maintenanceMode ? "#DFBA73" : "rgba(255,255,255,0.1)",
                   position: "relative",
                   cursor: "pointer",
                   border: "none",
@@ -2114,7 +2114,7 @@ function SettingsView() {
                     width: 20,
                     height: 20,
                     borderRadius: "50%",
-                    background: "#0A0F1E",
+                    background: "#0D0D11",
                     position: "absolute",
                     top: 3,
                     left: maintenanceMode ? 27 : 3,
@@ -2131,7 +2131,7 @@ function SettingsView() {
 
         {/* Security */}
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-          <h3 style={{ color: "#C9A84C", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Ασφάλεια</h3>
+          <h3 style={{ color: "#DFBA73", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Ασφάλεια</h3>
           <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "14px 16px", background: "rgba(34,197,94,0.06)", border: "1px solid rgba(34,197,94,0.15)", borderRadius: 10 }}>
             <CheckCircle size={18} color="#22c55e" />
             <span style={{ color: "rgba(255,255,255,0.7)", fontSize: 14 }}>Ο λογαριασμός σας προστατεύεται με κωδικό.</span>
@@ -2142,10 +2142,10 @@ function SettingsView() {
           onClick={save}
           style={{
             padding: "14px 32px",
-            background: saved ? "rgba(34,197,94,0.15)" : "linear-gradient(135deg, #C9A84C, #a8893e)",
+            background: saved ? "rgba(34,197,94,0.15)" : "linear-gradient(135deg, #DFBA73, #a8893e)",
             border: saved ? "1px solid rgba(34,197,94,0.4)" : "none",
             borderRadius: 12,
-            color: saved ? "#22c55e" : "#0A0F1E",
+            color: saved ? "#22c55e" : "#0D0D11",
             fontWeight: 700,
             fontSize: 15,
             cursor: "pointer",
@@ -2245,7 +2245,7 @@ function CRMView() {
     <div>
       <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 0, marginBottom: 24 }}>
         <div>
-          <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", marginBottom: 4 }}>Πελάτες</h1>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Outfit', sans-serif", marginBottom: 4 }}>Πελάτες</h1>
           {loading ? (
             <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13 }}>Φόρτωση πελατών...</p>
           ) : (
@@ -2259,9 +2259,9 @@ function CRMView() {
               onClick={() => setFilter(f)}
               style={{
                 padding: "8px 14px", borderRadius: 8,
-                border: `1px solid ${filter === f ? "#C9A84C" : "rgba(255,255,255,0.1)"}`,
-                background: filter === f ? "rgba(201,168,76,0.1)" : "transparent",
-                color: filter === f ? "#C9A84C" : "rgba(255,255,255,0.45)",
+                border: `1px solid ${filter === f ? "#DFBA73" : "rgba(255,255,255,0.1)"}`,
+                background: filter === f ? "rgba(223, 186, 115,0.1)" : "transparent",
+                color: filter === f ? "#DFBA73" : "rgba(255,255,255,0.45)",
                 cursor: "pointer", fontSize: 13,
                 flex: isMobile ? 1 : "auto",
               }}
@@ -2281,13 +2281,13 @@ function CRMView() {
                 key={c.id}
                 onClick={() => setSelected(c)}
                 style={{
-                  background: selected?.id === c.id ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)",
-                  border: `1px solid ${selected?.id === c.id ? "rgba(201,168,76,0.3)" : "rgba(255,255,255,0.08)"}`,
+                  background: selected?.id === c.id ? "rgba(223, 186, 115,0.08)" : "rgba(255,255,255,0.03)",
+                  border: `1px solid ${selected?.id === c.id ? "rgba(223, 186, 115,0.3)" : "rgba(255,255,255,0.08)"}`,
                   borderRadius: 14, padding: "16px 18px", cursor: "pointer", transition: "all 0.15s",
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-                  <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(201,168,76,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#C9A84C", fontWeight: 700, flexShrink: 0 }}>
+                  <div style={{ width: 42, height: 42, borderRadius: "50%", background: "rgba(223, 186, 115,0.15)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 16, color: "#DFBA73", fontWeight: 700, flexShrink: 0 }}>
                     {c.name[0]}
                   </div>
                   <div style={{ flex: 1, minWidth: 0 }}>
@@ -2295,7 +2295,7 @@ function CRMView() {
                     <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 12 }}>{c.business}</div>
                   </div>
                   <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: 4 }}>
-                    <span style={{ fontSize: 13, fontWeight: 700, color: "#C9A84C" }}>{c.totalValue}</span>
+                    <span style={{ fontSize: 13, fontWeight: 700, color: "#DFBA73" }}>{c.totalValue}</span>
                     <span style={{ fontSize: 11, color: clientStatus[c.status]?.color, background: `${clientStatus[c.status]?.color}18`, padding: "2px 8px", borderRadius: 999 }}>{clientStatus[c.status]?.label}</span>
                   </div>
                 </div>
@@ -2319,7 +2319,7 @@ function CRMView() {
                         border: "1px solid rgba(255,255,255,0.08)",
                         borderRadius: 8,
                         padding: "6px 12px",
-                        color: "#C9A84C",
+                        color: "#DFBA73",
                         cursor: "pointer",
                         fontSize: 13,
                         fontWeight: 600,
@@ -2330,9 +2330,9 @@ function CRMView() {
                   </div>
                 )}
                 {/* Profile header */}
-                <div style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.1), rgba(201,168,76,0.03))", padding: "28px 28px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+                <div style={{ background: "linear-gradient(135deg, rgba(223, 186, 115,0.1), rgba(223, 186, 115,0.03))", padding: "28px 28px 24px", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
                   <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", alignItems: isMobile ? "stretch" : "center", gap: 16 }}>
-                    <div style={{ width: 60, height: 60, borderRadius: "50%", background: "rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: "#C9A84C", fontWeight: 700, border: "2px solid rgba(201,168,76,0.3)", alignSelf: isMobile ? "flex-start" : "auto" }}>
+                    <div style={{ width: 60, height: 60, borderRadius: "50%", background: "rgba(223, 186, 115,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 24, color: "#DFBA73", fontWeight: 700, border: "2px solid rgba(223, 186, 115,0.3)", alignSelf: isMobile ? "flex-start" : "auto" }}>
                       {selected.name[0]}
                     </div>
                     <div>
@@ -2361,7 +2361,7 @@ function CRMView() {
                         <info.icon size={12} /> {info.label}
                       </div>
                       {info.href ? (
-                        <a href={info.href} style={{ color: "#C9A84C", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>{info.value}</a>
+                        <a href={info.href} style={{ color: "#DFBA73", fontSize: 13, textDecoration: "none", fontWeight: 500 }}>{info.value}</a>
                       ) : (
                         <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{info.value}</div>
                       )}
@@ -2371,7 +2371,7 @@ function CRMView() {
 
                 {/* Quick actions */}
                 <div style={{ display: "flex", gap: 10, flexWrap: "wrap" }}>
-                  <a href={`mailto:${selected.email}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "linear-gradient(135deg, #C9A84C, #a8893e)", borderRadius: 10, color: "#0A0F1E", fontWeight: 700, fontSize: 13, textDecoration: "none" }}>
+                  <a href={`mailto:${selected.email}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "linear-gradient(135deg, #DFBA73, #a8893e)", borderRadius: 10, color: "#0D0D11", fontWeight: 700, fontSize: 13, textDecoration: "none" }}>
                     <Mail size={14} /> Αποστολή Email
                   </a>
                   <a href={`tel:${selected.phone}`} style={{ display: "flex", alignItems: "center", gap: 8, padding: "10px 16px", background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, textDecoration: "none" }}>
@@ -2720,12 +2720,12 @@ function QuotesView({
           <meta charset="utf-8">
           <link rel="preconnect" href="https://fonts.googleapis.com">
           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-          <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
           <style>
             .pdf-body {
               font-family: 'DM Sans', Arial, sans-serif;
               padding: 40px;
-              color: #0A0F1E;
+              color: #0D0D11;
               background: #ffffff;
               margin: 0;
               box-sizing: border-box;
@@ -2742,14 +2742,14 @@ function QuotesView({
               font-size: 24px;
               font-weight: 700;
               letter-spacing: 2px;
-              color: #C9A84C;
-              font-family: 'Playfair Display', serif;
+              color: #DFBA73;
+              font-family: 'Outfit', sans-serif;
             }
             .title {
               font-size: 28px;
               font-weight: 700;
-              color: #C9A84C;
-              font-family: 'Playfair Display', serif;
+              color: #DFBA73;
+              font-family: 'Outfit', sans-serif;
             }
             .meta-section {
               margin-bottom: 40px;
@@ -2787,13 +2787,13 @@ function QuotesView({
             .service-name {
               font-size: 15px;
               font-weight: 700;
-              color: #0A0F1E;
+              color: #0D0D11;
             }
             .deliverables {
               margin-top: 10px;
               padding: 12px 16px;
               background: #f8f8f5;
-              border-left: 3px solid #C9A84C;
+              border-left: 3px solid #DFBA73;
               border-radius: 4px;
               text-align: left;
             }
@@ -2802,7 +2802,7 @@ function QuotesView({
               font-weight: 700;
               text-transform: uppercase;
               letter-spacing: 1px;
-              color: #C9A84C;
+              color: #DFBA73;
               margin-bottom: 6px;
             }
             ul {
@@ -2827,7 +2827,7 @@ function QuotesView({
               text-align: right;
               font-size: 22px;
               font-weight: 700;
-              color: #C9A84C;
+              color: #DFBA73;
               border-bottom: none;
               padding-top: 20px;
             }
@@ -2865,7 +2865,7 @@ function QuotesView({
 
           <div class="meta-section">
             <div class="label">Προς</div>
-            <div style="font-size: 18px; font-weight: 600; color: #0A0F1E;">${clientName}</div>
+            <div style="font-size: 18px; font-weight: 600; color: #0D0D11;">${clientName}</div>
             <div style="color: #555; font-size: 13px; margin-top: 4px;">Email: ${clientEmail}</div>
             ${clientPhone ? `<div style="color: #555; font-size: 13px; margin-top: 2px;">Τηλ: ${clientPhone}</div>` : ""}
           </div>
@@ -2896,7 +2896,7 @@ function QuotesView({
                       ${deliv}
                     </td>
                     <td style="text-align: right; white-space: nowrap;">€${i.price} × ${i.qty}</td>
-                    <td style="text-align: right; font-weight: 700; color: #0A0F1E; white-space: nowrap;">€${i.price * i.qty}</td>
+                    <td style="text-align: right; font-weight: 700; color: #0D0D11; white-space: nowrap;">€${i.price * i.qty}</td>
                   </tr>
                 `;
               }).join("")}
@@ -2924,20 +2924,20 @@ function QuotesView({
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
-          <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@700&display=swap" rel="stylesheet">
           <style>
             * { box-sizing: border-box; margin: 0; padding: 0; }
             .pdf-body {
               font-family: 'DM Sans', Arial, sans-serif;
               background: #ffffff;
-              color: #0A0F1E;
+              color: #0D0D11;
               padding: 28px 24px;
               -webkit-print-color-adjust: exact;
               print-color-adjust: exact;
             }
             .top-bar {
-              background: #0A0F1E;
-              color: #C9A84C;
+              background: #0D0D11;
+              color: #DFBA73;
               padding: 18px 20px;
               border-radius: 10px;
               display: flex;
@@ -2946,7 +2946,7 @@ function QuotesView({
               margin-bottom: 18px;
             }
             .company-name {
-              font-family: 'Playfair Display', serif;
+              font-family: 'Outfit', sans-serif;
               font-size: 20px;
               font-weight: 700;
               letter-spacing: 1px;
@@ -2979,14 +2979,14 @@ function QuotesView({
               font-size: 10px;
               text-transform: uppercase;
               letter-spacing: 2px;
-              color: #C9A84C;
+              color: #DFBA73;
               font-weight: 700;
               margin-bottom: 8px;
             }
             .client-name {
               font-size: 18px;
               font-weight: 700;
-              color: #0A0F1E;
+              color: #0D0D11;
               margin-bottom: 4px;
             }
             .client-contact {
@@ -3005,7 +3005,7 @@ function QuotesView({
             .service-name {
               font-size: 14px;
               font-weight: 600;
-              color: #0A0F1E;
+              color: #0D0D11;
             }
             .service-detail {
               font-size: 12px;
@@ -3015,12 +3015,12 @@ function QuotesView({
             .service-price {
               font-size: 14px;
               font-weight: 700;
-              color: #0A0F1E;
+              color: #0D0D11;
               white-space: nowrap;
               margin-left: 12px;
             }
             .total-card {
-              background: #0A0F1E;
+              background: #0D0D11;
               border-radius: 10px;
               padding: 16px 18px;
               display: flex;
@@ -3038,11 +3038,11 @@ function QuotesView({
             .total-amount {
               font-size: 26px;
               font-weight: 700;
-              color: #C9A84C;
-              font-family: 'Playfair Display', serif;
+              color: #DFBA73;
+              font-family: 'Outfit', sans-serif;
             }
             .note-card {
-              border-left: 3px solid #C9A84C;
+              border-left: 3px solid #DFBA73;
               background: #fdfaf4;
               padding: 12px 16px;
               border-radius: 0 8px 8px 0;
@@ -3141,7 +3141,7 @@ function QuotesView({
         left: "0",
         width: "100vw",
         height: "100vh",
-        background: "rgba(10, 15, 30, 0.96)",
+        background: "rgba(13, 13, 17, 0.96)",
         zIndex: "99999",
         display: "flex",
         flexDirection: "column",
@@ -3152,7 +3152,7 @@ function QuotesView({
         fontFamily: "sans-serif"
       });
       overlay.innerHTML = `
-        <div style="color:#C9A84C;font-size:16px;font-weight:700">📄 Δημιουργία PDF...</div>
+        <div style="color:#DFBA73;font-size:16px;font-weight:700">📄 Δημιουργία PDF...</div>
         <div style="color:rgba(255,255,255,0.4);font-size:13px">Παρακαλώ περιμένετε</div>
       `;
       document.body.appendChild(overlay);
@@ -3193,7 +3193,7 @@ function QuotesView({
         margin: "0",
         boxShadow: "none",
         background: "#ffffff",
-        color: "#0A0F1E"
+        color: "#0D0D11"
       });
       clone.innerHTML = htmlString;
       document.body.appendChild(clone);
@@ -3336,10 +3336,10 @@ function QuotesView({
   return (
     <div>
       <div style={{ display: "flex", flexDirection: isMobile ? "column" : "row", justifyContent: "space-between", alignItems: isMobile ? "stretch" : "center", gap: isMobile ? 16 : 0, marginBottom: 24 }}>
-        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif" }}>Προσφορές</h1>
+        <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Outfit', sans-serif" }}>Προσφορές</h1>
         <div style={{ display: "flex", gap: 8, alignSelf: isMobile ? "flex-start" : "auto" }}>
-          <button onClick={() => setTab("list")} style={{ padding: "9px 18px", borderRadius: 10, border: `1px solid ${tab === "list" ? "#C9A84C" : "rgba(255,255,255,0.1)"}`, background: tab === "list" ? "rgba(201,168,76,0.1)" : "transparent", color: tab === "list" ? "#C9A84C" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 13 }}>Ιστορικό</button>
-          <button onClick={startNewQuote} style={{ padding: "9px 18px", borderRadius: 10, border: "1px solid #C9A84C", background: "rgba(201,168,76,0.15)", color: "#C9A84C", cursor: "pointer", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
+          <button onClick={() => setTab("list")} style={{ padding: "9px 18px", borderRadius: 10, border: `1px solid ${tab === "list" ? "#DFBA73" : "rgba(255,255,255,0.1)"}`, background: tab === "list" ? "rgba(223, 186, 115,0.1)" : "transparent", color: tab === "list" ? "#DFBA73" : "rgba(255,255,255,0.45)", cursor: "pointer", fontSize: 13 }}>Ιστορικό</button>
+          <button onClick={startNewQuote} style={{ padding: "9px 18px", borderRadius: 10, border: "1px solid #DFBA73", background: "rgba(223, 186, 115,0.15)", color: "#DFBA73", cursor: "pointer", fontSize: 13, fontWeight: 600, display: "flex", alignItems: "center", gap: 6 }}>
             <Plus size={14} /> Νέα Προσφορά
           </button>
         </div>
@@ -3372,7 +3372,7 @@ function QuotesView({
                   onMouseEnter={(e) => { (e.currentTarget as HTMLElement).style.background = "rgba(255,255,255,0.03)"; }}
                   onMouseLeave={(e) => { (e.currentTarget as HTMLElement).style.background = "transparent"; }}
                 >
-                  <td style={{ padding: "14px 20px", color: "#C9A84C", fontWeight: 600, fontSize: 13 }}>{q.id}</td>
+                  <td style={{ padding: "14px 20px", color: "#DFBA73", fontWeight: 600, fontSize: 13 }}>{q.id}</td>
                   <td style={{ padding: "14px 20px", color: "#fff", fontSize: 14, fontWeight: 500 }}>{q.client}</td>
                   <td style={{ padding: "14px 20px", color: "rgba(255,255,255,0.4)", fontSize: 13 }}>{q.date}</td>
                   <td style={{ padding: "14px 20px", color: "#fff", fontWeight: 700, fontSize: 15 }}>
@@ -3383,7 +3383,7 @@ function QuotesView({
                   </td>
                   <td style={{ padding: "14px 20px" }}>
                     <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
-                      <button onClick={() => openQuote(q)} style={{ background: "transparent", border: "none", color: "#C9A84C", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 4, fontWeight: 600 }}>
+                      <button onClick={() => openQuote(q)} style={{ background: "transparent", border: "none", color: "#DFBA73", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 4, fontWeight: 600 }}>
                         <FileText size={14} /> Επεξεργασία
                       </button>
                       <button onClick={() => deleteQuote(q.id)} style={{ background: "transparent", border: "none", color: "#ef4444", cursor: "pointer", fontSize: 13, display: "flex", alignItems: "center", gap: 4, fontWeight: 600 }}>
@@ -3401,8 +3401,8 @@ function QuotesView({
         <>
           {editingQuoteId && (
             <div style={{
-              background: "rgba(201,168,76,0.1)",
-              border: "1px solid rgba(201,168,76,0.3)",
+              background: "rgba(223, 186, 115,0.1)",
+              border: "1px solid rgba(223, 186, 115,0.3)",
               borderRadius: 12,
               padding: "12px 16px",
               marginBottom: 20,
@@ -3410,7 +3410,7 @@ function QuotesView({
               justifyContent: "space-between",
               alignItems: "center"
             }}>
-              <span style={{ color: "#C9A84C", fontSize: 14, fontWeight: 600 }}>
+              <span style={{ color: "#DFBA73", fontSize: 14, fontWeight: 600 }}>
                 📝 Επεξεργασία Προσφοράς #{editingQuoteId}
               </span>
               <button
@@ -3435,7 +3435,7 @@ function QuotesView({
           <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
             {/* Client info */}
             <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-              <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Στοιχεία Πελάτη</div>
+              <div style={{ color: "#DFBA73", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Στοιχεία Πελάτη</div>
               {[
                 { label: "Ονοματεπώνυμο", value: clientName, set: setClientName, placeholder: "π.χ. Γιώργος Παπαδόπουλος" },
                 { label: "Email", value: clientEmail, set: setClientEmail, placeholder: "email@example.com" },
@@ -3452,7 +3452,7 @@ function QuotesView({
 
             {/* Package Selector */}
             <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-              <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Πακέτο Υπηρεσίας</div>
+              <div style={{ color: "#DFBA73", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Πακέτο Υπηρεσίας</div>
               <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 10, marginBottom: 16 }}>
                 {[
                   { id: "landing", label: "Landing Page", name: "Landing Page", price: prices.landing },
@@ -3473,10 +3473,10 @@ function QuotesView({
                       }}
                       style={{
                         padding: "10px",
-                        background: isActive ? "rgba(201,168,76,0.15)" : "rgba(255,255,255,0.03)",
-                        border: `1px solid ${isActive ? "#C9A84C" : "rgba(255,255,255,0.1)"}`,
+                        background: isActive ? "rgba(223, 186, 115,0.15)" : "rgba(255,255,255,0.03)",
+                        border: `1px solid ${isActive ? "#DFBA73" : "rgba(255,255,255,0.1)"}`,
                         borderRadius: 10,
-                        color: isActive ? "#C9A84C" : "rgba(255,255,255,0.6)",
+                        color: isActive ? "#DFBA73" : "rgba(255,255,255,0.6)",
                         fontSize: 12,
                         fontWeight: isActive ? 600 : 400,
                         cursor: "pointer",
@@ -3491,7 +3491,7 @@ function QuotesView({
 
               {selectedPackage && (
                 <div style={{ background: "rgba(255,255,255,0.02)", border: "1px solid rgba(255,255,255,0.05)", borderRadius: 10, padding: 14, textAlign: "left" }}>
-                  <div style={{ color: "#C9A84C", fontSize: 11, fontWeight: 600, textTransform: "uppercase", marginBottom: 10 }}>
+                  <div style={{ color: "#DFBA73", fontSize: 11, fontWeight: 600, textTransform: "uppercase", marginBottom: 10 }}>
                     Παροχές Πακέτου:
                   </div>
                   <ul style={{ paddingLeft: 16, margin: 0, fontSize: 12, color: "rgba(255,255,255,0.6)", lineHeight: "1.6" }}>
@@ -3505,15 +3505,15 @@ function QuotesView({
 
             {/* Service picker */}
             <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 24 }}>
-              <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Επίλεξε Επιπλέον Υπηρεσίες</div>
+              <div style={{ color: "#DFBA73", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 16 }}>Επίλεξε Επιπλέον Υπηρεσίες</div>
               {dynamicServiceOptions.map((svc) => {
                 const added = items.some((i) => i.name === svc.name);
                 return (
                   <div key={svc.name} onClick={() => addService(svc)}
-                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", borderRadius: 10, marginBottom: 6, cursor: "pointer", background: added ? "rgba(201,168,76,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${added ? "rgba(201,168,76,0.25)" : "rgba(255,255,255,0.06)"}`, transition: "all 0.15s" }}
+                    style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "10px 12px", borderRadius: 10, marginBottom: 6, cursor: "pointer", background: added ? "rgba(223, 186, 115,0.08)" : "rgba(255,255,255,0.03)", border: `1px solid ${added ? "rgba(223, 186, 115,0.25)" : "rgba(255,255,255,0.06)"}`, transition: "all 0.15s" }}
                   >
-                    <span style={{ color: added ? "#C9A84C" : "rgba(255,255,255,0.7)", fontSize: 14 }}>{svc.name}</span>
-                    <span style={{ color: added ? "#C9A84C" : "rgba(255,255,255,0.4)", fontSize: 13, fontWeight: 600 }}>€{svc.price}</span>
+                    <span style={{ color: added ? "#DFBA73" : "rgba(255,255,255,0.7)", fontSize: 14 }}>{svc.name}</span>
+                    <span style={{ color: added ? "#DFBA73" : "rgba(255,255,255,0.4)", fontSize: 13, fontWeight: 600 }}>€{svc.price}</span>
                   </div>
                 );
               })}
@@ -3522,12 +3522,12 @@ function QuotesView({
 
           {/* Right: preview */}
           <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28, display: "flex", flexDirection: "column" }}>
-            <div style={{ color: "#C9A84C", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Προεπισκόπηση Προσφοράς</div>
+            <div style={{ color: "#DFBA73", fontSize: 12, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Προεπισκόπηση Προσφοράς</div>
 
             {/* Header preview */}
-            <div style={{ background: "linear-gradient(135deg, rgba(201,168,76,0.08), transparent)", borderRadius: 12, padding: "16px 20px", marginBottom: 20, border: "1px solid rgba(201,168,76,0.15)" }}>
+            <div style={{ background: "linear-gradient(135deg, rgba(223, 186, 115,0.08), transparent)", borderRadius: 12, padding: "16px 20px", marginBottom: 20, border: "1px solid rgba(223, 186, 115,0.15)" }}>
               <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 16, fontFamily: "'Playfair Display', serif" }}>ALTUS STUDIO</div>
+                <div style={{ color: "#DFBA73", fontWeight: 700, fontSize: 16, fontFamily: "'Outfit', sans-serif" }}>ALTUS STUDIO</div>
                 <div style={{ color: "rgba(255,255,255,0.5)", fontSize: 12 }}>{new Date().toLocaleDateString("el-GR")}</div>
               </div>
               <div style={{ color: "rgba(255,255,255,0.6)", fontSize: 13, marginTop: 4 }}>
@@ -3560,16 +3560,16 @@ function QuotesView({
                           <span style={{ color: "#fff", fontSize: 13, fontWeight: 600, minWidth: 20, textAlign: "center" }}>{item.qty}</span>
                           <button onClick={() => changeQty(item.name, 1)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "rgba(255,255,255,0.4)", display: "flex" }}><PlusCircle size={16} /></button>
                           <button onClick={() => removeItem(item.name)} style={{ background: "transparent", border: "none", cursor: "pointer", color: "#ef4444", display: "flex", marginLeft: 4 }}><X size={15} /></button>
-                          <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: 14, minWidth: 50, textAlign: "right" }}>€{item.price * item.qty}</span>
+                          <span style={{ color: "#DFBA73", fontWeight: 700, fontSize: 14, minWidth: 50, textAlign: "right" }}>€{item.price * item.qty}</span>
                         </div>
                       </div>
                       {delivs && (
-                        <div style={{ marginTop: 10, padding: "10px 12px", background: "rgba(201,168,76,0.05)", borderLeft: "2px solid rgba(201,168,76,0.4)", borderRadius: "0 6px 6px 0" }}>
-                          <div style={{ color: "#C9A84C", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 6 }}>Αναλυτικά Περιλαμβάνει:</div>
+                        <div style={{ marginTop: 10, padding: "10px 12px", background: "rgba(223, 186, 115,0.05)", borderLeft: "2px solid rgba(223, 186, 115,0.4)", borderRadius: "0 6px 6px 0" }}>
+                          <div style={{ color: "#DFBA73", fontSize: 10, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.12em", marginBottom: 6 }}>Αναλυτικά Περιλαμβάνει:</div>
                           <ul style={{ margin: 0, paddingLeft: 14, listStyle: "none" }}>
                             {delivs.map((d, idx) => (
                               <li key={idx} style={{ color: "rgba(255,255,255,0.55)", fontSize: 11, lineHeight: "1.7", display: "flex", gap: 6, alignItems: "flex-start" }}>
-                                <span style={{ color: "#C9A84C", marginTop: 1 }}>✓</span> {d}
+                                <span style={{ color: "#DFBA73", marginTop: 1 }}>✓</span> {d}
                               </li>
                             ))}
                           </ul>
@@ -3583,9 +3583,9 @@ function QuotesView({
 
             {/* Total */}
             {items.length > 0 && (
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderTop: "2px solid rgba(201,168,76,0.3)", marginBottom: 16 }}>
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "14px 0", borderTop: "2px solid rgba(223, 186, 115,0.3)", marginBottom: 16 }}>
                 <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 14, fontWeight: 600 }}>ΣΥΝΟΛΟ</span>
-                <span style={{ color: "#C9A84C", fontSize: 24, fontWeight: 700 }}>€{total}</span>
+                <span style={{ color: "#DFBA73", fontSize: 24, fontWeight: 700 }}>€{total}</span>
               </div>
             )}
 
@@ -3642,10 +3642,10 @@ function QuotesView({
                   style={{
                     width: "100%",
                     padding: "13px",
-                    background: printed ? "rgba(34,197,94,0.15)" : (clientName && items.length > 0 ? "linear-gradient(135deg, #C9A84C, #a8893e)" : "rgba(255,255,255,0.05)"),
+                    background: printed ? "rgba(34,197,94,0.15)" : (clientName && items.length > 0 ? "linear-gradient(135deg, #DFBA73, #a8893e)" : "rgba(255,255,255,0.05)"),
                     border: printed ? "1px solid rgba(34,197,94,0.4)" : "none",
                     borderRadius: 12,
-                    color: printed ? "#22c55e" : (clientName && items.length > 0 ? "#0A0F1E" : "rgba(255,255,255,0.2)"),
+                    color: printed ? "#22c55e" : (clientName && items.length > 0 ? "#0D0D11" : "rgba(255,255,255,0.2)"),
                     fontWeight: 700,
                     fontSize: 14,
                     cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
@@ -3668,7 +3668,7 @@ function QuotesView({
                     background: "rgba(255,255,255,0.05)",
                     border: "1px solid rgba(255,255,255,0.1)",
                     borderRadius: 12,
-                    color: clientName && items.length > 0 ? "#C9A84C" : "rgba(255,255,255,0.2)",
+                    color: clientName && items.length > 0 ? "#DFBA73" : "rgba(255,255,255,0.2)",
                     fontWeight: 600,
                     fontSize: 14,
                     cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
@@ -3782,10 +3782,10 @@ function QuotesView({
                     style={{
                       flex: 1,
                       padding: "13px",
-                      background: printed ? "rgba(34,197,94,0.15)" : (clientName && items.length > 0 ? "rgba(201,168,76,0.1)" : "rgba(255,255,255,0.05)"),
-                      border: printed ? "1px solid rgba(34,197,94,0.4)" : "1px solid rgba(201,168,76,0.3)",
+                      background: printed ? "rgba(34,197,94,0.15)" : (clientName && items.length > 0 ? "rgba(223, 186, 115,0.1)" : "rgba(255,255,255,0.05)"),
+                      border: printed ? "1px solid rgba(34,197,94,0.4)" : "1px solid rgba(223, 186, 115,0.3)",
                       borderRadius: 12,
-                      color: printed ? "#22c55e" : (clientName && items.length > 0 ? "#C9A84C" : "rgba(255,255,255,0.2)"),
+                      color: printed ? "#22c55e" : (clientName && items.length > 0 ? "#DFBA73" : "rgba(255,255,255,0.2)"),
                       fontWeight: 700,
                       fontSize: 14,
                       cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
@@ -3805,10 +3805,10 @@ function QuotesView({
                     style={{
                       flex: 1,
                       padding: "13px",
-                      background: clientName && items.length > 0 ? "linear-gradient(135deg, #C9A84C, #a8893e)" : "rgba(255,255,255,0.05)",
+                      background: clientName && items.length > 0 ? "linear-gradient(135deg, #DFBA73, #a8893e)" : "rgba(255,255,255,0.05)",
                       border: "none",
                       borderRadius: 12,
-                      color: clientName && items.length > 0 ? "#0A0F1E" : "rgba(255,255,255,0.2)",
+                      color: clientName && items.length > 0 ? "#0D0D11" : "rgba(255,255,255,0.2)",
                       fontWeight: 700,
                       fontSize: 14,
                       cursor: clientName && items.length > 0 ? "pointer" : "not-allowed",
@@ -3848,7 +3848,7 @@ function QuotesView({
         }}>
           <div style={{
             background: "#111827",
-            border: "1px solid rgba(201,168,76,0.3)",
+            border: "1px solid rgba(223, 186, 115,0.3)",
             borderRadius: isMobile ? 16 : 20,
             width: "100%",
             maxWidth: isMobile ? "100%" : 880,
@@ -3868,7 +3868,7 @@ function QuotesView({
               flexShrink: 0
             }}>
               <h3 style={{ margin: 0, color: "#fff", fontSize: isMobile ? 14 : 16, display: "flex", alignItems: "center", gap: 8 }}>
-                <Eye size={isMobile ? 16 : 18} color="#C9A84C" />
+                <Eye size={isMobile ? 16 : 18} color="#DFBA73" />
                 {isMobile ? "Σύνοψη Προσφοράς" : "Προεπισκόπηση Προσφοράς (A4 Layout)"}
               </h3>
               <button
@@ -3914,14 +3914,14 @@ function QuotesView({
             {isMobile && (
               <div style={{ flex: 1, overflowY: "auto", padding: "16px", display: "flex", flexDirection: "column", gap: 12 }}>
                 {/* Header card */}
-                <div style={{ background: "rgba(201,168,76,0.08)", border: "1px solid rgba(201,168,76,0.2)", borderRadius: 12, padding: "14px 16px" }}>
+                <div style={{ background: "rgba(223, 186, 115,0.08)", border: "1px solid rgba(223, 186, 115,0.2)", borderRadius: 12, padding: "14px 16px" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                     <div>
-                      <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 15, fontFamily: "'Playfair Display', serif" }}>ALTUS STUDIO</div>
+                      <div style={{ color: "#DFBA73", fontWeight: 700, fontSize: 15, fontFamily: "'Outfit', sans-serif" }}>ALTUS STUDIO</div>
                       <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11, marginTop: 2 }}>Ημ/νία: {new Date().toLocaleDateString("el-GR")}</div>
                     </div>
                     <div style={{ textAlign: "right" }}>
-                      <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.1em" }}>ΠΡΟΣΦΟΡΑ</div>
+                      <div style={{ color: "#DFBA73", fontWeight: 700, fontSize: 12, textTransform: "uppercase", letterSpacing: "0.1em" }}>ΠΡΟΣΦΟΡΑ</div>
                       <div style={{ color: "rgba(255,255,255,0.4)", fontSize: 11 }}>#{editingQuoteId || "NEW"}</div>
                     </div>
                   </div>
@@ -3947,16 +3947,16 @@ function QuotesView({
                           <div style={{ color: "#fff", fontSize: 13, fontWeight: 600 }}>{item.name}</div>
                           <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11 }}>€{item.price} × {item.qty}</div>
                         </div>
-                        <div style={{ color: "#C9A84C", fontWeight: 700, fontSize: 14 }}>€{item.price * item.qty}</div>
+                        <div style={{ color: "#DFBA73", fontWeight: 700, fontSize: 14 }}>€{item.price * item.qty}</div>
                       </div>
                     ))
                   )}
                 </div>
 
                 {/* Total */}
-                <div style={{ background: "rgba(201,168,76,0.1)", border: "1px solid rgba(201,168,76,0.3)", borderRadius: 12, padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{ background: "rgba(223, 186, 115,0.1)", border: "1px solid rgba(223, 186, 115,0.3)", borderRadius: 12, padding: "14px 16px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                   <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600, fontSize: 13, textTransform: "uppercase", letterSpacing: "0.1em" }}>Συνολικό Κόστος</span>
-                  <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: 22 }}>€{total}</span>
+                  <span style={{ color: "#DFBA73", fontWeight: 700, fontSize: 22 }}>€{total}</span>
                 </div>
 
                 {/* Note */}
@@ -3992,7 +3992,7 @@ function QuotesView({
               </button>
               <button
                 onClick={() => { printQuote("download"); setPreviewOpen(false); }}
-                style={{ padding: isMobile ? "9px 14px" : "8px 16px", borderRadius: 8, border: "none", background: "linear-gradient(135deg, #C9A84C, #a8893e)", color: "#0A0F1E", cursor: "pointer", fontWeight: 600, fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}
+                style={{ padding: isMobile ? "9px 14px" : "8px 16px", borderRadius: 8, border: "none", background: "linear-gradient(135deg, #DFBA73, #a8893e)", color: "#0D0D11", cursor: "pointer", fontWeight: 600, fontSize: 13, display: "flex", alignItems: "center", gap: 6 }}
               >
                 <Download size={14} /> {isMobile ? "Κατέβασμα PDF" : "Λήψη PDF"}
               </button>
@@ -4029,7 +4029,7 @@ function QuotesView({
           }}>
             <div style={{
               background: "#111827",
-              border: "1px solid rgba(201,168,76,0.3)",
+              border: "1px solid rgba(223, 186, 115,0.3)",
               borderRadius: 20,
               width: "100%",
               maxWidth: 440,
@@ -4045,7 +4045,7 @@ function QuotesView({
                 borderBottom: "1px solid rgba(255,255,255,0.08)"
               }}>
                 <h3 style={{ margin: 0, color: "#fff", fontSize: 16, display: "flex", alignItems: "center", gap: 8 }}>
-                  <Share2 size={18} color="#C9A84C" /> Κοινοποίηση Προσφοράς
+                  <Share2 size={18} color="#DFBA73" /> Κοινοποίηση Προσφοράς
                 </h3>
                 <button
                   onClick={() => setShareOpen(false)}
@@ -4125,17 +4125,17 @@ function QuotesView({
                     alignItems: "center",
                     gap: 12,
                     padding: "12px 16px",
-                    background: "rgba(201,168,76,0.1)",
-                    border: "1px solid rgba(201,168,76,0.3)",
+                    background: "rgba(223, 186, 115,0.1)",
+                    border: "1px solid rgba(223, 186, 115,0.3)",
                     borderRadius: 10,
-                    color: "#C9A84C",
+                    color: "#DFBA73",
                     textDecoration: "none",
                     fontSize: 14,
                     fontWeight: 600,
                     transition: "background 0.2s"
                   }}
-                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(201,168,76,0.18)"}
-                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(201,168,76,0.1)"}
+                  onMouseEnter={(e) => e.currentTarget.style.background = "rgba(223, 186, 115,0.18)"}
+                  onMouseLeave={(e) => e.currentTarget.style.background = "rgba(223, 186, 115,0.1)"}
                 >
                   <Mail size={16} /> Αποστολή Email
                 </a>
@@ -4175,7 +4175,7 @@ function PackagesView() {
       title: "Εταιρική Ιστοσελίδα (Corporate)",
       price: "350€",
       icon: Globe,
-      color: "#C9A84C",
+      color: "#DFBA73",
       description: "Για επαγγελματίες και επιχειρήσεις που θέλουν πλήρη εταιρική παρουσία, αναλυτικές υπηρεσίες και καλό SEO.",
       items: [
         "Ολοκληρωμένη πολυσελιδική δομή (5-8 σελίδες)",
@@ -4207,7 +4207,7 @@ function PackagesView() {
   return (
     <div>
       <div style={{ marginBottom: 32 }}>
-        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#fff", fontFamily: "'Playfair Display', serif", margin: "0 0 8px 0" }}>
+        <h1 style={{ fontSize: 28, fontWeight: 700, color: "#fff", fontFamily: "'Outfit', sans-serif", margin: "0 0 8px 0" }}>
           Έτοιμα Πλάνα & Παροχές
         </h1>
         <p style={{ color: "rgba(255,255,255,0.45)", margin: 0, fontSize: 14 }}>
@@ -4410,8 +4410,8 @@ export function AdminPage() {
             top: 0,
             zIndex: 80,
             height: 60,
-            background: "#0A0F1E",
-            borderBottom: "1px solid rgba(201,168,76,0.15)",
+            background: "#0D0D11",
+            borderBottom: "1px solid rgba(223, 186, 115,0.15)",
             display: "flex",
             alignItems: "center",
             justifyContent: "space-between",
@@ -4423,7 +4423,7 @@ export function AdminPage() {
             style={{
               background: "transparent",
               border: "none",
-              color: "#C9A84C",
+              color: "#DFBA73",
               cursor: "pointer",
               display: "flex",
               alignItems: "center",
@@ -4434,12 +4434,12 @@ export function AdminPage() {
           </button>
           
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <Globe size={18} color="#C9A84C" />
-            <span style={{ color: "#C9A84C", fontWeight: 700, fontSize: 13, fontFamily: "'Playfair Display', serif", letterSpacing: "0.05em" }}>ALTUS ADMIN</span>
+            <Globe size={18} color="#DFBA73" />
+            <span style={{ color: "#DFBA73", fontWeight: 700, fontSize: 13, fontFamily: "'Outfit', sans-serif", letterSpacing: "0.05em" }}>ALTUS ADMIN</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#C9A84C", fontWeight: 700 }}>A</div>
+            <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(223, 186, 115,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#DFBA73", fontWeight: 700 }}>A</div>
           </div>
         </header>
       )}
@@ -4461,7 +4461,7 @@ export function AdminPage() {
               <Bell size={15} /> Ειδοποιήσεις
             </button>
             <div style={{ display: "flex", alignItems: "center", gap: 10, background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 10, padding: "8px 14px" }}>
-              <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(201,168,76,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#C9A84C", fontWeight: 700 }}>A</div>
+              <div style={{ width: 28, height: 28, borderRadius: "50%", background: "rgba(223, 186, 115,0.2)", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 13, color: "#DFBA73", fontWeight: 700 }}>A</div>
               <span style={{ color: "rgba(255,255,255,0.6)", fontSize: 13 }}>Admin</span>
             </div>
           </div>

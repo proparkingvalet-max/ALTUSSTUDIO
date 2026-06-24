@@ -72,20 +72,20 @@ export function mapSupabaseProject(p: any): Project {
   let img = p.img || "";
   let gallery = Array.isArray(p.gallery) ? p.gallery : [];
   
-  // Fallbacks for default projects if they contain the Unsplash placeholder or are empty
+  // Fallbacks for default projects if they contain the Unsplash placeholder, are empty, or point to stale build assets
   if (p.id === "project-1") {
-    if (!img || img.includes("unsplash.com/photo-1506015391300-4802dc74de2e")) {
+    if (!img || img.includes("unsplash.com/photo-1506015391300-4802dc74de2e") || img.startsWith("/assets/") || img.startsWith("assets/")) {
       img = ppHero;
     }
-    if (gallery.length === 0 || (gallery.length === 1 && gallery[0].includes("unsplash.com/photo-1506015391300-4802dc74de2e"))) {
+    if (gallery.length === 0 || gallery.some(g => g.includes("unsplash.com/photo-1506015391300-4802dc74de2e") || g.startsWith("/assets/") || g.startsWith("assets/"))) {
       gallery = [ppHero, ppBooking, ppMarina, ppAirSea, ppContact, ppShowroom, ppSupercar, ppTheater];
     }
   } else if (p.id === "project-2") {
-    if (!img) img = eshopPreview;
-    if (gallery.length === 0) gallery = [eshopPreview, eshopProduct];
+    if (!img || img.startsWith("/assets/") || img.startsWith("assets/")) img = eshopPreview;
+    if (gallery.length === 0 || gallery.some(g => g.startsWith("/assets/") || g.startsWith("assets/"))) gallery = [eshopPreview, eshopProduct];
   } else if (p.id === "project-3") {
-    if (!img) img = resortPreview;
-    if (gallery.length === 0) gallery = [resortPreview, resortBooking];
+    if (!img || img.startsWith("/assets/") || img.startsWith("assets/")) img = resortPreview;
+    if (gallery.length === 0 || gallery.some(g => g.startsWith("/assets/") || g.startsWith("assets/"))) gallery = [resortPreview, resortBooking];
   }
 
   let liveUrl = p.live_url || p.liveUrl || "";
@@ -195,18 +195,18 @@ export function getProjects(): Project[] {
         let img = p.img || "";
         let gallery = Array.isArray(p.gallery) ? p.gallery : [];
         if (p.id === "project-1") {
-          if (!img || img.includes("unsplash.com/photo-1506015391300-4802dc74de2e")) {
+          if (!img || img.includes("unsplash.com/photo-1506015391300-4802dc74de2e") || img.startsWith("/assets/") || img.startsWith("assets/")) {
             img = ppHero;
           }
-          if (gallery.length === 0 || (gallery.length === 1 && gallery[0].includes("unsplash.com/photo-1506015391300-4802dc74de2e"))) {
+          if (gallery.length === 0 || gallery.some(g => g.includes("unsplash.com/photo-1506015391300-4802dc74de2e") || g.startsWith("/assets/") || g.startsWith("assets/"))) {
             gallery = [ppHero, ppBooking, ppMarina, ppAirSea, ppContact, ppShowroom, ppSupercar, ppTheater];
           }
         } else if (p.id === "project-2") {
-          if (!img) img = eshopPreview;
-          if (gallery.length === 0) gallery = [eshopPreview, eshopProduct];
+          if (!img || img.startsWith("/assets/") || img.startsWith("assets/")) img = eshopPreview;
+          if (gallery.length === 0 || gallery.some(g => g.startsWith("/assets/") || g.startsWith("assets/"))) gallery = [eshopPreview, eshopProduct];
         } else if (p.id === "project-3") {
-          if (!img) img = resortPreview;
-          if (gallery.length === 0) gallery = [resortPreview, resortBooking];
+          if (!img || img.startsWith("/assets/") || img.startsWith("assets/")) img = resortPreview;
+          if (gallery.length === 0 || gallery.some(g => g.startsWith("/assets/") || g.startsWith("assets/"))) gallery = [resortPreview, resortBooking];
         }
 
         let liveUrl = p.liveUrl || "";

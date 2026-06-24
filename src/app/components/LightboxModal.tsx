@@ -71,20 +71,20 @@ export function LightboxModal({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
-          className="fixed inset-0 z-[100] bg-[#0A0F1E]/98 backdrop-blur-xl p-4 md:p-8 select-none flex flex-col"
+          className="fixed inset-0 z-[100] bg-[#0D0D11]/98 backdrop-blur-xl p-4 md:p-8 select-none flex flex-col"
         >
           {/* Header */}
           <div className="flex justify-between items-center w-full pb-4 border-b border-white/5 z-10 shrink-0">
             <div>
               <p
-                className="text-[#C9A84C] text-[10px] sm:text-xs tracking-[0.25em] uppercase font-semibold mb-1"
+                className="text-[#DFBA73] text-[10px] sm:text-xs tracking-[0.25em] uppercase font-semibold mb-1"
                 style={{ fontFamily: "'DM Sans', sans-serif" }}
               >
                 {projectCategory}
               </p>
               <h4
-                className="text-[#F5F5F0] text-lg sm:text-xl font-bold"
-                style={{ fontFamily: "'Playfair Display', serif" }}
+                className="text-[#F9FAFB] text-lg sm:text-xl font-bold"
+                style={{ fontFamily: "'Outfit', sans-serif" }}
               >
                 {projectName}
               </h4>
@@ -92,7 +92,7 @@ export function LightboxModal({
 
             <button
               onClick={onClose}
-              className="p-3 bg-white/5 border border-white/10 text-[#F5F5F0] hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 cursor-pointer"
+              className="p-3 bg-white/5 border border-white/10 text-[#F9FAFB] hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 cursor-pointer"
             >
               <X size={20} />
             </button>
@@ -110,7 +110,7 @@ export function LightboxModal({
                 {images.length > 1 && (
                   <button
                     onClick={handlePrev}
-                    className="absolute left-4 p-3 bg-white/5 border border-white/10 text-[#F5F5F0] hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 z-10 cursor-pointer"
+                    className="absolute left-4 p-3 bg-white/5 border border-white/10 text-[#F9FAFB] hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 z-10 cursor-pointer"
                   >
                     <ChevronLeft size={20} />
                   </button>
@@ -144,7 +144,7 @@ export function LightboxModal({
                 {images.length > 1 && (
                   <button
                     onClick={handleNext}
-                    className="absolute right-4 p-3 bg-white/5 border border-white/10 text-[#F5F5F0] hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 z-10 cursor-pointer"
+                    className="absolute right-4 p-3 bg-white/5 border border-white/10 text-[#F9FAFB] hover:bg-white/10 hover:text-white rounded-full transition-all duration-300 z-10 cursor-pointer"
                   >
                     <ChevronRight size={20} />
                   </button>
@@ -165,7 +165,7 @@ export function LightboxModal({
                         onClick={() => setCurrentIndex(idx)}
                         className={`relative w-14 h-10 rounded overflow-hidden border transition-all duration-300 cursor-pointer shrink-0 ${
                           currentIndex === idx
-                            ? "border-[#C9A84C] scale-105 opacity-100"
+                            ? "border-[#DFBA73] scale-105 opacity-100"
                             : "border-white/10 opacity-30 hover:opacity-75"
                         }`}
                       >
@@ -188,11 +188,11 @@ export function LightboxModal({
                 
                 {/* 🎯 Challenge / Overview */}
                 <div>
-                  <h5 className="text-[#C9A84C] text-[10px] tracking-[0.2em] uppercase font-semibold mb-2 flex items-center gap-1.5">
+                  <h5 className="text-[#DFBA73] text-[10px] tracking-[0.2em] uppercase font-semibold mb-2 flex items-center gap-1.5">
                     <Target size={12} />
                     {lang === "el" ? "Η ΠΡΟΚΛΗΣΗ" : "THE CHALLENGE"}
                   </h5>
-                  <p className="text-[#F5F5F0]/80 text-sm leading-relaxed font-light" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <p className="text-[#F9FAFB]/80 text-sm leading-relaxed font-light" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     {projectDescription || (lang === "el" 
                       ? "Σχεδιασμός και ανάπτυξη μιας premium ψηφιακής παρουσίας με επίκεντρο την ταχύτητα, την αισθητική και τη βέλτιστη εμπειρία χρήσης."
                       : "Design and development of a premium digital experience focused on speed, aesthetics, and optimal user experience.")}
@@ -201,11 +201,11 @@ export function LightboxModal({
 
                 {/* ✨ Solution */}
                 <div className="border-t border-white/5 pt-5">
-                  <h5 className="text-[#C9A84C] text-[10px] tracking-[0.2em] uppercase font-semibold mb-2 flex items-center gap-1.5">
+                  <h5 className="text-[#DFBA73] text-[10px] tracking-[0.2em] uppercase font-semibold mb-2 flex items-center gap-1.5">
                     <CheckCircle2 size={12} />
                     {lang === "el" ? "Η ΛΥΣΗ ALTUS" : "THE ALTUS SOLUTION"}
                   </h5>
-                  <p className="text-[#F5F5F0]/60 text-xs leading-relaxed font-light" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  <p className="text-[#F9FAFB]/60 text-xs leading-relaxed font-light" style={{ fontFamily: "'DM Sans', sans-serif" }}>
                     {lang === "el" 
                       ? "Υλοποίηση custom σχεδιασμού (UI/UX) προσαρμοσμένου στις ανάγκες του brand, με χρήση React και Tailwind CSS για κορυφαίες επιδόσεις και βελτιστοποίηση SEO για μέγιστη προβολή."
                       : "Implementation of a bespoke UI/UX custom layout aligned with brand identity, built with React and Tailwind CSS for peak performance and fully SEO optimized."}
@@ -214,11 +214,11 @@ export function LightboxModal({
 
                 {/* 📈 Results & Impact */}
                 {projectResults && (
-                  <div className="bg-[#C9A84C]/5 border border-[#C9A84C]/15 p-4 rounded-lg">
-                    <p className="text-[#C9A84C] text-[9px] tracking-widest uppercase mb-1 font-semibold">
+                  <div className="bg-[#DFBA73]/5 border border-[#DFBA73]/15 p-4 rounded-lg">
+                    <p className="text-[#DFBA73] text-[9px] tracking-widest uppercase mb-1 font-semibold">
                       {lang === "el" ? "ΑΠΟΤΕΛΕΣΜΑ / IMPACT" : "RESULT / IMPACT"}
                     </p>
-                    <p className="text-[#F5F5F0] text-lg font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+                    <p className="text-[#F9FAFB] text-lg font-bold" style={{ fontFamily: "'Outfit', sans-serif" }}>
                       {projectResults}
                     </p>
                   </div>
@@ -227,14 +227,14 @@ export function LightboxModal({
                 {/* 🛠️ Tech Stack Tags */}
                 {projectTags.length > 0 && (
                   <div className="border-t border-white/5 pt-5">
-                    <h5 className="text-[#C9A84C] text-[9px] tracking-[0.2em] uppercase font-semibold mb-3">
+                    <h5 className="text-[#DFBA73] text-[9px] tracking-[0.2em] uppercase font-semibold mb-3">
                       {lang === "el" ? "ΤΕΧΝΟΛΟΓΙΕΣ" : "TECH STACK"}
                     </h5>
                     <div className="flex flex-wrap gap-2">
                       {projectTags.map((tag) => (
                         <span
                           key={tag}
-                          className="px-3 py-1 border border-white/10 bg-white/2 text-[10px] text-[#F5F5F0]/70 font-mono"
+                          className="px-3 py-1 border border-white/10 bg-white/2 text-[10px] text-[#F9FAFB]/70 font-mono"
                         >
                           {tag}
                         </span>
@@ -250,7 +250,7 @@ export function LightboxModal({
                       <span className="text-white/30 text-[9px] tracking-wider uppercase block mb-1 flex items-center gap-1">
                         <Calendar size={11} /> {lang === "el" ? "ΕΤΟΣ" : "YEAR"}
                       </span>
-                      <span className="text-[#F5F5F0] text-xs font-semibold">{projectYear}</span>
+                      <span className="text-[#F9FAFB] text-xs font-semibold">{projectYear}</span>
                     </div>
                   )}
                   {projectIsLive !== undefined && (
@@ -274,7 +274,7 @@ export function LightboxModal({
                     href={projectLiveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#C9A84C] text-[#0A0F1E] text-xs tracking-wider uppercase font-semibold hover:bg-[#D4B76A] transition-colors duration-300 text-center"
+                    className="flex-1 flex items-center justify-center gap-2 py-4 bg-[#DFBA73] text-[#0D0D11] text-xs tracking-wider uppercase font-semibold hover:bg-[#E6CE93] transition-colors duration-300 text-center"
                     style={{ fontFamily: "'DM Sans', sans-serif" }}
                   >
                     {lang === "el" ? "Επισκεψη Ιστοσελιδας" : "Visit Live Website"}
@@ -286,8 +286,8 @@ export function LightboxModal({
                   onClick={onClose}
                   className={`flex-1 flex items-center justify-center gap-2 py-4 ${
                     projectIsLive && projectLiveUrl
-                      ? "bg-white/5 border border-white/10 text-[#F5F5F0] hover:bg-white/10 hover:text-white"
-                      : "bg-[#C9A84C] text-[#0A0F1E] hover:bg-[#D4B76A]"
+                      ? "bg-white/5 border border-white/10 text-[#F9FAFB] hover:bg-white/10 hover:text-white"
+                      : "bg-[#DFBA73] text-[#0D0D11] hover:bg-[#E6CE93]"
                   } text-xs tracking-wider uppercase font-semibold transition-colors duration-300`}
                   style={{ fontFamily: "'DM Sans', sans-serif" }}
                 >

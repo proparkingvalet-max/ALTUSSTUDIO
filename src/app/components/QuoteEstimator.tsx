@@ -241,26 +241,26 @@ export function QuoteEstimator() {
   };
 
   return (
-    <section className="py-24 bg-[#0A0F1E] border-t border-white/5 relative overflow-hidden">
+    <section className="py-24 bg-[#0D0D11] border-t border-white/5 relative overflow-hidden">
       {/* Background radial effects */}
       <div className="absolute inset-0 pointer-events-none select-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70vw] h-[70vw] rounded-full bg-radial-gradient" 
-          style={{ background: "radial-gradient(circle, rgba(201,168,76,0.03) 0%, transparent 60%)" }}
+          style={{ background: "radial-gradient(circle, rgba(223, 186, 115,0.03) 0%, transparent 60%)" }}
         />
       </div>
 
       <div className="relative max-w-4xl mx-auto px-6">
         <div className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-[#C9A84C]/30 bg-[#C9A84C]/5 rounded-full mb-4">
-            <Calculator size={13} className="text-[#C9A84C]" />
-            <span className="text-[#C9A84C] text-[10px] tracking-widest uppercase font-semibold">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 border border-[#DFBA73]/30 bg-[#DFBA73]/5 rounded-full mb-4">
+            <Calculator size={13} className="text-[#DFBA73]" />
+            <span className="text-[#DFBA73] text-[10px] tracking-widest uppercase font-semibold">
               {lang === "el" ? "Υπολογισμός Κόστους" : "Cost Estimator"}
             </span>
           </div>
-          <h2 className="text-[#F5F5F0] text-3xl md:text-4xl font-bold" style={{ fontFamily: "'Playfair Display', serif" }}>
+          <h2 className="text-[#F9FAFB] text-3xl md:text-4xl font-bold" style={{ fontFamily: "'Outfit', sans-serif" }}>
             {lang === "el" ? "Σχεδιάστε την Προσφορά σας" : "Estimate Your Project Cost"}
           </h2>
-          <p className="text-[#F5F5F0]/50 text-sm mt-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+          <p className="text-[#F9FAFB]/50 text-sm mt-3" style={{ fontFamily: "'DM Sans', sans-serif" }}>
             {lang === "el" 
               ? "Επιλέξτε τις προδιαγραφές που επιθυμείτε και δείτε μια εκτίμηση κόστους σε πραγματικό χρόνο." 
               : "Select your project options to receive a live dynamic estimate."}
@@ -273,7 +273,7 @@ export function QuoteEstimator() {
           {/* Progress bar */}
           <div className="absolute top-0 left-0 right-0 h-1 bg-white/5">
             <motion.div 
-              className="h-full bg-[#C9A84C]"
+              className="h-full bg-[#DFBA73]"
               animate={{ width: `${(step / 4) * 100}%` }}
               transition={{ duration: 0.3 }}
             />
@@ -291,8 +291,8 @@ export function QuoteEstimator() {
                 {/* STEP 1: PROJECT TYPE */}
                 {step === 1 && (
                   <div>
-                    <h3 className="text-[#F5F5F0] text-lg font-semibold mb-8 flex items-center gap-2">
-                      <span className="text-[#C9A84C]">01.</span> {lang === "el" ? "Τύπος Έργου" : "Project Type"}
+                    <h3 className="text-[#F9FAFB] text-lg font-semibold mb-8 flex items-center gap-2">
+                      <span className="text-[#DFBA73]">01.</span> {lang === "el" ? "Τύπος Έργου" : "Project Type"}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {[
@@ -308,18 +308,18 @@ export function QuoteEstimator() {
                             onClick={() => setProjectType(item.id as any)}
                             className={`border p-6 cursor-pointer text-left transition-all duration-300 group ${
                               isSelected 
-                                ? "border-[#C9A84C] bg-[#C9A84C]/5" 
+                                ? "border-[#DFBA73] bg-[#DFBA73]/5" 
                                 : "border-white/10 hover:border-white/20 bg-white/2"
                             }`}
                           >
                             <div className="flex items-center justify-between mb-4">
-                              <div className={`w-10 h-10 flex items-center justify-center border transition-colors ${isSelected ? "border-[#C9A84C]" : "border-white/15"}`}>
-                                <Icon size={18} className={isSelected ? "text-[#C9A84C]" : "text-[#F5F5F0]/60"} />
+                              <div className={`w-10 h-10 flex items-center justify-center border transition-colors ${isSelected ? "border-[#DFBA73]" : "border-white/15"}`}>
+                                <Icon size={18} className={isSelected ? "text-[#DFBA73]" : "text-[#F9FAFB]/60"} />
                               </div>
-                              <span className="text-[#C9A84C] text-sm font-bold">from €{item.price}</span>
+                              <span className="text-[#DFBA73] text-sm font-bold">from €{item.price}</span>
                             </div>
-                            <h4 className="text-[#F5F5F0] font-semibold text-base mb-2">{lang === "el" ? item.labelEl : item.labelEn}</h4>
-                            <p className="text-[#F5F5F0]/40 text-xs leading-relaxed">{lang === "el" ? item.descEl : item.descEn}</p>
+                            <h4 className="text-[#F9FAFB] font-semibold text-base mb-2">{lang === "el" ? item.labelEl : item.labelEn}</h4>
+                            <p className="text-[#F9FAFB]/40 text-xs leading-relaxed">{lang === "el" ? item.descEl : item.descEn}</p>
                           </div>
                         );
                       })}
@@ -333,7 +333,7 @@ export function QuoteEstimator() {
                         className="mt-8 p-6 bg-white/2 border border-white/5 rounded-lg text-left"
                       >
                         <div className="mb-6 border-b border-white/10 pb-4">
-                          <p className="text-xs text-[#F5F5F0]/80 leading-relaxed">
+                          <p className="text-xs text-[#F9FAFB]/80 leading-relaxed">
                             {projectType === "landing" && (lang === "el" 
                               ? "Μία στοχευμένη, μονοσέλιδη παρουσίαση σχεδιασμένη αποκλειστικά για να μετατρέπει τους επισκέπτες σε πελάτες (leads/πωλήσεις). Ιδανική για διαφημιστικές καμπάνιες Google/Social Media, προώθηση ενός συγκεκριμένου προϊόντος/υπηρεσίας και γρήγορο ξεκίνημα με χαμηλό κόστος." 
                               : "A focused, single-page website designed specifically to convert visitors into customers (leads/sales). Ideal for Google/Social Media campaigns, promoting a single product or service, and launching quickly with a lower budget.")}
@@ -346,38 +346,38 @@ export function QuoteEstimator() {
                           </p>
                         </div>
                         
-                        <h4 className="text-[#C9A84C] text-[10px] font-bold tracking-wider mb-4 uppercase">
+                        <h4 className="text-[#DFBA73] text-[10px] font-bold tracking-wider mb-4 uppercase">
                           {lang === "el" ? "Βασικά Χαρακτηριστικά & Παραδοτέα:" : "Core Features & Deliverables:"}
                         </h4>
-                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-[#F5F5F0]/70">
+                        <ul className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs text-[#F9FAFB]/70">
                           {projectType === "landing" && (
                             <>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Μονοσέλιδη στοχευμένη δομή (Single Page)" : "Single Page conversion-focused layout"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Έως 6 σχεδιαστικές ενότητες (Sections)" : "Up to 6 visual sections"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Φόρμα επικοινωνίας & κουμπιά Call-to-Action" : "Contact form & Call-to-action buttons"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Πλήρης responsive προσαρμογή για κινητά" : "100% Responsive mobile optimization"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σύνδεση με Google Analytics" : "Google Analytics integration"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Βασική βελτιστοποίηση ταχύτητας" : "Basic speed performance optimization"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Μονοσέλιδη στοχευμένη δομή (Single Page)" : "Single Page conversion-focused layout"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Έως 6 σχεδιαστικές ενότητες (Sections)" : "Up to 6 visual sections"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Φόρμα επικοινωνίας & κουμπιά Call-to-Action" : "Contact form & Call-to-action buttons"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Πλήρης responsive προσαρμογή για κινητά" : "100% Responsive mobile optimization"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Σύνδεση με Google Analytics" : "Google Analytics integration"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Βασική βελτιστοποίηση ταχύτητας" : "Basic speed performance optimization"}</li>
                             </>
                           )}
                           {projectType === "website" && (
                             <>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Ολοκληρωμένη πολυσελιδική δομή (5-8 σελίδες)" : "Complete multi-page structure (5-8 pages)"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σελίδες: Αρχική, Υπηρεσίες, Portfolio, Επικοινωνία" : "Pages: Home, Services, Portfolio, Contact, About"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Bespoke UI/UX σχεδίαση μακέτας στο Figma" : "Bespoke UI/UX custom Figma design mockups"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Responsive για κινητά & tablets" : "100% Mobile & tablet responsive layout"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Setup Google Search Console (SEO)" : "Google Search Console index setup"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Βελτιστοποίηση ταχύτητας (PageSpeed 90+)" : "Advanced speed optimization (PageSpeed 90+)"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Ολοκληρωμένη πολυσελιδική δομή (5-8 σελίδες)" : "Complete multi-page structure (5-8 pages)"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Σελίδες: Αρχική, Υπηρεσίες, Portfolio, Επικοινωνία" : "Pages: Home, Services, Portfolio, Contact, About"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Bespoke UI/UX σχεδίαση μακέτας στο Figma" : "Bespoke UI/UX custom Figma design mockups"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Responsive για κινητά & tablets" : "100% Mobile & tablet responsive layout"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Setup Google Search Console (SEO)" : "Google Search Console index setup"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Βελτιστοποίηση ταχύτητας (PageSpeed 90+)" : "Advanced speed optimization (PageSpeed 90+)"}</li>
                             </>
                           )}
                           {projectType === "eshop" && (
                             <>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Πλατφόρμα e-commerce με καλάθι & checkout" : "Full e-commerce cart & checkout funnel"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σύνδεση με τράπεζες (Stripe, Viva) & PayPal" : "Stripe, Viva Wallet, & PayPal payment integration"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Διαχείριση αποστολών & υπολογισμός μεταφορικών" : "Shipping management & delivery cost calculation"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Πλήρες διαχειριστικό panel προϊόντων" : "Admin dashboard for catalog & orders management"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "Σύνθετα φίλτρα & αναζήτηση προϊόντων" : "Advanced product filters & search tools"}</li>
-                              <li className="flex items-center gap-2"><span className="text-[#C9A84C]">✓</span> {lang === "el" ? "GDPR Συμμόρφωση & Cookies Banner" : "GDPR Compliance & cookies privacy banner setup"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Πλατφόρμα e-commerce με καλάθι & checkout" : "Full e-commerce cart & checkout funnel"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Σύνδεση με τράπεζες (Stripe, Viva) & PayPal" : "Stripe, Viva Wallet, & PayPal payment integration"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Διαχείριση αποστολών & υπολογισμός μεταφορικών" : "Shipping management & delivery cost calculation"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Πλήρες διαχειριστικό panel προϊόντων" : "Admin dashboard for catalog & orders management"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "Σύνθετα φίλτρα & αναζήτηση προϊόντων" : "Advanced product filters & search tools"}</li>
+                              <li className="flex items-center gap-2"><span className="text-[#DFBA73]">✓</span> {lang === "el" ? "GDPR Συμμόρφωση & Cookies Banner" : "GDPR Compliance & cookies privacy banner setup"}</li>
                             </>
                           )}
                         </ul>
@@ -389,8 +389,8 @@ export function QuoteEstimator() {
                 {/* STEP 2: COMPLEXITY */}
                 {step === 2 && (
                   <div>
-                    <h3 className="text-[#F5F5F0] text-lg font-semibold mb-8 flex items-center gap-2">
-                      <span className="text-[#C9A84C]">02.</span> {lang === "el" ? "Μέγεθος / Σελίδες" : "Scope & Pages"}
+                    <h3 className="text-[#F9FAFB] text-lg font-semibold mb-8 flex items-center gap-2">
+                      <span className="text-[#DFBA73]">02.</span> {lang === "el" ? "Μέγεθος / Σελίδες" : "Scope & Pages"}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {[
@@ -405,18 +405,18 @@ export function QuoteEstimator() {
                             onClick={() => setComplexity(item.id)}
                             className={`border p-6 cursor-pointer text-left transition-all duration-300 group ${
                               isSelected 
-                                ? "border-[#C9A84C] bg-[#C9A84C]/5" 
+                                ? "border-[#DFBA73] bg-[#DFBA73]/5" 
                                 : "border-white/10 hover:border-white/20 bg-white/2"
                             }`}
                           >
                             <div className="flex items-center justify-between mb-4">
-                              <span className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? "border-[#C9A84C]" : "border-white/20"}`}>
-                                {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-[#C9A84C]" />}
+                              <span className={`w-5 h-5 rounded-full border flex items-center justify-center ${isSelected ? "border-[#DFBA73]" : "border-white/20"}`}>
+                                {isSelected && <span className="w-2.5 h-2.5 rounded-full bg-[#DFBA73]" />}
                               </span>
-                              <span className="text-[#C9A84C] text-sm font-bold">+{item.price > 0 ? `€${item.price}` : "Free"}</span>
+                              <span className="text-[#DFBA73] text-sm font-bold">+{item.price > 0 ? `€${item.price}` : "Free"}</span>
                             </div>
-                            <h4 className="text-[#F5F5F0] font-semibold text-base mb-2">{lang === "el" ? item.labelEl : item.labelEn}</h4>
-                            <p className="text-[#F5F5F0]/40 text-xs leading-relaxed">{lang === "el" ? item.descEl : item.descEn}</p>
+                            <h4 className="text-[#F9FAFB] font-semibold text-base mb-2">{lang === "el" ? item.labelEl : item.labelEn}</h4>
+                            <p className="text-[#F9FAFB]/40 text-xs leading-relaxed">{lang === "el" ? item.descEl : item.descEn}</p>
                           </div>
                         );
                       })}
@@ -427,8 +427,8 @@ export function QuoteEstimator() {
                 {/* STEP 3: ADDONS */}
                 {step === 3 && (
                   <div>
-                    <h3 className="text-[#F5F5F0] text-lg font-semibold mb-8 flex items-center gap-2">
-                      <span className="text-[#C9A84C]">03.</span> {lang === "el" ? "Πρόσθετες Υπηρεσίες" : "Add-ons"}
+                    <h3 className="text-[#F9FAFB] text-lg font-semibold mb-8 flex items-center gap-2">
+                      <span className="text-[#DFBA73]">03.</span> {lang === "el" ? "Πρόσθετες Υπηρεσίες" : "Add-ons"}
                     </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {addons.map((item) => {
@@ -439,19 +439,19 @@ export function QuoteEstimator() {
                             onClick={() => handleAddonClick(item.id)}
                             className={`border p-5 cursor-pointer text-left transition-all duration-300 flex items-start gap-4 ${
                               isSelected 
-                                ? "border-[#C9A84C] bg-[#C9A84C]/5" 
+                                ? "border-[#DFBA73] bg-[#DFBA73]/5" 
                                 : "border-white/10 hover:border-white/20 bg-white/2"
                             }`}
                           >
-                            <div className={`w-5 h-5 border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${isSelected ? "border-[#C9A84C] bg-[#C9A84C]" : "border-white/20"}`}>
-                              {isSelected && <Check size={12} className="text-[#0A0F1E] stroke-[3]" />}
+                            <div className={`w-5 h-5 border flex items-center justify-center shrink-0 mt-0.5 transition-colors ${isSelected ? "border-[#DFBA73] bg-[#DFBA73]" : "border-white/20"}`}>
+                              {isSelected && <Check size={12} className="text-[#0D0D11] stroke-[3]" />}
                             </div>
                             <div className="flex-1 min-w-0">
                               <div className="flex justify-between items-center mb-1">
-                                <h4 className="text-[#F5F5F0] font-semibold text-sm truncate">{lang === "el" ? item.nameEl : item.nameEn}</h4>
-                                <span className="text-[#C9A84C] text-xs font-bold font-mono">+{item.id === "support" ? `€${item.price}/mo` : `€${item.price}`}</span>
+                                <h4 className="text-[#F9FAFB] font-semibold text-sm truncate">{lang === "el" ? item.nameEl : item.nameEn}</h4>
+                                <span className="text-[#DFBA73] text-xs font-bold font-mono">+{item.id === "support" ? `€${item.price}/mo` : `€${item.price}`}</span>
                               </div>
-                              <p className="text-[#F5F5F0]/40 text-xs truncate">{lang === "el" ? item.descEl : item.descEn}</p>
+                              <p className="text-[#F9FAFB]/40 text-xs truncate">{lang === "el" ? item.descEl : item.descEn}</p>
                             </div>
                           </div>
                         );
@@ -463,10 +463,10 @@ export function QuoteEstimator() {
                 {/* STEP 4: SEND REQUEST */}
                 {step === 4 && (
                   <div className="max-w-md mx-auto text-center">
-                    <h3 className="text-[#F5F5F0] text-lg font-semibold mb-4">
+                    <h3 className="text-[#F9FAFB] text-lg font-semibold mb-4">
                       {lang === "el" ? "Σχεδόν Έτοιμο!" : "Almost There!"}
                     </h3>
-                    <p className="text-[#F5F5F0]/50 text-xs mb-8">
+                    <p className="text-[#F9FAFB]/50 text-xs mb-8">
                       {lang === "el" 
                         ? "Συμπληρώστε τα στοιχεία σας για να καταχωρηθεί η προσφορά σας στο σύστημα. Θα επικοινωνήσουμε άμεσα μαζί σας."
                         : "Complete your contact details to save your quote request. We will review it and contact you."}
@@ -474,46 +474,46 @@ export function QuoteEstimator() {
 
                     <form onSubmit={handleSubmit} className="space-y-4 text-left">
                       <div>
-                        <label className="block text-[#F5F5F0]/40 text-[10px] tracking-widest uppercase mb-1.5">{lang === "el" ? "Ονοματεπώνυμο *" : "Full Name *"}</label>
+                        <label className="block text-[#F9FAFB]/40 text-[10px] tracking-widest uppercase mb-1.5">{lang === "el" ? "Ονοματεπώνυμο *" : "Full Name *"}</label>
                         <input
                           type="text"
                           required
                           value={name}
                           onChange={(e) => setName(e.target.value)}
                           placeholder="Γιώργος Παπαδόπουλος"
-                          className="w-full bg-white/5 border border-white/10 focus:border-[#C9A84C] p-3 text-sm text-[#F5F5F0] outline-none transition-colors"
+                          className="w-full bg-white/5 border border-white/10 focus:border-[#DFBA73] p-3 text-sm text-[#F9FAFB] outline-none transition-colors"
                         />
                       </div>
                       <div>
-                        <label className="block text-[#F5F5F0]/40 text-[10px] tracking-widest uppercase mb-1.5">Email *</label>
+                        <label className="block text-[#F9FAFB]/40 text-[10px] tracking-widest uppercase mb-1.5">Email *</label>
                         <input
                           type="email"
                           required
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           placeholder="email@company.gr"
-                          className="w-full bg-white/5 border border-white/10 focus:border-[#C9A84C] p-3 text-sm text-[#F5F5F0] outline-none transition-colors"
+                          className="w-full bg-white/5 border border-white/10 focus:border-[#DFBA73] p-3 text-sm text-[#F9FAFB] outline-none transition-colors"
                         />
                       </div>
                       <div>
-                        <label className="block text-[#F5F5F0]/40 text-[10px] tracking-widest uppercase mb-1.5">{lang === "el" ? "Τηλέφωνο" : "Phone"}</label>
+                        <label className="block text-[#F9FAFB]/40 text-[10px] tracking-widest uppercase mb-1.5">{lang === "el" ? "Τηλέφωνο" : "Phone"}</label>
                         <input
                           type="tel"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                           placeholder="69XXXXXXXX"
-                          className="w-full bg-white/5 border border-white/10 focus:border-[#C9A84C] p-3 text-sm text-[#F5F5F0] outline-none transition-colors"
+                          className="w-full bg-white/5 border border-white/10 focus:border-[#DFBA73] p-3 text-sm text-[#F9FAFB] outline-none transition-colors"
                         />
                       </div>
 
                       <button
                         type="submit"
                         disabled={sending}
-                        className="w-full mt-6 py-4 bg-[#C9A84C] text-[#0A0F1E] text-sm tracking-wider uppercase hover:bg-[#D4B76A] font-bold disabled:opacity-75 flex items-center justify-center gap-2 transition-all cursor-pointer"
+                        className="w-full mt-6 py-4 bg-[#DFBA73] text-[#0D0D11] text-sm tracking-wider uppercase hover:bg-[#E6CE93] font-bold disabled:opacity-75 flex items-center justify-center gap-2 transition-all cursor-pointer"
                       >
                         {sending ? (
                           <>
-                            <div className="w-4 h-4 border-2 border-[#0A0F1E]/40 border-t-[#0A0F1E] rounded-full animate-spin" />
+                            <div className="w-4 h-4 border-2 border-[#0D0D11]/40 border-t-[#0D0D11] rounded-full animate-spin" />
                             {lang === "el" ? "Αποστολή..." : "Sending..."}
                           </>
                         ) : (
@@ -533,7 +533,7 @@ export function QuoteEstimator() {
                     {step > 1 && (
                       <button
                         onClick={() => setStep(step - 1)}
-                        className="px-4 py-2 border border-white/10 hover:border-white/20 text-[#F5F5F0]/70 hover:text-[#F5F5F0] text-xs tracking-wider uppercase transition-colors flex items-center gap-1 cursor-pointer"
+                        className="px-4 py-2 border border-white/10 hover:border-white/20 text-[#F9FAFB]/70 hover:text-[#F9FAFB] text-xs tracking-wider uppercase transition-colors flex items-center gap-1 cursor-pointer"
                       >
                         <ChevronLeft size={14} /> {lang === "el" ? "Πίσω" : "Back"}
                       </button>
@@ -542,8 +542,8 @@ export function QuoteEstimator() {
 
                   {/* Summary cost */}
                   <div className="text-right">
-                    <p className="text-[#F5F5F0]/40 text-[10px] tracking-widest uppercase mb-1">{lang === "el" ? "ΕΚΤΙΜΩΜΕΝΟ ΚΟΣΤΟΣ" : "ESTIMATED TOTAL"}</p>
-                    <p className="text-[#C9A84C] font-mono text-2xl font-bold">
+                    <p className="text-[#F9FAFB]/40 text-[10px] tracking-widest uppercase mb-1">{lang === "el" ? "ΕΚΤΙΜΩΜΕΝΟ ΚΟΣΤΟΣ" : "ESTIMATED TOTAL"}</p>
+                    <p className="text-[#DFBA73] font-mono text-2xl font-bold">
                       €{calculateTotal()}
                     </p>
                   </div>
@@ -558,7 +558,7 @@ export function QuoteEstimator() {
                           }
                           setStep(step + 1);
                         }}
-                        className="px-6 py-2.5 bg-[#C9A84C] hover:bg-[#D4B76A] text-[#0A0F1E] text-xs tracking-wider uppercase font-bold transition-all flex items-center gap-1 cursor-pointer"
+                        className="px-6 py-2.5 bg-[#DFBA73] hover:bg-[#E6CE93] text-[#0D0D11] text-xs tracking-wider uppercase font-bold transition-all flex items-center gap-1 cursor-pointer"
                       >
                         {lang === "el" ? "Επόμενο" : "Next"} <ChevronRight size={14} />
                       </button>
@@ -573,11 +573,11 @@ export function QuoteEstimator() {
                 animate={{ opacity: 1, scale: 1 }}
                 className="text-center py-12 flex flex-col items-center"
               >
-                <CheckCircle2 size={48} className="text-[#C9A84C] mb-6 animate-pulse" />
-                <h3 className="text-[#F5F5F0] text-2xl font-bold mb-4" style={{ fontFamily: "'Playfair Display', serif" }}>
+                <CheckCircle2 size={48} className="text-[#DFBA73] mb-6 animate-pulse" />
+                <h3 className="text-[#F9FAFB] text-2xl font-bold mb-4" style={{ fontFamily: "'Outfit', sans-serif" }}>
                   {lang === "el" ? "Η Προσφορά Καταχωρήθηκε!" : "Quote Requested!"}
                 </h3>
-                <p className="text-[#F5F5F0]/50 text-sm max-w-sm mb-8 leading-relaxed">
+                <p className="text-[#F9FAFB]/50 text-sm max-w-sm mb-8 leading-relaxed">
                   {lang === "el" 
                     ? "Λάβαμε τις προδιαγραφές σας και υπολογίσαμε το κόστος. Η ομάδα μας θα επικοινωνήσει μαζί σας μέσω email σύντομα!"
                     : "We have received your specifications and estimated budget. Our team will contact you via email shortly!"}
@@ -585,7 +585,7 @@ export function QuoteEstimator() {
                 <div className="flex flex-wrap gap-4 justify-center">
                   <button
                     onClick={() => setShowBookingModal(true)}
-                    className="px-8 py-3 bg-[#C9A84C] hover:bg-[#D4B76A] text-[#0A0F1E] font-bold text-xs tracking-wider uppercase transition-colors cursor-pointer"
+                    className="px-8 py-3 bg-[#DFBA73] hover:bg-[#E6CE93] text-[#0D0D11] font-bold text-xs tracking-wider uppercase transition-colors cursor-pointer"
                   >
                     {lang === "el" ? "Κλείσιμο Ραντεβού" : "Schedule Call"}
                   </button>
@@ -600,7 +600,7 @@ export function QuoteEstimator() {
                       setPhone("");
                       setSubmitted(false);
                     }}
-                    className="px-8 py-3 border border-[#C9A84C]/30 text-[#C9A84C] hover:bg-[#C9A84C]/10 text-xs tracking-wider uppercase transition-colors cursor-pointer"
+                    className="px-8 py-3 border border-[#DFBA73]/30 text-[#DFBA73] hover:bg-[#DFBA73]/10 text-xs tracking-wider uppercase transition-colors cursor-pointer"
                   >
                     {lang === "el" ? "Νέος Υπολογισμός" : "New Estimation"}
                   </button>
