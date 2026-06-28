@@ -1642,6 +1642,24 @@ function AnalyticsView() {
   const [loading, setLoading] = useState(true);
   const [timeframe, setTimeframe] = useState<"7days" | "30days" | "all">("30days");
 
+  const parseViews = (list: any[]) => {
+    return list.map((v: any) => {
+      let device = v.device || "Desktop";
+      let referrer = v.referrer || "Direct";
+      let cleanPath = v.path || "";
+      if (cleanPath.includes("?device=")) {
+        try {
+          const parts = cleanPath.split("?");
+          cleanPath = parts[0];
+          const urlParams = new URLSearchParams(parts[1]);
+          device = urlParams.get("device") || "Desktop";
+          referrer = urlParams.get("ref") || "Direct";
+        } catch (e) {}
+      }
+      return { ...v, path: cleanPath, device, referrer };
+    });
+  };
+
   useEffect(() => {
     if (isSupabaseConfigured && supabase) {
       supabase
@@ -1650,19 +1668,26 @@ function AnalyticsView() {
         .order("created_at", { ascending: true })
         .then(({ data, error }) => {
           if (!error && data) {
-            setViews(data);
-            localStorage.setItem("altus_page_views", JSON.stringify(data));
+            const parsed = parseViews(data);
+            setViews(parsed);
+            localStorage.setItem("altus_page_views", JSON.stringify(parsed));
           } else {
             console.error("Failed to load page views from Supabase:", error);
             const raw = localStorage.getItem("altus_page_views");
-            if (raw) setViews(JSON.parse(raw));
+            if (raw) {
+              try {
+                setViews(parseViews(JSON.parse(raw)));
+              } catch (e) {}
+            }
           }
           setLoading(false);
         });
     } else {
       const raw = localStorage.getItem("altus_page_views");
       if (raw) {
-        setViews(JSON.parse(raw));
+        try {
+          setViews(parseViews(JSON.parse(raw)));
+        } catch (e) {}
       }
       setLoading(false);
     }

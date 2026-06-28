@@ -9,6 +9,8 @@ import { ThemeProvider } from "@/app/context/ThemeContext";
 import { CustomCursor } from "./CustomCursor";
 import { MaintenancePage } from "./MaintenancePage";
 import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
+import { motion, AnimatePresence } from "motion/react";
+import { ArrowUp } from "lucide-react";
 
 function getDeviceType() {
   const ua = navigator.userAgent;
@@ -43,6 +45,20 @@ export function Root() {
 
   // Stateful admin status
   const [isAdmin, setIsAdmin] = useState(() => localStorage.getItem("altus_admin") === "true");
+
+  const [showScrollTop, setShowScrollTop] = useState(false);
+
+  useEffect(() => {
+    const handleScrollButtonVisibility = () => {
+      setShowScrollTop(window.scrollY > 400);
+    };
+    window.addEventListener("scroll", handleScrollButtonVisibility, { passive: true });
+    return () => window.removeEventListener("scroll", handleScrollButtonVisibility);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
 
   // 1. Check for ?preview=true on mount to bypass maintenance mode
   useEffect(() => {
@@ -120,7 +136,8 @@ export function Root() {
     const device = getDeviceType();
     const referrer = getReferrer();
     const date = new Date().toISOString().split("T")[0];
-    const viewPayload = { path: pathname, date, device, referrer };
+    const pathWithParams = `${pathname}?device=${device}&ref=${referrer}`;
+    const viewPayload = { path: pathWithParams, date };
 
     if (isSupabaseConfigured && supabase) {
       supabase
@@ -128,14 +145,7 @@ export function Root() {
         .insert(viewPayload)
         .then(({ error }) => {
           if (error) {
-            console.warn("Page view tracking error, retrying with basic payload:", error.message);
-            // Fallback for when the device/referrer columns do not exist in the DB schema
-            supabase
-              .from("page_views")
-              .insert({ path: pathname, date })
-              .then(({ error: retryError }) => {
-                if (retryError) console.error("Failed to track page view on retry:", retryError.message);
-              });
+            console.error("Failed to track page view:", error.message);
           }
         });
     }
@@ -269,6 +279,20 @@ export function Root() {
           <CookieBanner />
           <AltusAssistant />
           {renderAdminFloat()}
+          <AnimatePresence>
+            {showScrollTop && (
+              <motion.button
+                initial={{ opacity: 0, scale: 0.8, y: 20 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                onClick={scrollToTop}
+                className="fixed bottom-8 right-8 z-[999] w-12 h-12 bg-[#0D0D11]/90 backdrop-blur-md border border-[#DFBA73]/30 hover:border-[#DFBA73] rounded-full flex items-center justify-center text-[#DFBA73] hover:text-[#0D0D11] hover:bg-[#DFBA73] shadow-lg transition-all duration-300 group active:scale-95"
+                aria-label="Scroll to top"
+              >
+                <ArrowUp size={18} className="transition-transform duration-300 group-hover:-translate-y-1" />
+              </motion.button>
+            )}
+          </AnimatePresence>
         </div>
       </LanguageProvider>
     </ThemeProvider>
