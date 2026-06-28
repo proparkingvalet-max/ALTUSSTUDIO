@@ -21,6 +21,51 @@ export function AltusAssistant() {
   const [leadSubmitted, setLeadSubmitted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  const [prices, setPrices] = useState({
+    landing: 250,
+    website: 350,
+    eshop: 990,
+  });
+
+  useEffect(() => {
+    // Load current prices from Supabase
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "prices")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data && data.value) {
+            const val = data.value;
+            if (val.landing || val.website || val.eshop) {
+              setPrices({
+                website: val.website ?? 350,
+                eshop: val.eshop ?? 990,
+                landing: val.landing ?? 250,
+              });
+            }
+          }
+        });
+    } else {
+      const cached = localStorage.getItem("altus_prices");
+      if (cached) {
+        try {
+          const val = JSON.parse(cached);
+          if (val.landing || val.website || val.eshop) {
+            setPrices({
+              website: val.website ?? 350,
+              eshop: val.eshop ?? 990,
+              landing: val.landing ?? 250,
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+  }, []);
+
   // Initialize with greeting
   useEffect(() => {
     const welcomeMsg =
@@ -59,8 +104,8 @@ export function AltusAssistant() {
       label: lang === "el" ? "💶 Πόσο κοστίζει μια ιστοσελίδα;" : "💶 How much does a website cost?",
       botReply:
         lang === "el"
-          ? "Το κόστος προσαρμόζεται στις απαιτήσεις σας. Ενδεικτικά: Landing Pages από €250, Custom Ιστοσελίδες από €350, E-Shops από €990. Μπορείτε να χρησιμοποιήσετε τον «Κοστολογητή» στη σελίδα των Υπηρεσιών μας για μια άμεση, live εκτίμηση!"
-          : "Pricing is tailored to your requirements. Indicatively: Landing Pages start at €250, Custom Websites at €350, and E-Shops at €990. You can use our 'Quote Estimator' wizard on our Services page for an instant, live estimate!",
+          ? `Το κόστος προσαρμόζεται στις απαιτήσεις σας. Ενδεικτικά: Landing Pages από €${prices.landing}, Custom Ιστοσελίδες από €${prices.website}, E-Shops από €${prices.eshop}. Μπορείτε να χρησιμοποιήσετε τον «Κοστολογητή» στη σελίδα των Υπηρεσιών μας για μια άμεση, live εκτίμηση!`
+          : `Pricing is tailored to your requirements. Indicatively: Landing Pages start at €${prices.landing}, Custom Websites at €${prices.website}, and E-Shops at €${prices.eshop}. You can use our 'Quote Estimator' wizard on our Services page for an instant, live estimate!`,
     },
     {
       id: "time",

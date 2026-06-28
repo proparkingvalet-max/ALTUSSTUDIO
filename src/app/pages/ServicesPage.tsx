@@ -4,6 +4,7 @@ import { motion } from "motion/react";
 import { Globe, ShoppingCart, Zap, Palette, BarChart2, RefreshCw, ArrowUpRight, CheckCircle2 } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
 import { QuoteEstimator } from "@/app/components/QuoteEstimator";
+import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
 
 const icons = [Globe, ShoppingCart, Zap];
 const addonIcons = [Palette, BarChart2, RefreshCw];
@@ -364,7 +365,12 @@ function SpeedSimulatorSection() {
 }
 
 export function ServicesPage() {
-  const { t } = useLanguage();
+  const { t, lang } = useLanguage();
+  const [basePrices, setBasePrices] = useState({
+    website: 350,
+    eshop: 990,
+    landing: 250,
+  });
 
   const mainServices = (t("services.cards") as unknown as {
     number: string; title: string; subtitle: string; description: string;
@@ -376,6 +382,67 @@ export function ServicesPage() {
   useEffect(() => {
     document.title = `${t("nav.services")} | Altus Studio`;
   }, [t]);
+
+  useEffect(() => {
+    // Load current prices from Supabase
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "prices")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data && data.value) {
+            const val = data.value;
+            if (val.landing || val.website || val.eshop) {
+              setBasePrices({
+                website: val.website ?? 350,
+                eshop: val.eshop ?? 990,
+                landing: val.landing ?? 250,
+              });
+            }
+          }
+        });
+    } else {
+      const cached = localStorage.getItem("altus_prices");
+      if (cached) {
+        try {
+          const val = JSON.parse(cached);
+          if (val.landing || val.website || val.eshop) {
+            setBasePrices({
+              website: val.website ?? 350,
+              eshop: val.eshop ?? 990,
+              landing: val.landing ?? 250,
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    }
+
+    // Dynamic storage sync helper
+    const handleStorageChange = () => {
+      const cached = localStorage.getItem("altus_prices");
+      if (cached) {
+        try {
+          const val = JSON.parse(cached);
+          if (val.landing || val.website || val.eshop) {
+            setBasePrices({
+              website: val.website ?? 350,
+              eshop: val.eshop ?? 990,
+              landing: val.landing ?? 250,
+            });
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   return (
     <div className="bg-[#F9FAFB]">
@@ -526,7 +593,11 @@ export function ServicesPage() {
                         className="text-[#0D0D11]"
                         style={{ fontFamily: "'Outfit', sans-serif", fontSize: "2.5rem", fontWeight: 700 }}
                       >
-                        {s.from}
+                        {(() => {
+                          const priceKey = s.number === "01" ? "website" : s.number === "02" ? "eshop" : "landing";
+                          const price = basePrices[priceKey];
+                          return `€${price}`;
+                        })()}
                       </p>
                     </div>
                     <div className="h-px bg-[#0D0D11]/8" />
