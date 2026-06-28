@@ -286,7 +286,7 @@ export function Root() {
                 animate={{ opacity: 1, scale: 1, y: 0 }}
                 exit={{ opacity: 0, scale: 0.8, y: 20 }}
                 onClick={scrollToTop}
-                className="fixed bottom-8 right-8 z-[999] w-12 h-12 bg-[#0D0D11]/90 backdrop-blur-md border border-[#DFBA73]/30 hover:border-[#DFBA73] rounded-full flex items-center justify-center text-[#DFBA73] hover:text-[#0D0D11] hover:bg-[#DFBA73] shadow-lg transition-all duration-300 group active:scale-95"
+                className="fixed bottom-24 right-7 z-[999] w-12 h-12 bg-[#0D0D11]/90 backdrop-blur-md border border-[#DFBA73]/30 hover:border-[#DFBA73] rounded-full flex items-center justify-center text-[#DFBA73] hover:text-[#0D0D11] hover:bg-[#DFBA73] shadow-lg transition-all duration-300 group active:scale-95"
                 aria-label="Scroll to top"
               >
                 <ArrowUp size={18} className="transition-transform duration-300 group-hover:-translate-y-1" />
