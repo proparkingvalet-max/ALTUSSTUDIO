@@ -12,6 +12,25 @@ import ppSupercar from "@/assets/proparking/supercar.png";
 import ppTheater from "@/assets/proparking/theater.jpg";
 import { supabase, isSupabaseConfigured } from "./supabaseClient";
 
+let hasFetchedSupabase = false;
+
+function resolveAssetPath(path: string): string {
+  if (!path) return "";
+  if (path.includes("hero_section.png")) return ppHero;
+  if (path.includes("booking_section.png")) return ppBooking;
+  if (path.includes("marina.jpg")) return ppMarina;
+  if (path.includes("air_sea.png")) return ppAirSea;
+  if (path.includes("contact_section.png")) return ppContact;
+  if (path.includes("showroom.png")) return ppShowroom;
+  if (path.includes("supercar.png")) return ppSupercar;
+  if (path.includes("theater.jpg")) return ppTheater;
+  if (path.includes("eshop_preview.png")) return eshopPreview;
+  if (path.includes("eshop_product.png")) return eshopProduct;
+  if (path.includes("resort_preview.png")) return resortPreview;
+  if (path.includes("resort_booking.png")) return resortBooking;
+  return path;
+}
+
 export interface Project {
   id: string;
   name: string;
@@ -74,18 +93,29 @@ export function mapSupabaseProject(p: any): Project {
   
   // Fallbacks for default projects if they contain the Unsplash placeholder, are empty, or point to stale build assets
   if (p.id === "project-1") {
-    if (!img || img.includes("unsplash.com/photo-1506015391300-4802dc74de2e") || img.includes("assets/")) {
+    if (!img || img.includes("unsplash.com/photo-1506015391300-4802dc74de2e")) {
       img = ppHero;
+    } else {
+      img = resolveAssetPath(img);
     }
-    if (gallery.length === 0 || gallery.some(g => g.includes("unsplash.com/photo-1506015391300-4802dc74de2e") || g.includes("assets/"))) {
+    if (gallery.length === 0 || (gallery.length === 1 && gallery[0].includes("unsplash.com/photo-1506015391300-4802dc74de2e"))) {
       gallery = [ppHero, ppBooking, ppMarina, ppAirSea, ppContact, ppShowroom, ppSupercar, ppTheater];
+    } else {
+      gallery = gallery.map(resolveAssetPath);
     }
   } else if (p.id === "project-2") {
-    if (!img || img.includes("assets/")) img = eshopPreview;
-    if (gallery.length === 0 || gallery.some(g => g.includes("assets/"))) gallery = [eshopPreview, eshopProduct];
+    if (!img) img = eshopPreview;
+    else img = resolveAssetPath(img);
+    if (gallery.length === 0) gallery = [eshopPreview, eshopProduct];
+    else gallery = gallery.map(resolveAssetPath);
   } else if (p.id === "project-3") {
-    if (!img || img.includes("assets/")) img = resortPreview;
-    if (gallery.length === 0 || gallery.some(g => g.includes("assets/"))) gallery = [resortPreview, resortBooking];
+    if (!img) img = resortPreview;
+    else img = resolveAssetPath(img);
+    if (gallery.length === 0) gallery = [resortPreview, resortBooking];
+    else gallery = gallery.map(resolveAssetPath);
+  } else {
+    img = resolveAssetPath(img);
+    gallery = gallery.map(resolveAssetPath);
   }
 
   let liveUrl = p.live_url || p.liveUrl || "";
@@ -110,7 +140,8 @@ export function mapSupabaseProject(p: any): Project {
 
 export function getProjects(): Project[] {
   // Async background sync with Supabase if configured
-  if (isSupabaseConfigured && supabase) {
+  if (isSupabaseConfigured && supabase && !hasFetchedSupabase) {
+    hasFetchedSupabase = true;
     supabase
       .from("projects")
       .select("*")
@@ -195,18 +226,29 @@ export function getProjects(): Project[] {
         let img = p.img || "";
         let gallery = Array.isArray(p.gallery) ? p.gallery : [];
         if (p.id === "project-1") {
-          if (!img || img.includes("unsplash.com/photo-1506015391300-4802dc74de2e") || img.includes("assets/")) {
+          if (!img || img.includes("unsplash.com/photo-1506015391300-4802dc74de2e")) {
             img = ppHero;
+          } else {
+            img = resolveAssetPath(img);
           }
-          if (gallery.length === 0 || gallery.some(g => g.includes("unsplash.com/photo-1506015391300-4802dc74de2e") || g.includes("assets/"))) {
+          if (gallery.length === 0 || (gallery.length === 1 && gallery[0].includes("unsplash.com/photo-1506015391300-4802dc74de2e"))) {
             gallery = [ppHero, ppBooking, ppMarina, ppAirSea, ppContact, ppShowroom, ppSupercar, ppTheater];
+          } else {
+            gallery = gallery.map(resolveAssetPath);
           }
         } else if (p.id === "project-2") {
-          if (!img || img.includes("assets/")) img = eshopPreview;
-          if (gallery.length === 0 || gallery.some(g => g.includes("assets/"))) gallery = [eshopPreview, eshopProduct];
+          if (!img) img = eshopPreview;
+          else img = resolveAssetPath(img);
+          if (gallery.length === 0) gallery = [eshopPreview, eshopProduct];
+          else gallery = gallery.map(resolveAssetPath);
         } else if (p.id === "project-3") {
-          if (!img || img.includes("assets/")) img = resortPreview;
-          if (gallery.length === 0 || gallery.some(g => g.includes("assets/"))) gallery = [resortPreview, resortBooking];
+          if (!img) img = resortPreview;
+          else img = resolveAssetPath(img);
+          if (gallery.length === 0) gallery = [resortPreview, resortBooking];
+          else gallery = gallery.map(resolveAssetPath);
+        } else {
+          img = resolveAssetPath(img);
+          gallery = gallery.map(resolveAssetPath);
         }
 
         let liveUrl = p.liveUrl || "";

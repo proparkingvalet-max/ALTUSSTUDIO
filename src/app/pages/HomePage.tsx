@@ -706,10 +706,8 @@ function PortfolioSection() {
       setProjectsList(getProjects());
     };
     window.addEventListener("storage", handleStorage);
-    const interval = setInterval(handleStorage, 1000);
     return () => {
       window.removeEventListener("storage", handleStorage);
-      clearInterval(interval);
     };
   }, []);
 
