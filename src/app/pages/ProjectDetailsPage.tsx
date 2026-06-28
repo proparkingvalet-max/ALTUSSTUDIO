@@ -11,6 +11,7 @@ export function ProjectDetailsPage() {
   const navigate = useNavigate();
   const [project, setProject] = useState<Project | null>(null);
   const [nextProject, setNextProject] = useState<Project | null>(null);
+  const [deviceMode, setDeviceMode] = useState<"desktop" | "tablet" | "mobile">("desktop");
 
   useEffect(() => {
     const list = getProjects();
@@ -245,6 +246,120 @@ export function ProjectDetailsPage() {
                   />
                 </motion.div>
               ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Live Preview Section */}
+      {project.isLive && project.liveUrl && (
+        <section className="py-24 border-t border-white/5 bg-[#0D0D11] relative z-10">
+          <div className="max-w-7xl mx-auto px-6 lg:px-12 text-center">
+            <div className="flex flex-col items-center mb-12">
+              <span
+                className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase mb-4 block"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {lang === "el" ? "Ζωντανή Δοκιμή" : "Live Exploration"}
+              </span>
+              <h2
+                className="text-2xl md:text-3xl font-bold mb-6 text-white"
+                style={{ fontFamily: "'Outfit', sans-serif" }}
+              >
+                {lang === "el" ? "Διαδραστική Προεπισκόπηση" : "Interactive Live Preview"}
+              </h2>
+              <p
+                className="text-white/60 text-sm max-w-xl font-light mb-8"
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {lang === "el"
+                  ? "Δοκιμάστε το live site απευθείας από εδώ. Εναλλάξτε τη σχεδίαση μεταξύ Υπολογιστή, Tablet και Κινητού για να δείτε το responsive layout σε δράση."
+                  : "Explore the live, fully-functional site directly. Switch between Desktop, Tablet, and Mobile viewports to test the responsive layout in real-time."}
+              </p>
+
+              {/* Viewport controls */}
+              <div className="flex items-center gap-2 bg-[#1C1C24] p-1.5 rounded-full border border-white/5">
+                {(["desktop", "tablet", "mobile"] as const).map((mode) => (
+                  <button
+                    key={mode}
+                    onClick={() => setDeviceMode(mode)}
+                    className={`px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 ${
+                      deviceMode === mode
+                        ? "bg-[#DFBA73] text-[#0D0D11]"
+                        : "text-white/40 hover:text-white"
+                    }`}
+                    style={{ fontFamily: "'DM Sans', sans-serif" }}
+                  >
+                    {mode === "desktop" ? (lang === "el" ? "Υπολογιστής" : "Desktop") : 
+                     mode === "tablet" ? (lang === "el" ? "Tablet" : "Tablet") : 
+                     (lang === "el" ? "Κινητό" : "Mobile")}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Frame Wrapper based on Device Mode */}
+            <div className="flex justify-center transition-all duration-500">
+              {deviceMode === "desktop" && (
+                <div className="w-full max-w-6xl bg-[#1C1C24] border border-white/10 rounded-lg overflow-hidden shadow-2xl">
+                  {/* Browser chrome header */}
+                  <div className="bg-[#0D0D11] px-4 py-3 flex items-center justify-between border-b border-white/8">
+                    <div className="flex items-center gap-2">
+                      <div className="flex gap-1.5">
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-green-500/40" />
+                      </div>
+                      <div className="bg-white/5 rounded-sm h-5 px-3 flex items-center gap-2 text-[10px] text-white/30 ml-4 font-mono">
+                        <span>{project.liveUrl.replace("https://", "")}</span>
+                      </div>
+                    </div>
+                    <a
+                      href={project.liveUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[10px] font-mono text-[#DFBA73] font-bold hover:underline"
+                    >
+                      {lang === "el" ? "Άνοιγμα σε νέο tab ↗" : "Open in new tab ↗"}
+                    </a>
+                  </div>
+                  <iframe
+                    src={project.liveUrl}
+                    title="Live Project Preview - Desktop"
+                    className="w-full h-[650px] border-none bg-white"
+                  />
+                </div>
+              )}
+
+              {deviceMode === "tablet" && (
+                <div className="w-full max-w-[768px] bg-black p-4 rounded-[24px] border border-white/10 shadow-2xl">
+                  <div className="w-full bg-[#1C1C24] overflow-hidden rounded-[12px]">
+                    <iframe
+                      src={project.liveUrl}
+                      title="Live Project Preview - Tablet"
+                      className="w-full h-[768px] border-none bg-white"
+                    />
+                  </div>
+                </div>
+              )}
+
+              {deviceMode === "mobile" && (
+                <div className="relative w-full max-w-[375px] bg-black p-4 rounded-[40px] border-4 border-white/20 shadow-2xl">
+                  {/* Notch / Speaker */}
+                  <div className="absolute top-2 left-1/2 -translate-x-1/2 w-28 h-4 bg-black rounded-b-xl z-20 flex items-center justify-center">
+                    <div className="w-12 h-1 bg-white/10 rounded-full" />
+                  </div>
+                  <div className="w-full bg-[#1C1C24] overflow-hidden rounded-[28px] relative z-10">
+                    <iframe
+                      src={project.liveUrl}
+                      title="Live Project Preview - Mobile"
+                      className="w-full h-[600px] border-none bg-white"
+                    />
+                  </div>
+                  {/* Home indicator bar at bottom */}
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-28 h-1 bg-white/20 rounded-full z-20" />
+                </div>
+              )}
             </div>
           </div>
         </section>

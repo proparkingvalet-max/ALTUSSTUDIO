@@ -1,9 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router";
 import { motion, AnimatePresence } from "motion/react";
 import { ArrowUpRight, Globe, ShoppingCart, Zap, Smartphone, TrendingUp, HeadphonesIcon, Quote } from "lucide-react";
 import { useLanguage } from "@/app/context/LanguageContext";
-import { QuoteEstimator } from "@/app/components/QuoteEstimator";
 import { getProjects, Project } from "@/app/utils/projects";
 
 import eshopPreview from "@/assets/eshop_preview.png";
@@ -159,24 +158,26 @@ function HeroSection({ t }: { t: (k: string) => any }) {
                 </div>
                 <div className="flex-1 bg-white/5 rounded-sm h-5 ml-3 flex items-center px-3">
                   <span className="text-white/25 text-xs" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                    proparkingvalet.gr
+                    altus.studio
                   </span>
                 </div>
               </div>
-              {/* Hero mockup content - Live scaled iframe of proparkingvalet.gr */}
-              <div className="relative w-full h-[320px] bg-[#0d1220] overflow-hidden">
-                <iframe
-                  src="https://proparkingvalet.gr"
-                  title="proparkingvalet.gr Live Preview"
-                  className="absolute top-0 left-0 border-none select-none pointer-events-none"
-                  style={{
-                    width: "1024px",
-                    height: "730px",
-                    transform: "scale(0.44)",
-                    transformOrigin: "top left",
-                  }}
-                  loading="lazy"
-                />
+              {/* Hero mockup content */}
+              <div className="p-8 space-y-4">
+                <div className="h-2 bg-white/8 rounded-sm w-1/3" />
+                <div className="h-5 bg-white/12 rounded-sm w-5/6" />
+                <div className="h-5 bg-white/8 rounded-sm w-2/3" />
+                <div className="h-3 bg-white/5 rounded-sm w-full mt-2" />
+                <div className="h-3 bg-white/5 rounded-sm w-4/5" />
+                <div className="flex gap-3 mt-6">
+                  <div className="h-8 bg-[#DFBA73]/70 rounded-sm w-24" />
+                  <div className="h-8 border border-white/15 rounded-sm w-24" />
+                </div>
+                <div className="mt-8 grid grid-cols-3 gap-3">
+                  {[0, 1, 2].map((i) => (
+                    <div key={i} className="bg-white/5 rounded-sm aspect-video" />
+                  ))}
+                </div>
               </div>
             </div>
             {/* Floating accent card */}
@@ -1130,328 +1131,6 @@ function LogoWallSection() {
   );
 }
 
-// ─── Figma to Code Section ───────────────────────────────────────────────────
-
-function FigmaToCodeSection() {
-  const { lang } = useLanguage();
-  const [sliderVal, setSliderVal] = useState(50);
-  const [isDragging, setIsDragging] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  const tContent = {
-    el: {
-      label: "Figma to React Code",
-      heading1: "Από το Mockup",
-      heading2: "στον Καθαρό Κώδικα",
-      desc: "Σχεδιάζουμε custom UI/UX μακέτες στο Figma και τις μετατρέπουμε σε pixel-perfect κώδικα React & Tailwind CSS. Σύρετε τον διακόπτη για να δείτε τη μεταμόρφωση από το design στο live component.",
-      figmaLabel: "Figma Design Canvas",
-      codeLabel: "Live React Component",
-      commentUser: "Αλέξανδρος (Lead UI/UX)",
-      commentText: "Πρόσθεσε gold glow effect στο hover και responsive padding για mobile.",
-      resolved: "Επιλύθηκε",
-      designerCursor: "Δημήτρης (Dev)",
-    },
-    en: {
-      label: "Figma to React Code",
-      heading1: "From Figma Mockup",
-      heading2: "to Clean Code",
-      desc: "We design custom UI/UX mockups in Figma and turn them into pixel-perfect React & Tailwind CSS code. Drag the slider to see the live transformation from layout bounds to active components.",
-      figmaLabel: "Figma Design Canvas",
-      codeLabel: "Live React Component",
-      commentUser: "Alex (Lead UI/UX)",
-      commentText: "Add gold glow effect on hover and responsive padding for mobile devices.",
-      resolved: "Resolved",
-      designerCursor: "Dimitris (Dev)",
-    }
-  }[lang as "el" | "en"] || {
-    label: "Figma to React Code",
-    heading1: "From Figma Mockup",
-    heading2: "to Clean Code",
-    desc: "We design custom UI/UX mockups in Figma and turn them into pixel-perfect React & Tailwind CSS code. Drag the slider to see the live transformation from layout bounds to active components.",
-    figmaLabel: "Figma Design Canvas",
-    codeLabel: "Live React Component",
-    commentUser: "Alex (Lead UI/UX)",
-    commentText: "Add gold glow effect on hover and responsive padding for mobile devices.",
-    resolved: "Resolved",
-    designerCursor: "Dimitris (Dev)",
-  };
-
-  const rectRef = useRef<DOMRect | null>(null);
-
-  const handleMove = (clientX: number) => {
-    const rect = rectRef.current || (containerRef.current ? containerRef.current.getBoundingClientRect() : null);
-    if (!rect) return;
-    const x = clientX - rect.left;
-    const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-    setSliderVal(percentage);
-  };
-
-  const handleStart = (clientX: number) => {
-    setIsDragging(true);
-    if (containerRef.current) {
-      const rect = containerRef.current.getBoundingClientRect();
-      rectRef.current = rect;
-      const x = clientX - rect.left;
-      const percentage = Math.max(0, Math.min(100, (x / rect.width) * 100));
-      setSliderVal(percentage);
-    }
-  };
-
-  const handleMouseDown = (e: React.MouseEvent) => {
-    handleStart(e.clientX);
-  };
-
-  const handleTouchStart = (e: React.TouchEvent) => {
-    if (e.touches[0]) {
-      handleStart(e.touches[0].clientX);
-    }
-  };
-
-  useEffect(() => {
-    if (!isDragging) return;
-
-    const onMouseMove = (e: MouseEvent) => {
-      handleMove(e.clientX);
-    };
-
-    const onMouseUp = () => {
-      setIsDragging(false);
-    };
-
-    const onTouchMove = (e: TouchEvent) => {
-      if (e.touches[0]) {
-        handleMove(e.touches[0].clientX);
-      }
-    };
-
-    const onTouchEnd = () => {
-      setIsDragging(false);
-    };
-
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    window.addEventListener("touchmove", onTouchMove, { passive: true });
-    window.addEventListener("touchend", onTouchEnd);
-
-    return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      window.removeEventListener("touchmove", onTouchMove);
-      window.removeEventListener("touchend", onTouchEnd);
-    };
-  }, [isDragging]);
-
-  return (
-    <section className="py-32 bg-[#0D0D11] relative overflow-hidden border-t border-white/5">
-      <div className="absolute inset-0 pointer-events-none select-none opacity-[0.02]">
-        <svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="figmagrid" width="40" height="40" patternUnits="userSpaceOnUse">
-              <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5" />
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#figmagrid)" />
-        </svg>
-      </div>
-
-      <div className="relative max-w-7xl mx-auto px-6 lg:px-12 grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
-        <div className="lg:col-span-5 space-y-6">
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <div className="flex items-center gap-4 mb-4">
-              <div className="w-8 h-px bg-[#DFBA73]" />
-              <span
-                className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase"
-                style={{ fontFamily: "'DM Sans', sans-serif" }}
-              >
-                {tContent.label}
-              </span>
-            </div>
-            <h2
-              className="text-[#F9FAFB] leading-tight mb-6"
-              style={{
-                fontFamily: "'Outfit', sans-serif",
-                fontSize: "clamp(2rem, 4vw, 3rem)",
-                fontWeight: 700,
-              }}
-            >
-              {tContent.heading1}{" "}
-              <em style={{ fontStyle: "italic", color: "#DFBA73" }}>{tContent.heading2}</em>
-            </h2>
-            <p
-              className="text-[#F9FAFB]/60 text-sm md:text-base leading-relaxed font-light"
-              style={{ fontFamily: "'DM Sans', sans-serif" }}
-            >
-              {tContent.desc}
-            </p>
-          </motion.div>
-        </div>
-
-        <div className="lg:col-span-7">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="relative select-none"
-          >
-            <div className="bg-[#1C1C24] border border-white/10 overflow-hidden relative shadow-2xl h-[420px] rounded-lg">
-              <div className="bg-[#0D0D11] px-4 py-3 flex items-center justify-between border-b border-white/8">
-                <div className="flex items-center gap-2">
-                  <div className="flex gap-1.5">
-                    <div className="w-2.5 h-2.5 rounded-full bg-red-500/40" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/40" />
-                    <div className="w-2.5 h-2.5 rounded-full bg-green-500/40" />
-                  </div>
-                  <div className="bg-white/5 rounded-sm h-5 px-3 flex items-center gap-2 text-[10px] text-white/30 ml-4 font-mono">
-                    <span>altus-design-system.fig</span>
-                  </div>
-                </div>
-                <div className="flex gap-4">
-                  <span className="text-[10px] font-mono text-[#DFBA73] font-bold tracking-widest">{Math.round(sliderVal)}% Web</span>
-                </div>
-              </div>
-
-              <div
-                ref={containerRef}
-                onMouseDown={handleMouseDown}
-                onTouchStart={handleTouchStart}
-                className="w-full h-[calc(100%-45px)] relative overflow-hidden cursor-ew-resize select-none"
-              >
-                <div className="absolute inset-0 bg-[#2C2C2C] p-8 flex items-center justify-center font-sans overflow-hidden">
-                  <div className="absolute inset-0 opacity-10 bg-[radial-gradient(#ffffff_1.5px,transparent_1.5px)] [background-size:16px_16px]" />
-                  
-                  <div className="relative border-2 border-[#18A0FB] w-[280px] xs:w-[320px] sm:w-[350px] h-[220px] bg-[#1E1E1E] p-6 flex flex-col justify-between shadow-xl">
-                    <div className="absolute -top-3.5 -left-0.5 bg-[#18A0FB] text-white text-[9px] px-1 font-mono">
-                      Frame: Card Component
-                    </div>
-                    <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 text-[#18A0FB] text-[9px] font-mono whitespace-nowrap">
-                      W: Responsive &nbsp;&nbsp; H: 220px
-                    </div>
-                    
-                    <div className="absolute -top-1 -left-1 w-2.5 h-2.5 bg-white border border-[#18A0FB]" />
-                    <div className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-white border border-[#18A0FB]" />
-                    <div className="absolute -bottom-1 -left-1 w-2.5 h-2.5 bg-white border border-[#18A0FB]" />
-                    <div className="absolute -bottom-1 -right-1 w-2.5 h-2.5 bg-white border border-[#18A0FB]" />
-
-                    <div className="space-y-3">
-                      <div className="border border-[#18A0FB]/40 border-dashed p-1.5 inline-block">
-                        <span className="text-[#18A0FB] text-[8px] font-mono">#DFBA73 Label</span>
-                      </div>
-                      <div className="w-2/3 h-6 bg-[#2C2C2C] border border-[#18A0FB]/20" />
-                      <div className="w-5/6 h-3 bg-[#2C2C2C] border border-[#18A0FB]/20" />
-                      <div className="w-4/5 h-3 bg-[#2C2C2C] border border-[#18A0FB]/20" />
-                    </div>
-
-                    <div className="flex justify-between items-center mt-4">
-                      <div className="h-7 w-20 border border-[#18A0FB]/30 bg-white/5" />
-                      <div className="h-5 w-5 rounded-full border border-dashed border-[#18A0FB]" />
-                    </div>
-
-                    <div className="absolute top-1/2 -translate-y-1/2 -right-8 w-48 bg-[#1E1E1E] border border-white/10 p-3 rounded shadow-2xl z-20 pointer-events-none scale-90">
-                      <div className="flex items-center gap-1.5 mb-1.5">
-                        <div className="w-4.5 h-4.5 rounded-full bg-[#DFBA73] text-[8px] text-[#0D0D11] flex items-center justify-center font-bold">AS</div>
-                        <span className="text-[9px] font-semibold text-white">{tContent.commentUser}</span>
-                      </div>
-                      <p className="text-[9px] text-white/60 leading-normal">{tContent.commentText}</p>
-                    </div>
-
-                    <div className="absolute bottom-6 left-12 flex items-center gap-1 pointer-events-none z-10">
-                      <svg width="12" height="15" viewBox="0 0 12 15" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M0 0V14.5L4 10.5L11.5 12L0 0Z" fill="#F24E1E" />
-                      </svg>
-                      <div className="bg-[#F24E1E] text-white text-[8px] px-1 py-0.5 rounded font-mono">
-                        {tContent.designerCursor}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="absolute left-4 top-4 bg-black/60 px-3 py-1.5 rounded-full border border-white/5 backdrop-blur-sm">
-                    <span className="text-white/60 text-[9px] tracking-wider uppercase font-semibold">{tContent.figmaLabel}</span>
-                  </div>
-                </div>
-
-                <div
-                  className="absolute inset-0 bg-[#0D0D11] p-8 flex items-center justify-center font-sans overflow-hidden"
-                  style={{
-                    clipPath: `polygon(${sliderVal}% 0, 100% 0, 100% 100%, ${sliderVal}% 100%)`,
-                  }}
-                >
-                  <div className="absolute w-[200px] h-[200px] rounded-full bg-[#DFBA73]/10 blur-[60px] pointer-events-none" />
-
-                  <motion.div
-                    whileHover={{ scale: 1.02, y: -2 }}
-                    className="relative w-[280px] xs:w-[320px] sm:w-[350px] h-[220px] bg-[#1C1C24]/80 backdrop-blur-md border border-white/10 hover:border-[#DFBA73]/40 p-6 flex flex-col justify-between shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-all duration-300 group"
-                  >
-                    <div className="absolute inset-0 bg-gradient-to-r from-transparent to-[#DFBA73]/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded" />
-                    
-                    <div className="space-y-3">
-                      <span className="text-[#DFBA73] text-[9px] tracking-[0.25em] uppercase font-bold">
-                        UX Optimization
-                      </span>
-                      <h3 className="text-white text-lg font-bold" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                        Conversion Focus
-                      </h3>
-                      <p className="text-white/50 text-xs leading-relaxed font-light" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                        Our code transforms design layouts into highly interactive products optimized for search engine indexing.
-                      </p>
-                    </div>
-
-                    <div className="flex justify-between items-center mt-4">
-                      <span className="text-xs text-[#DFBA73] tracking-widest uppercase font-semibold flex items-center gap-1">
-                        Explore <ArrowUpRight size={12} />
-                      </span>
-                      <div className="w-6 h-6 rounded-full bg-[#DFBA73]/10 border border-[#DFBA73]/20 flex items-center justify-center text-[10px] text-[#DFBA73]">
-                        ✔
-                      </div>
-                    </div>
-                  </motion.div>
-
-                  <div className="absolute bottom-4 right-4 bg-black/85 border border-white/10 p-3 rounded font-mono text-[8px] text-emerald-400 opacity-70 w-52 max-h-24 overflow-hidden pointer-events-none">
-                    <span className="text-pink-400">const</span> Card = () =&gt; (<br />
-                    &nbsp;&nbsp;&lt;<span className="text-blue-400">div</span> <span className="text-yellow-400">className</span>=<span className="text-orange-300">"bg-[#1C1C24] p-6 hover:border-[#DFBA73]"</span>&gt;<br />
-                    &nbsp;&nbsp;&nbsp;&nbsp;&lt;<span className="text-blue-400">h3</span>&gt;Conversion Focus&lt;/<span className="text-blue-400">h3</span>&gt;<br />
-                    &nbsp;&nbsp;&lt;/<span className="text-blue-400">div</span>&gt;<br />
-                    );
-                  </div>
-
-                  <div className="absolute right-4 top-4 bg-[#DFBA73]/15 px-3 py-1.5 rounded-full border border-[#DFBA73]/20 backdrop-blur-sm">
-                    <span className="text-[#DFBA73] text-[9px] tracking-wider uppercase font-semibold">{tContent.codeLabel}</span>
-                  </div>
-                </div>
-
-                <div
-                  onMouseDown={handleMouseDown}
-                  onTouchStart={handleTouchStart}
-                  className="absolute top-0 bottom-0 w-1 bg-[#DFBA73] z-30 select-none shadow-[0_0_10px_rgba(223,186,115,0.8)]"
-                  style={{
-                    left: `${sliderVal}%`,
-                    transform: "translateX(-50%)",
-                  }}
-                >
-                  <div className="absolute top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 w-8 h-8 rounded-full bg-[#DFBA73] border border-[#0D0D11] text-[#0D0D11] font-bold flex items-center justify-center cursor-ew-resize hover:scale-105 active:scale-95 transition-transform duration-100 z-40 select-none shadow-lg">
-                    ↕
-                  </div>
-                </div>
-              </div>
-            </div>
-            
-            <div className="mt-4 text-center">
-              <span className="text-white/30 text-xs tracking-wider font-light" style={{ fontFamily: "'DM Sans', sans-serif" }}>
-                {lang === "el" ? "← Σύρετε το κουμπί αριστερά/δεξιά για να δείτε τον κώδικα →" : "← Drag handle left/right to reveal live component and code →"}
-              </span>
-            </div>
-          </motion.div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 // ─── Page ─────────────────────────────────────────────────────────────────────
 
 export function HomePage() {
@@ -1469,10 +1148,8 @@ export function HomePage() {
       <WhyUsSection />
       <ProcessSection />
       <AboutSection />
-      <FigmaToCodeSection />
       <PortfolioSection />
       <TestimonialsSection />
-      <QuoteEstimator />
       <FAQSection />
       <CTASection />
     </>

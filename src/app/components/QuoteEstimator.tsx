@@ -35,7 +35,7 @@ export function QuoteEstimator() {
   // Pricing Logic
   const [basePrices, setBasePrices] = useState({
     website: 350,
-    eshop: 790,
+    eshop: 990,
     landing: 250,
   });
 
@@ -66,7 +66,7 @@ export function QuoteEstimator() {
               if (val.landing || val.website || val.eshop) {
                 setBasePrices({
                   website: val.website ?? 350,
-                  eshop: val.eshop ?? 790,
+                  eshop: val.eshop ?? 990,
                   landing: val.landing ?? 250,
                 });
               }
@@ -87,7 +87,7 @@ export function QuoteEstimator() {
             if (val.landing || val.website || val.eshop) {
               setBasePrices({
                 website: val.website ?? 350,
-                eshop: val.eshop ?? 790,
+                eshop: val.eshop ?? 990,
                 landing: val.landing ?? 250,
               });
             }
@@ -297,7 +297,7 @@ export function QuoteEstimator() {
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       {[
                         { id: "website", labelEl: "Εταιρική Ιστοσελίδα", labelEn: "Corporate Website", price: 350, icon: Laptop, descEl: "Σελίδα παρουσίασης της επιχείρησής σας", descEn: "Represent your business online professionally" },
-                        { id: "eshop", labelEl: "Ηλεκτρονικό Κατάστημα", labelEn: "E-Shop", price: 790, icon: ShoppingCart, descEl: "Πωλήσεις προϊόντων 24/7 με ασφάλεια πληρωμών", descEn: "Sell products online 24/7 with payments security" },
+                        { id: "eshop", labelEl: "Ηλεκτρονικό Κατάστημα", labelEn: "E-Shop", price: 990, icon: ShoppingCart, descEl: "Πωλήσεις προϊόντων 24/7 με ασφάλεια πληρωμών", descEn: "Sell products online 24/7 with payments security" },
                         { id: "landing", labelEl: "Landing Page", labelEn: "Landing Page", price: 250, icon: Zap, descEl: "Σελίδα με στόχο την άμεση μετατροπή πελατών", descEn: "High conversion single-page lead capture" },
                       ].map((item) => {
                         const Icon = item.icon;

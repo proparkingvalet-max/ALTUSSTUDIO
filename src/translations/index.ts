@@ -251,7 +251,7 @@ export const translations = {
             "Λειτουργεί νόμιμα — με όλες τις απαραίτητες ρυθμίσεις",
           ],
           delivery: "25-45 ημέρες",
-          from: "€790",
+          from: "€990",
         },
         {
           number: "03",
@@ -641,7 +641,7 @@ export const translations = {
             "Optimised to be found on Google",
           ],
           delivery: "25-45 days",
-          from: "€790",
+          from: "€990",
         },
         {
           number: "03",

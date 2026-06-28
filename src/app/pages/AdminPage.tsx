@@ -1914,7 +1914,7 @@ function SettingsView() {
   const [prices, setPrices] = useState({
     landing: 250,
     website: 350,
-    eshop: 790,
+    eshop: 990,
     uiux: 150,
     seo: 120,
     multilang: 100,
@@ -2432,7 +2432,7 @@ function CRMView() {
 
 const serviceOptions = [
   { name: "Κατασκευή Ιστοσελίδας", price: 350 },
-  { name: "Ανάπτυξη E-Shop", price: 790 },
+  { name: "Ανάπτυξη E-Shop", price: 990 },
   { name: "Landing Page", price: 250 },
   { name: "Εταιρική Ταυτότητα", price: 200 },
   { name: "SEO & Στατιστικά", price: 150 },
@@ -2469,7 +2469,7 @@ const packageDeliverables: Record<string, { titleEl: string; titleEn: string; pr
   eshop: {
     titleEl: "Ηλεκτρονικό Κατάστημα (E-Shop)",
     titleEn: "E-Shop",
-    price: 790,
+    price: 990,
     items: [
       "Πλατφόρμα e-commerce με καλάθι & checkout",
       "Σύνδεση με τράπεζες (Stripe, Viva) & PayPal",
@@ -2507,7 +2507,7 @@ function QuotesView({
   const [prices, setPrices] = useState({
     landing: 250,
     website: 350,
-    eshop: 790,
+    eshop: 990,
     uiux: 150,
     seo: 120,
     multilang: 100,
@@ -4216,7 +4216,7 @@ function PackagesView() {
     {
       id: "eshop",
       title: "Ηλεκτρονικό Κατάστημα (E-Shop)",
-      price: "790€",
+      price: "990€",
       icon: ShoppingCart,
       color: "#9C27B0",
       description: "Για καταστήματα που θέλουν να πουλάνε online προϊόντα, να δέχονται κάρτες και να διαχειρίζονται stock.",

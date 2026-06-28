@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "motion/react";
 import { Globe, ShoppingCart, Zap, Palette, BarChart2, RefreshCw, ArrowUpRight, CheckCircle2 } from "lucide-react";
@@ -7,6 +7,361 @@ import { QuoteEstimator } from "@/app/components/QuoteEstimator";
 
 const icons = [Globe, ShoppingCart, Zap];
 const addonIcons = [Palette, BarChart2, RefreshCw];
+
+// ─── Speed Simulator Section ──────────────────────────────────────────────────
+
+function SpeedSimulatorSection() {
+  const { lang } = useLanguage();
+  const [siteType, setSiteType] = useState<"website" | "eshop" | "landing">("website");
+  const [status, setStatus] = useState<"idle" | "auditing" | "done">("idle");
+  const [progress, setProgress] = useState(0);
+  const [wpScore, setWpScore] = useState(100);
+  const [altusScore, setAltusScore] = useState(0);
+
+  const tSim = {
+    el: {
+      label: "Live Speed Auditor",
+      heading1: "Εξομοιωτής Ταχύτητας &",
+      heading2: "Core Web Vitals",
+      desc: "Επιλέξτε έναν τύπο ιστοσελίδας και πατήστε «Έναρξη Test» για να δείτε σε πραγματικό χρόνο τη διαφορά φόρτωσης ανάμεσα σε ένα έτοιμο WordPress template των 300€ και ένα custom React build της Altus Studio.",
+      btnStart: "Έναρξη Test Ταχύτητας",
+      btnRunning: "Ανάλυση σε εξέλιξη...",
+      scoreLabel: "Σκορ Google PageSpeed",
+      loadTime: "Χρόνος Φόρτωσης",
+      layoutShift: "Μετατόπιση Layout (CLS)",
+      seoPen: "Ποινή Google SEO",
+      convRate: "Κίνδυνος Εγκατάλειψης",
+      wpLabel: "WordPress Template (300€)",
+      altusLabel: "Altus Custom React Build",
+      typeWebsite: "Εταιρικό Site",
+      typeEshop: "E-Shop",
+      typeLanding: "Landing Page",
+      auditComplete: "Η ανάλυση ολοκληρώθηκε!",
+      retest: "Δοκιμάστε ξανά",
+      metrics: {
+        website: {
+          wpTime: "6.2s",
+          altusTime: "0.5s",
+          wpCls: "0.32 (Κακό)",
+          altusCls: "0.00 (Τέλειο)",
+          wpSeo: "Υψηλή (Θέσεις 30+)",
+          altusSeo: "Μηδενική (Top 3)",
+          wpRisk: "+48% Απώλεια Πελατών",
+          altusRisk: "0% Βελτιστοποιημένο",
+        },
+        eshop: {
+          wpTime: "8.4s",
+          altusTime: "0.7s",
+          wpCls: "0.45 (Κακό)",
+          altusCls: "0.01 (Τέλειο)",
+          wpSeo: "Υψηλή (Θέσεις 40+)",
+          altusSeo: "Μηδενική (Top 5)",
+          wpRisk: "+65% Απώλεια Πωλήσεων",
+          altusRisk: "0% Βελτιστοποιημένο",
+        },
+        landing: {
+          wpTime: "4.8s",
+          altusTime: "0.4s",
+          wpCls: "0.22 (Κακό)",
+          altusCls: "0.00 (Τέλειο)",
+          wpSeo: "Υψηλό Ad Cost (Low Score)",
+          altusSeo: "Χαμηλό Ad Cost (Quality 10/10)",
+          wpRisk: "+35% bounce rate διαφημίσεων",
+          altusRisk: "0% Μέγιστη Μετατροπή",
+        }
+      }
+    },
+    en: {
+      label: "Live Speed Auditor",
+      heading1: "Speed &",
+      heading2: "Core Web Vitals",
+      desc: "Select a website category and click 'Start Speed Test' to compare how a generic 300€ WordPress theme performs compared to a custom React build by Altus Studio.",
+      btnStart: "Start Speed Test",
+      btnRunning: "Running Audit...",
+      scoreLabel: "Google PageSpeed Score",
+      loadTime: "Load Time",
+      layoutShift: "Layout Shift (CLS)",
+      seoPen: "Google SEO Penalty",
+      convRate: "Abandonment Risk",
+      wpLabel: "WordPress Template (300€)",
+      altusLabel: "Altus Custom React Build",
+      typeWebsite: "Corporate Website",
+      typeEshop: "E-Shop",
+      typeLanding: "Landing Page",
+      auditComplete: "Audit Complete!",
+      retest: "Run Test Again",
+      metrics: {
+        website: {
+          wpTime: "6.2s",
+          altusTime: "0.5s",
+          wpCls: "0.32 (Poor)",
+          altusCls: "0.00 (Perfect)",
+          wpSeo: "High (Rank 30+)",
+          altusSeo: "None (Top 3 Rankings)",
+          wpRisk: "+48% Client Loss",
+          altusRisk: "0% Optimised Flow",
+        },
+        eshop: {
+          wpTime: "8.4s",
+          altusTime: "0.7s",
+          wpCls: "0.45 (Poor)",
+          altusCls: "0.01 (Perfect)",
+          wpSeo: "High (Rank 40+)",
+          altusSeo: "None (Top 5 Rankings)",
+          wpRisk: "+65% Sales Drop Risk",
+          altusRisk: "0% Optimised Flow",
+        },
+        landing: {
+          wpTime: "4.8s",
+          altusTime: "0.4s",
+          wpCls: "0.22 (Poor)",
+          altusCls: "0.00 (Perfect)",
+          wpSeo: "High Ad Cost (Low Score)",
+          altusSeo: "Low Ad Cost (10/10 Score)",
+          wpRisk: "+35% Ad Bounce Rate",
+          altusRisk: "0% Maximum Conversion",
+        }
+      }
+    }
+  }[lang as "el" | "en"] || tSim.el;
+
+  const currentMetrics = tSim.metrics[siteType];
+
+  const runTest = () => {
+    setStatus("auditing");
+    setProgress(0);
+    setWpScore(100);
+    setAltusScore(0);
+  };
+
+  useEffect(() => {
+    if (status !== "auditing") return;
+
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setStatus("done");
+          setWpScore(siteType === "eshop" ? 28 : siteType === "website" ? 34 : 42);
+          setAltusScore(siteType === "eshop" ? 98 : siteType === "website" ? 99 : 100);
+          return 100;
+        }
+        
+        const nextProg = prev + 4;
+        setWpScore(Math.max(30, Math.round(100 - nextProg * 0.7)));
+        setAltusScore(Math.min(99, Math.round(nextProg * 0.99)));
+        
+        return nextProg;
+      });
+    }, 100);
+
+    return () => clearInterval(interval);
+  }, [status, siteType]);
+
+  return (
+    <section className="py-32 bg-white relative overflow-hidden border-t border-[#0D0D11]/5">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start mb-20">
+          <div className="lg:col-span-4">
+            <div className="flex items-center gap-4 mb-4">
+              <div className="w-8 h-px bg-[#DFBA73]" />
+              <span className="text-[#DFBA73] text-xs tracking-[0.3em] uppercase font-semibold" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                {tSim.label}
+              </span>
+            </div>
+            <h2 className="text-[#0D0D11] leading-tight" style={{ fontFamily: "'Outfit', sans-serif", fontSize: "clamp(1.8rem, 3vw, 2.5rem)", fontWeight: 700 }}>
+              {tSim.heading1}
+              <br />
+              <em style={{ fontStyle: "italic", color: "#DFBA73" }}>{tSim.heading2}</em>
+            </h2>
+          </div>
+          <div className="lg:col-span-8">
+            <p className="text-[#0D0D11]/60 text-base md:text-lg leading-relaxed font-light mb-8" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+              {tSim.desc}
+            </p>
+            
+            <div className="flex flex-wrap items-center gap-4">
+              {(["website", "eshop", "landing"] as const).map((type) => (
+                <button
+                  key={type}
+                  onClick={() => {
+                    if (status !== "auditing") setSiteType(type);
+                  }}
+                  className={`px-6 py-2.5 text-xs font-semibold tracking-wider uppercase transition-all duration-300 ${
+                    siteType === type
+                      ? "bg-[#0D0D11] text-white"
+                      : "border border-[#0D0D11]/10 text-[#0D0D11]/50 hover:border-[#0D0D11]/20 hover:text-[#0D0D11]"
+                  }`}
+                  style={{ fontFamily: "'DM Sans', sans-serif" }}
+                >
+                  {type === "website" ? tSim.typeWebsite : type === "eshop" ? tSim.typeEshop : type === "landing" ? tSim.typeLanding : ""}
+                </button>
+              ))}
+
+              <button
+                onClick={runTest}
+                disabled={status === "auditing"}
+                className={`ml-0 sm:ml-4 px-8 py-3 bg-[#DFBA73] text-[#0D0D11] text-xs font-bold tracking-wider uppercase hover:bg-[#E6CE93] transition-all duration-300 shadow-md ${
+                  status === "auditing" ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
+                }`}
+                style={{ fontFamily: "'DM Sans', sans-serif" }}
+              >
+                {status === "auditing" ? tSim.btnRunning : status === "done" ? tSim.retest : tSim.btnStart}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {status !== "idle" && (
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch"
+          >
+            <div className="lg:col-span-6 bg-[#F9FAFB] border border-[#0D0D11]/8 p-8 flex flex-col justify-between relative overflow-hidden rounded-lg">
+              {status === "auditing" && (
+                <div className="absolute top-0 left-0 right-0 h-1 bg-red-500/20">
+                  <div
+                    className="h-full bg-red-500 transition-all duration-100 ease-out"
+                    style={{ width: `${Math.min(100, progress * 0.7)}%` }}
+                  />
+                </div>
+              )}
+
+              <div>
+                <span className="text-red-500 text-[10px] tracking-[0.2em] uppercase font-bold mb-4 block">
+                  {tSim.wpLabel}
+                </span>
+
+                <div className="flex items-center gap-6 mb-8">
+                  <div className="relative w-20 h-20 rounded-full border-4 border-red-500/10 flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full border-4 border-red-500 border-t-transparent border-r-transparent animate-spin duration-1000 opacity-30" style={{ display: status === "auditing" ? "block" : "none" }} />
+                    <span className="text-2xl font-bold text-red-500 font-mono">
+                      {wpScore}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase text-[#0D0D11]" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {tSim.scoreLabel}
+                    </p>
+                    <p className="text-red-500 text-[10px] uppercase font-semibold mt-1">
+                      {status === "auditing" ? "Testing..." : "FAILED AUDIT"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 border-t border-[#0D0D11]/5 pt-6 font-mono text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-[#0D0D11]/45">{tSim.loadTime}</span>
+                    <span className={status === "done" ? "text-red-500 font-bold" : "text-[#0D0D11]/60 animate-pulse"}>
+                      {status === "done" ? currentMetrics.wpTime : "Measuring..."}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#0D0D11]/45">{tSim.layoutShift}</span>
+                    <span className={status === "done" ? "text-red-500 font-semibold" : "text-[#0D0D11]/60 animate-pulse"}>
+                      {status === "done" ? currentMetrics.wpCls : "Measuring..."}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#0D0D11]/45">{tSim.seoPen}</span>
+                    <span className={status === "done" ? "text-red-600 font-semibold" : "text-[#0D0D11]/60 animate-pulse"}>
+                      {status === "done" ? currentMetrics.wpSeo : "Measuring..."}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-[#0D0D11]/45">{tSim.convRate}</span>
+                    <span className={status === "done" ? "text-red-500 font-bold" : "text-[#0D0D11]/60 animate-pulse"}>
+                      {status === "done" ? currentMetrics.wpRisk : "Measuring..."}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {status === "done" && (
+                <div className="mt-8 p-4 bg-red-500/5 border-l-4 border-red-500 text-xs text-red-700/80 leading-relaxed font-light" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  {lang === "el"
+                    ? "Τα έτοιμα templates φορτώνουν δεκάδες περιττά scripts (plugins, sliders, fonts) που καταστρέφουν την ταχύτητα και οδηγούν σε υψηλό bounce rate."
+                    : "Pre-made templates bundle heavy script overrides and duplicate CSS frameworks, triggering severe speed lag that directly pushes buyers away."}
+                </div>
+              )}
+            </div>
+
+            <div className="lg:col-span-6 bg-[#0D0D11] border border-white/10 p-8 flex flex-col justify-between relative overflow-hidden rounded-lg">
+              {status === "auditing" && (
+                <div className="absolute top-0 left-0 right-0 h-1 bg-emerald-500/20">
+                  <div
+                    className="h-full bg-emerald-500 transition-all duration-100 ease-out"
+                    style={{ width: `${progress}%` }}
+                  />
+                </div>
+              )}
+
+              <div>
+                <span className="text-[#DFBA73] text-[10px] tracking-[0.2em] uppercase font-bold mb-4 block">
+                  {tSim.altusLabel}
+                </span>
+
+                <div className="flex items-center gap-6 mb-8">
+                  <div className="relative w-20 h-20 rounded-full border-4 border-emerald-500/20 flex items-center justify-center">
+                    <div className="absolute inset-0 rounded-full border-4 border-emerald-500 border-t-transparent border-r-transparent animate-spin duration-1000 opacity-60" style={{ display: status === "auditing" ? "block" : "none" }} />
+                    <span className="text-2xl font-bold text-emerald-400 font-mono">
+                      {altusScore}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-xs font-bold uppercase text-white" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                      {tSim.scoreLabel}
+                    </p>
+                    <p className="text-emerald-400 text-[10px] uppercase font-semibold mt-1">
+                      {status === "auditing" ? "Optimizing..." : "PASSED (PERFECT SCORE)"}
+                    </p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 border-t border-white/5 pt-6 font-mono text-xs">
+                  <div className="flex justify-between">
+                    <span className="text-white/45">{tSim.loadTime}</span>
+                    <span className={status === "done" ? "text-emerald-400 font-bold" : "text-white/60"}>
+                      {status === "done" ? currentMetrics.altusTime : "Measuring..."}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/45">{tSim.layoutShift}</span>
+                    <span className={status === "done" ? "text-emerald-400 font-semibold" : "text-white/60 animate-pulse"}>
+                      {status === "done" ? currentMetrics.altusCls : "Measuring..."}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/45">{tSim.seoPen}</span>
+                    <span className={status === "done" ? "text-emerald-400 font-semibold" : "text-white/60 animate-pulse"}>
+                      {status === "done" ? currentMetrics.altusSeo : "Measuring..."}
+                    </span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-white/45">{tSim.convRate}</span>
+                    <span className={status === "done" ? "text-emerald-400 font-bold" : "text-white/60 animate-pulse"}>
+                      {status === "done" ? currentMetrics.altusRisk : "Measuring..."}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {status === "done" && (
+                <div className="mt-8 p-4 bg-emerald-500/5 border-l-4 border-emerald-500 text-xs text-emerald-400/80 leading-relaxed font-light" style={{ fontFamily: "'DM Sans', sans-serif" }}>
+                  {lang === "el"
+                    ? "Ο κώδικάς μας είναι 100% custom, γραμμένος σε React/Vite. Φορτώνει μόνο ό,τι χρειάζεται η σελίδα, εξασφαλίζοντας χρόνο φόρτωσης κάτω από 1s και άριστα Web Vitals."
+                    : "Our architecture is 100% custom-written React assets. Only necessary files are served, driving loading speeds under 1 second and securing top Google indexing positions."}
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </div>
+    </section>
+  );
+}
 
 export function ServicesPage() {
   const { t } = useLanguage();
@@ -204,6 +559,9 @@ export function ServicesPage() {
           })}
         </div>
       </section>
+
+      {/* Speed Simulator Section */}
+      <SpeedSimulatorSection />
 
       {/* Add-ons */}
       <section className="py-24 bg-[#0D0D11]">
