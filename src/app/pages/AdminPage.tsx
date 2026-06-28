@@ -446,6 +446,33 @@ function DashboardView() {
             setPageViewsToday(data.filter((r: any) => r.date === today).length);
           }
         });
+    } else {
+      const thisMonth = new Date().toISOString().substring(0, 7); // "YYYY-MM"
+      const today = new Date().toISOString().split("T")[0]; // "YYYY-MM-DD"
+      const raw = localStorage.getItem("altus_page_views");
+      if (raw) {
+        try {
+          const list = JSON.parse(raw);
+          if (Array.isArray(list)) {
+            const monthly = list.filter((v: any) => {
+              const vDate = v.date || (v.created_at ? v.created_at.substring(0, 10) : "");
+              return vDate.startsWith(thisMonth);
+            });
+            const todayViews = list.filter((v: any) => {
+              const vDate = v.date || (v.created_at ? v.created_at.substring(0, 10) : "");
+              return vDate === today;
+            });
+            setPageViewsMonth(monthly.length);
+            setPageViewsToday(todayViews.length);
+          }
+        } catch (e) {
+          setPageViewsMonth(0);
+          setPageViewsToday(0);
+        }
+      } else {
+        setPageViewsMonth(0);
+        setPageViewsToday(0);
+      }
     }
   };
 
@@ -4327,6 +4354,14 @@ export function AdminPage() {
         { event: "*", schema: "public", table: "quotes" },
         () => {
           console.log("Realtime quotes change received");
+          window.dispatchEvent(new Event("storage"));
+        }
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "page_views" },
+        () => {
+          console.log("Realtime page views change received");
           window.dispatchEvent(new Event("storage"));
         }
       )

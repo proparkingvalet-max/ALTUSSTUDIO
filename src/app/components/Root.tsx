@@ -151,6 +151,7 @@ export function Root() {
       });
       if (list.length > 1000) list.shift();
       localStorage.setItem("altus_page_views", JSON.stringify(list));
+      window.dispatchEvent(new Event("storage"));
     } catch (e) {
       console.warn("Failed to write page view to localStorage:", e);
     }
