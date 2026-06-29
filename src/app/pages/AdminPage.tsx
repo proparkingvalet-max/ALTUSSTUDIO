@@ -43,6 +43,7 @@ import {
   Briefcase,
   Smartphone,
   ShoppingCart,
+  CheckSquare,
 } from "lucide-react";
 
 const ADMIN_PASSWORD = "gate71337";
@@ -213,6 +214,7 @@ const navItems = [
   { id: "messages", label: "Μηνύματα", icon: MessageSquare },
   { id: "projects", label: "Projects", icon: FolderOpen },
   { id: "clients", label: "Πελάτες (CRM)", icon: Users },
+  { id: "tasks", label: "Εργασίες", icon: CheckSquare },
   { id: "quotes", label: "Προσφορές", icon: FileText },
   { id: "packages", label: "Πακέτα & Παροχές", icon: Briefcase },
   { id: "analytics", label: "Στατιστικά", icon: BarChart2 },
@@ -2481,6 +2483,491 @@ function SettingsView() {
                   }
                   setShowServiceModal(false);
                 }}
+                style={{ padding: "10px 18px", background: "linear-gradient(135deg, #DFBA73, #a8893e)", border: "none", borderRadius: 8, color: "#0D0D11", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+              >
+                Αποθήκευση
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── Tasks View ────────────────────────────────────────────────────────────────
+
+interface AdminTask {
+  id: string;
+  title: string;
+  description: string;
+  assignee: "Alexandros" | "Dimitris" | "Eleni" | "None";
+  priority: "low" | "medium" | "high";
+  status: "todo" | "in-progress" | "done";
+  dueDate?: string;
+  created_at: string;
+}
+
+function TasksView() {
+  const isMobile = useIsMobile();
+  const [tasks, setTasks] = useState<AdminTask[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  // Modal / Form state
+  const [showModal, setShowModal] = useState(false);
+  const [editingTask, setEditingTask] = useState<AdminTask | null>(null);
+  
+  const [taskTitle, setTaskTitle] = useState("");
+  const [taskDesc, setTaskDesc] = useState("");
+  const [taskAssignee, setTaskAssignee] = useState<AdminTask["assignee"]>("None");
+  const [taskPriority, setTaskPriority] = useState<AdminTask["priority"]>("medium");
+  const [taskStatus, setTaskStatus] = useState<AdminTask["status"]>("todo");
+  const [taskDueDate, setTaskDueDate] = useState("");
+
+  const fetchTasks = () => {
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "admin_tasks")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data && Array.isArray(data.value)) {
+            setTasks(data.value);
+          } else {
+            setTasks([]);
+          }
+          setLoading(false);
+        });
+    } else {
+      const cached = localStorage.getItem("altus_admin_tasks");
+      if (cached) {
+        try {
+          setTasks(JSON.parse(cached));
+        } catch (e) {
+          setTasks([]);
+        }
+      } else {
+        setTasks([]);
+      }
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchTasks();
+    window.addEventListener("storage", fetchTasks);
+    return () => window.removeEventListener("storage", fetchTasks);
+  }, []);
+
+  const saveTasksToDb = async (newTasks: AdminTask[]) => {
+    setTasks(newTasks);
+    localStorage.setItem("altus_admin_tasks", JSON.stringify(newTasks));
+    window.dispatchEvent(new Event("storage"));
+
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { error } = await supabase
+          .from("settings")
+          .upsert({ key: "admin_tasks", value: newTasks });
+        if (error) throw error;
+      } catch (e) {
+        console.error("Failed to save tasks to Supabase:", e);
+      }
+    }
+  };
+
+  const handleOpenAddModal = () => {
+    setEditingTask(null);
+    setTaskTitle("");
+    setTaskDesc("");
+    setTaskAssignee("None");
+    setTaskPriority("medium");
+    setTaskStatus("todo");
+    setTaskDueDate("");
+    setShowModal(true);
+  };
+
+  const handleOpenEditModal = (task: AdminTask) => {
+    setEditingTask(task);
+    setTaskTitle(task.title);
+    setTaskDesc(task.description);
+    setTaskAssignee(task.assignee);
+    setTaskPriority(task.priority);
+    setTaskStatus(task.status);
+    setTaskDueDate(task.dueDate || "");
+    setShowModal(true);
+  };
+
+  const handleSaveTask = async () => {
+    if (!taskTitle.trim()) {
+      alert("Παρακαλώ εισάγετε τίτλο εργασίας!");
+      return;
+    }
+
+    let updatedTasks: AdminTask[];
+    if (editingTask) {
+      updatedTasks = tasks.map((t) =>
+        t.id === editingTask.id
+          ? {
+              ...t,
+              title: taskTitle,
+              description: taskDesc,
+              assignee: taskAssignee,
+              priority: taskPriority,
+              status: taskStatus,
+              dueDate: taskDueDate || undefined,
+            }
+          : t
+      );
+    } else {
+      const newTask: AdminTask = {
+        id: "task-" + Date.now() + Math.random().toString(36).substring(2, 9),
+        title: taskTitle,
+        description: taskDesc,
+        assignee: taskAssignee,
+        priority: taskPriority,
+        status: taskStatus,
+        dueDate: taskDueDate || undefined,
+        created_at: new Date().toISOString(),
+      };
+      updatedTasks = [newTask, ...tasks];
+    }
+
+    await saveTasksToDb(updatedTasks);
+    setShowModal(false);
+  };
+
+  const handleDeleteTask = async (id: string) => {
+    if (confirm("Είστε σίγουροι ότι θέλετε να διαγράψετε αυτή την εργασία;")) {
+      const updated = tasks.filter((t) => t.id !== id);
+      await saveTasksToDb(updated);
+    }
+  };
+
+  const handleMoveStatus = async (task: AdminTask, direction: "left" | "right") => {
+    const statusOrder: AdminTask["status"][] = ["todo", "in-progress", "done"];
+    const currentIndex = statusOrder.indexOf(task.status);
+    let nextIndex = currentIndex;
+    
+    if (direction === "left" && currentIndex > 0) {
+      nextIndex -= 1;
+    } else if (direction === "right" && currentIndex < 2) {
+      nextIndex += 1;
+    }
+    
+    if (nextIndex !== currentIndex) {
+      const updated = tasks.map((t) =>
+        t.id === task.id ? { ...t, status: statusOrder[nextIndex] } : t
+      );
+      await saveTasksToDb(updated);
+    }
+  };
+
+  const priorityColors = {
+    low: { bg: "rgba(34,197,94,0.15)", text: "#22c55e", label: "Χαμηλή" },
+    medium: { bg: "rgba(245,158,11,0.15)", text: "#f59e0b", label: "Μεσαία" },
+    high: { bg: "rgba(239,68,68,0.15)", text: "#ef4444", label: "Υψηλή" },
+  };
+
+  const assigneeNames = {
+    Alexandros: "Αλέξανδρος",
+    Dimitris: "Δημήτρης",
+    Eleni: "Ελένη",
+    None: "Χωρίς Ανάθεση",
+  };
+
+  const columns: { id: AdminTask["status"]; label: string; color: string }[] = [
+    { id: "todo", label: "Προς Υλοποίηση", color: "#3b82f6" },
+    { id: "in-progress", label: "Σε Εξέλιξη", color: "#f59e0b" },
+    { id: "done", label: "Ολοκληρώθηκαν", color: "#22c55e" },
+  ];
+
+  return (
+    <div>
+      {/* Title block */}
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
+        <div>
+          <h1 style={{ fontSize: 26, fontWeight: 700, color: "#fff", fontFamily: "'Outfit', sans-serif", marginBottom: 4 }}>Διαχείριση Εργασιών (Kanban)</h1>
+          <p style={{ color: "rgba(255,255,255,0.4)", fontSize: 13, margin: 0 }}>
+            {loading ? "Φόρτωση εργασιών..." : `${tasks.length} εργασίες συνολικά`}
+          </p>
+        </div>
+        <button
+          onClick={handleOpenAddModal}
+          style={{
+            padding: "10px 18px",
+            background: "linear-gradient(135deg, #DFBA73, #a8893e)",
+            border: "none",
+            borderRadius: 10,
+            color: "#0D0D11",
+            fontSize: 13,
+            fontWeight: 700,
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            gap: 6,
+          }}
+        >
+          <Plus size={16} /> Νέα Εργασία
+        </button>
+      </div>
+
+      {/* Columns Grid */}
+      <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr 1fr", gap: 20, alignItems: "start" }}>
+        {columns.map((col) => {
+          const colTasks = tasks.filter((t) => t.status === col.id);
+          return (
+            <div
+              key={col.id}
+              style={{
+                background: "rgba(255,255,255,0.02)",
+                border: "1px solid rgba(255,255,255,0.06)",
+                borderRadius: 16,
+                padding: 16,
+                minHeight: 500,
+              }}
+            >
+              {/* Column Header */}
+              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16, borderBottom: `2px solid ${col.color}25`, paddingBottom: 10 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: "50%", background: col.color }} />
+                  <span style={{ color: "#fff", fontWeight: 700, fontSize: 14 }}>{col.label}</span>
+                </div>
+                <span style={{ fontSize: 11, background: "rgba(255,255,255,0.06)", padding: "2px 8px", borderRadius: 999, color: "rgba(255,255,255,0.5)" }}>
+                  {colTasks.length}
+                </span>
+              </div>
+
+              {/* Tasks List inside Column */}
+              <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                {colTasks.length === 0 ? (
+                  <div style={{ border: "1px dashed rgba(255,255,255,0.05)", borderRadius: 12, padding: "24px 10px", textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 12 }}>
+                    Καμία εργασία
+                  </div>
+                ) : (
+                  colTasks.map((task) => (
+                    <div
+                      key={task.id}
+                      style={{
+                        background: "rgba(255,255,255,0.04)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: 12,
+                        padding: 16,
+                        boxShadow: "0 4px 6px -1px rgba(0,0,0,0.1)",
+                      }}
+                    >
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", gap: 8, marginBottom: 8 }}>
+                        <span style={{ fontSize: 11, padding: "2px 8px", borderRadius: 4, background: priorityColors[task.priority].bg, color: priorityColors[task.priority].text, fontWeight: 600 }}>
+                          {priorityColors[task.priority].label}
+                        </span>
+                        
+                        <div style={{ display: "flex", gap: 6 }}>
+                          <button
+                            onClick={() => handleOpenEditModal(task)}
+                            style={{ background: "transparent", border: "none", color: "rgba(255,255,255,0.4)", cursor: "pointer", padding: 2 }}
+                            title="Επεξεργασία"
+                          >
+                            <FileText size={13} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTask(task.id)}
+                            style={{ background: "transparent", border: "none", color: "rgba(239,68,68,0.5)", cursor: "pointer", padding: 2 }}
+                            title="Διαγραφή"
+                          >
+                            <Trash2 size={13} />
+                          </button>
+                        </div>
+                      </div>
+
+                      <h4 style={{ color: "#fff", margin: "0 0 6px 0", fontSize: 14, fontWeight: 600 }}>{task.title}</h4>
+                      {task.description && (
+                        <p style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, margin: "0 0 12px 0", lineHeight: 1.4, wordBreak: "break-word" }}>
+                          {task.description}
+                        </p>
+                      )}
+
+                      {/* Footer information inside card */}
+                      <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: 10, display: "flex", justifyContent: "space-between", alignItems: "center", gap: 6 }}>
+                        {/* Assignee Avatar */}
+                        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+                          <div style={{
+                            width: 22, height: 22, borderRadius: "50%",
+                            background: task.assignee !== "None" ? "rgba(223,186,115,0.15)" : "rgba(255,255,255,0.05)",
+                            border: task.assignee !== "None" ? "1px solid rgba(223,186,115,0.3)" : "1px solid rgba(255,255,255,0.1)",
+                            display: "flex", alignItems: "center", justifyContent: "center",
+                            fontSize: 10, color: task.assignee !== "None" ? "#DFBA73" : "rgba(255,255,255,0.4)", fontWeight: 700
+                          }}>
+                            {task.assignee !== "None" ? task.assignee[0] : "—"}
+                          </div>
+                          <span style={{ fontSize: 11, color: "rgba(255,255,255,0.5)" }}>
+                            {assigneeNames[task.assignee]}
+                          </span>
+                        </div>
+
+                        {/* Due date */}
+                        {task.dueDate && (
+                          <div style={{ display: "flex", alignItems: "center", gap: 4, color: "rgba(255,255,255,0.35)", fontSize: 10 }}>
+                            <Clock size={11} />
+                            <span>{new Date(task.dueDate).toLocaleDateString("el-GR", { day: "numeric", month: "short" })}</span>
+                          </div>
+                        )}
+                      </div>
+
+                      {/* Column quick shifting buttons */}
+                      <div style={{ display: "flex", justifyContent: "space-between", marginTop: 12, borderTop: "1px dashed rgba(255,255,255,0.04)", paddingTop: 8 }}>
+                        <button
+                          onClick={() => handleMoveStatus(task, "left")}
+                          disabled={col.id === "todo"}
+                          style={{
+                            background: "transparent", border: "none",
+                            color: col.id === "todo" ? "rgba(255,255,255,0.05)" : "#DFBA73",
+                            cursor: col.id === "todo" ? "default" : "pointer",
+                            fontSize: 11, padding: "2px 6px"
+                          }}
+                        >
+                          ←
+                        </button>
+                        <button
+                          onClick={() => handleMoveStatus(task, "right")}
+                          disabled={col.id === "done"}
+                          style={{
+                            background: "transparent", border: "none",
+                            color: col.id === "done" ? "rgba(255,255,255,0.05)" : "#DFBA73",
+                            cursor: col.id === "done" ? "default" : "pointer",
+                            fontSize: 11, padding: "2px 6px"
+                          }}
+                        >
+                          →
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Task Modal Editor */}
+      {showModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0, left: 0, right: 0, bottom: 0,
+            background: "rgba(0,0,0,0.75)",
+            backdropFilter: "blur(4px)",
+            zIndex: 99999,
+            display: "flex", alignItems: "center", justifyContent: "center",
+            padding: 20
+          }}
+        >
+          <div
+            style={{
+              background: "#121217",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 16,
+              width: "100%", maxWidth: 450,
+              padding: 28,
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5)"
+            }}
+          >
+            <h3 style={{ color: "#DFBA73", fontSize: 18, fontWeight: 700, marginTop: 0, marginBottom: 20 }}>
+              {editingTask ? "Επεξεργασία Εργασίας" : "Προσθήκη Νέας Εργασίας"}
+            </h3>
+
+            <div style={{ display: "grid", gap: 16, marginBottom: 24 }}>
+              {/* Title */}
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Τίτλος Εργασίας *</label>
+                <input
+                  value={taskTitle}
+                  onChange={(e) => setTaskTitle(e.target.value)}
+                  placeholder="π.χ. Σχεδιασμός Αρχικής στο Figma"
+                  style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              {/* Description */}
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Περιγραφή</label>
+                <textarea
+                  value={taskDesc}
+                  onChange={(e) => setTaskDesc(e.target.value)}
+                  placeholder="Περιγράψτε την εργασία ή προσθέστε checklist..."
+                  rows={3}
+                  style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none", boxSizing: "border-box", fontFamily: "inherit" }}
+                />
+              </div>
+
+              {/* Assignee & Priority Row */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div>
+                  <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Ανάθεση σε</label>
+                  <select
+                    value={taskAssignee}
+                    onChange={(e) => setTaskAssignee(e.target.value as any)}
+                    style={{ width: "100%", padding: "10px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none" }}
+                  >
+                    <option value="None">Χωρίς Ανάθεση</option>
+                    <option value="Alexandros">Αλέξανδρος</option>
+                    <option value="Dimitris">Δημήτρης</option>
+                    <option value="Eleni">Ελένη</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Προτεραιότητα</label>
+                  <select
+                    value={taskPriority}
+                    onChange={(e) => setTaskPriority(e.target.value as any)}
+                    style={{ width: "100%", padding: "10px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none" }}
+                  >
+                    <option value="low">Χαμηλή</option>
+                    <option value="medium">Μεσαία</option>
+                    <option value="high">Υψηλή</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Status & Due Date Row */}
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12 }}>
+                <div>
+                  <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Κατάσταση</label>
+                  <select
+                    value={taskStatus}
+                    onChange={(e) => setTaskStatus(e.target.value as any)}
+                    style={{ width: "100%", padding: "10px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none" }}
+                  >
+                    <option value="todo">Προς Υλοποίηση</option>
+                    <option value="in-progress">Σε Εξέλιξη</option>
+                    <option value="done">Ολοκληρώθηκε</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Deadline</label>
+                  <input
+                    type="date"
+                    value={taskDueDate}
+                    onChange={(e) => setTaskDueDate(e.target.value)}
+                    style={{ width: "100%", padding: "8px 12px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Buttons */}
+            <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setShowModal(false)}
+                style={{ padding: "10px 18px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", fontSize: 13, cursor: "pointer" }}
+              >
+                Ακύρωση
+              </button>
+              <button
+                onClick={handleSaveTask}
                 style={{ padding: "10px 18px", background: "linear-gradient(135deg, #DFBA73, #a8893e)", border: "none", borderRadius: 8, color: "#0D0D11", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
               >
                 Αποθήκευση
@@ -4876,6 +5363,7 @@ export function AdminPage() {
       );
       case "projects": return <ProjectsView />;
       case "clients": return <CRMView />;
+      case "tasks": return <TasksView />;
       case "quotes": return (
         <QuotesView
           prefilledClient={prefilledClient}
