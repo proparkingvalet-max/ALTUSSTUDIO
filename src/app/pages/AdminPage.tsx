@@ -1932,7 +1932,7 @@ function AnalyticsView() {
 function SettingsView() {
   const isMobile = useIsMobile();
   const [viber, setViber] = useState("6970015447");
-  const [email, setEmail] = useState("info@altusstudio.gr");
+  const [email, setEmail] = useState("altusstudiogr@gmail.com");
   const [saved, setSaved] = useState(false);
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [loadingMaintenance, setLoadingMaintenance] = useState(true);
@@ -2962,7 +2962,7 @@ function QuotesView({
           ${note ? `<div class="note-box"><strong>Σημείωση:</strong> ${note}</div>` : ""}
           
           <div class="footer">
-            Altus Studio · info@altusstudio.gr · 6970015447 · altusstudio.gr
+            Altus Studio · altusstudiogr@gmail.com · 6970015447 · altusstudio.gr
           </div>
         </body>
       </html>
@@ -3152,7 +3152,7 @@ function QuotesView({
           ${note ? `<div class="note-card"><strong>Σημείωση:</strong> ${note}</div>` : ""}
 
           <div class="footer">
-            Altus Studio &nbsp;·&nbsp; info@altusstudio.gr &nbsp;·&nbsp; 6970015447 &nbsp;·&nbsp; altusstudio.gr
+            Altus Studio &nbsp;·&nbsp; altusstudiogr@gmail.com &nbsp;·&nbsp; 6970015447 &nbsp;·&nbsp; altusstudio.gr
           </div>
         </body>
       </html>
@@ -4021,7 +4021,7 @@ function QuotesView({
 
                 {/* Footer info */}
                 <div style={{ textAlign: "center", color: "rgba(255,255,255,0.2)", fontSize: 11, paddingBottom: 4 }}>
-                  Altus Studio · info@altusstudio.gr · 6970015447 · altusstudio.gr
+                  Altus Studio · altusstudiogr@gmail.com · 6970015447 · altusstudio.gr
                 </div>
               </div>
             )}
@@ -4060,7 +4060,7 @@ function QuotesView({
         const waLink = `https://wa.me/${clientPhone.replace(/\D/g, '') || ''}?text=${encodedText}`;
         const viberLink = `viber://forward?text=${encodedText}`;
         const emailSubject = encodeURIComponent(`Προσφορά Συνεργασίας – Altus Studio`);
-        const emailBody = encodeURIComponent(`Αγαπητέ/ή ${clientName},\n\nΣας στέλνουμε συνημμένα την προσφορά μας για τις υπηρεσίες:\n${items.map(i => `- ${i.name} (€${i.price})`).join("\n")}\n\nΣυνολικό Κόστος: €${total}\n\nΘα βρείτε το αναλυτικό έγγραφο της προσφοράς στο συνημμένο PDF.\n\nΜε εκτίμηση,\nAltus Studio\ninfo@altusstudio.gr`);
+        const emailBody = encodeURIComponent(`Αγαπητέ/ή ${clientName},\n\nΣας στέλνουμε συνημμένα την προσφορά μας για τις υπηρεσίες:\n${items.map(i => `- ${i.name} (€${i.price})`).join("\n")}\n\nΣυνολικό Κόστος: €${total}\n\nΘα βρείτε το αναλυτικό έγγραφο της προσφοράς στο συνημμένο PDF.\n\nΜε εκτίμηση,\nAltus Studio\naltusstudiogr@gmail.com`);
         const mailLink = `mailto:${clientEmail}?subject=${emailSubject}&body=${emailBody}`;
 
         return (

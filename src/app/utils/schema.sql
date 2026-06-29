@@ -147,7 +147,7 @@ VALUES ('maintenance_mode', '{"enabled": false}'::jsonb)
 ON CONFLICT (key) DO NOTHING;
 
 INSERT INTO settings (key, value)
-VALUES ('contact_info', '{"phone": "6970015447", "email": "info@altus-studio.gr"}'::jsonb)
+VALUES ('contact_info', '{"phone": "6970015447", "email": "altusstudiogr@gmail.com"}'::jsonb)
 ON CONFLICT (key) DO NOTHING;
 
 

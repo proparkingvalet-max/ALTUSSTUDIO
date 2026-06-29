@@ -17,7 +17,7 @@ export const supabase = isSupabaseConfigured
 
 export function useContactInfo() {
   const [contact, setContact] = useState(() => {
-    const defaultContact = { phone: "6970015447", email: "info@altus-studio.gr" };
+    const defaultContact = { phone: "6970015447", email: "altusstudiogr@gmail.com" };
     const raw = localStorage.getItem("altus_contact_info");
     if (!raw) return defaultContact;
     try {
@@ -33,7 +33,7 @@ export function useContactInfo() {
 
   useEffect(() => {
     const handleStorage = () => {
-      const defaultContact = { phone: "6970015447", email: "info@altus-studio.gr" };
+      const defaultContact = { phone: "6970015447", email: "altusstudiogr@gmail.com" };
       const raw = localStorage.getItem("altus_contact_info");
       if (raw) {
         try {
