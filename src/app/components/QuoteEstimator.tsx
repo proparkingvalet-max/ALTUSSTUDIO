@@ -5,6 +5,7 @@ import { useLanguage } from "@/app/context/LanguageContext";
 import { BookingCalendar } from "./BookingCalendar";
 import { supabase, isSupabaseConfigured } from "@/app/utils/supabaseClient";
 import { sendTelegramNotification } from "@/app/utils/telegram";
+import emailjs from "@emailjs/browser";
 
 interface Addon {
   id: string;
@@ -53,7 +54,85 @@ export function QuoteEstimator() {
   ]);
 
   useEffect(() => {
-    const loadPrices = () => {
+    const loadPricesAndServices = () => {
+      // 1. Try loading full services configuration
+      if (isSupabaseConfigured && supabase) {
+        supabase
+          .from("settings")
+          .select("value")
+          .eq("key", "services_config")
+          .maybeSingle()
+          .then(({ data, error }) => {
+            if (!error && data && Array.isArray(data.value)) {
+              const loadedServices = data.value;
+              const bases: Record<string, number> = {};
+              const addonsList: Addon[] = [];
+              
+              loadedServices.forEach((s: any) => {
+                if (s.type === "base") {
+                  bases[s.id] = s.price;
+                } else if (s.type === "addon") {
+                  addonsList.push({
+                    id: s.id,
+                    nameEl: s.nameEl,
+                    nameEn: s.nameEn,
+                    price: s.price,
+                    descEl: s.descEl || "",
+                    descEn: s.descEn || ""
+                  });
+                }
+              });
+              
+              if (Object.keys(bases).length > 0) {
+                setBasePrices(prev => ({ ...prev, ...bases }));
+              }
+              if (addonsList.length > 0) {
+                setAddons(addonsList);
+              }
+            } else {
+              // Fallback to standard prices key if services_config is empty
+              loadStandardPricesOnly();
+            }
+          });
+      } else {
+        const cachedServices = localStorage.getItem("altus_services_config");
+        if (cachedServices) {
+          try {
+            const loadedServices = JSON.parse(cachedServices);
+            const bases: Record<string, number> = {};
+            const addonsList: Addon[] = [];
+            
+            loadedServices.forEach((s: any) => {
+              if (s.type === "base") {
+                bases[s.id] = s.price;
+              } else if (s.type === "addon") {
+                addonsList.push({
+                  id: s.id,
+                  nameEl: s.nameEl,
+                  nameEn: s.nameEn,
+                  price: s.price,
+                  descEl: s.descEl || "",
+                  descEn: s.descEn || ""
+                });
+              }
+            });
+            
+            if (Object.keys(bases).length > 0) {
+              setBasePrices(prev => ({ ...prev, ...bases }));
+            }
+            if (addonsList.length > 0) {
+              setAddons(addonsList);
+            }
+          } catch (e) {
+            loadStandardPricesOnly();
+          }
+        } else {
+          loadStandardPricesOnly();
+        }
+      }
+    };
+
+    const loadStandardPricesOnly = () => {
       if (isSupabaseConfigured && supabase) {
         supabase
           .from("settings")
@@ -105,9 +184,9 @@ export function QuoteEstimator() {
       }
     };
 
-    loadPrices();
-    window.addEventListener("storage", loadPrices);
-    return () => window.removeEventListener("storage", loadPrices);
+    loadPricesAndServices();
+    window.addEventListener("storage", loadPricesAndServices);
+    return () => window.removeEventListener("storage", loadPricesAndServices);
   }, []);
 
   const calculateTotal = () => {
@@ -185,7 +264,6 @@ export function QuoteEstimator() {
       note: `Υποβλήθηκε από τον Κοστολογητή στις δημόσιες σελίδες.`
     };
 
-    // Construct Telegram Notification Message
     const tgMessage = `💰 <b>Νέα Ζήτηση Προσφοράς από Κοστολογητή</b>\n\n` +
       `👤 <b>Όνομα:</b> ${name}\n` +
       `📧 <b>Email:</b> ${email}\n` +
@@ -194,6 +272,32 @@ export function QuoteEstimator() {
       `⚙️ <b>Μέγεθος:</b> ${compLabel}\n` +
       `➕ <b>Πρόσθετα:</b> ${selectedAddsList || "Κανένα"}\n\n` +
       `💵 <b>Σύνολο:</b> €${totalCost}`;
+
+    const sendEmailConfirmation = (pld: typeof payload) => {
+      const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      if (!serviceId || !templateId || !publicKey) {
+        console.warn("EmailJS environment variables are not configured. Skipping confirmation email.");
+        return;
+      }
+
+      const templateParams = {
+        name: pld.name,
+        email: pld.email,
+        phone: pld.phone || "—",
+        service: pld.service,
+        message: pld.message
+      };
+
+      emailjs.send(serviceId, templateId, templateParams, publicKey)
+        .then((response) => {
+           console.log("EmailJS confirmation sent successfully!", response.status, response.text);
+        }, (err) => {
+           console.error("EmailJS failed to send:", err);
+        });
+    };
 
     const saveToLocalStorage = () => {
       try {
@@ -208,6 +312,7 @@ export function QuoteEstimator() {
 
         window.dispatchEvent(new Event("storage"));
         sendTelegramNotification(tgMessage);
+        sendEmailConfirmation(payload);
       } catch (err) {
         console.error("Failed to save estimator quote lead locally:", err);
       }

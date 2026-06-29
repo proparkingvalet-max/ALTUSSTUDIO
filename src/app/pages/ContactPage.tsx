@@ -5,6 +5,7 @@ import { useLanguage } from "@/app/context/LanguageContext";
 import { BookingCalendar } from "@/app/components/BookingCalendar";
 import { supabase, isSupabaseConfigured, useContactInfo } from "@/app/utils/supabaseClient";
 import { sendTelegramNotification } from "@/app/utils/telegram";
+import emailjs from "@emailjs/browser";
 
 type FormState = "idle" | "sending" | "sent";
 
@@ -19,6 +20,32 @@ export function ContactPage() {
   const [activeTab, setActiveTab] = useState<"message" | "booking">("message");
   const [formState, setFormState] = useState<FormState>("idle");
   const [form, setForm] = useState({ name: "", email: "", phone: "", service: "", message: "" });
+
+  const sendEmailConfirmation = (payload: { name: string; email: string; phone?: string; service: string; message: string }) => {
+    const serviceId = import.meta.env.VITE_EMAILJS_SERVICE_ID;
+    const templateId = import.meta.env.VITE_EMAILJS_TEMPLATE_ID;
+    const publicKey = import.meta.env.VITE_EMAILJS_PUBLIC_KEY;
+
+    if (!serviceId || !templateId || !publicKey) {
+      console.warn("EmailJS environment variables are not configured. Skipping confirmation email.");
+      return;
+    }
+
+    const templateParams = {
+      name: payload.name,
+      email: payload.email,
+      phone: payload.phone || "—",
+      service: payload.service,
+      message: payload.message
+    };
+
+    emailjs.send(serviceId, templateId, templateParams, publicKey)
+      .then((response) => {
+         console.log("EmailJS confirmation sent successfully!", response.status, response.text);
+      }, (err) => {
+         console.error("EmailJS failed to send:", err);
+      });
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,6 +79,7 @@ export function ContactPage() {
             console.error("Error submitting contact to Supabase:", error);
           } else {
             sendTelegramNotification(tgMessage);
+            sendEmailConfirmation(payload);
           }
           setFormState("sent");
           setForm({ name: "", email: "", phone: "", service: "", message: "" });
@@ -70,6 +98,7 @@ export function ContactPage() {
           const updatedMessages = [newMessage, ...existingMessages];
           localStorage.setItem("altus_messages", JSON.stringify(updatedMessages));
           sendTelegramNotification(tgMessage);
+          sendEmailConfirmation(payload);
         } catch (err) {
           console.error("Failed to save message to localStorage:", err);
         }

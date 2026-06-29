@@ -1929,6 +1929,26 @@ function AnalyticsView() {
 
 // ─── Settings View ─────────────────────────────────────────────────────────────
 
+interface ServiceConfigItem {
+  id: string;
+  nameEl: string;
+  nameEn: string;
+  price: number;
+  descEl?: string;
+  descEn?: string;
+  type: "base" | "addon";
+}
+
+const defaultServices: ServiceConfigItem[] = [
+  { id: "landing", nameEl: "Landing Page", nameEn: "Landing Page", price: 250, descEl: "Μονοσέλιδο", descEn: "Single page website", type: "base" },
+  { id: "website", nameEl: "Corporate Site", nameEn: "Corporate Site", price: 350, descEl: "Εταιρική Ιστοσελίδα", descEn: "Corporate multi-page website", type: "base" },
+  { id: "eshop", nameEl: "E-Shop", nameEn: "E-Shop", price: 990, descEl: "Ηλεκτρονικό Κατάστημα", descEn: "Online e-commerce store", type: "base" },
+  { id: "uiux", nameEl: "Custom UI/UX Σχεδιασμός", nameEn: "Custom UI/UX Design", price: 150, descEl: "Μακέτα στο Figma", descEn: "Bespoke Figma designs", type: "addon" },
+  { id: "seo", nameEl: "SEO & Google Analytics", nameEn: "SEO & Google Analytics", price: 120, descEl: "Προώθηση & στατιστικά", descEn: "Optimization and analytics", type: "addon" },
+  { id: "multilang", nameEl: "Πολυγλωσσικότητα", nameEn: "Multi-language Support", price: 100, descEl: "Μεταφράσεις σε άλλες γλώσσες", descEn: "Support for multiple locales", type: "addon" },
+  { id: "support", nameEl: "VIP Υποστήριξη /μήνα", nameEn: "VIP Support /month", price: 80, descEl: "Ongoing VIP Support", descEn: "Monthly maintenance and support", type: "addon" },
+];
+
 function SettingsView() {
   const isMobile = useIsMobile();
   const [viber, setViber] = useState("6970015447");
@@ -1936,6 +1956,18 @@ function SettingsView() {
   const [saved, setSaved] = useState(false);
   const [maintenanceMode, setMaintenanceMode] = useState(false);
   const [loadingMaintenance, setLoadingMaintenance] = useState(true);
+  
+  const [services, setServices] = useState<ServiceConfigItem[]>([]);
+  const [editingService, setEditingService] = useState<ServiceConfigItem | null>(null);
+  const [showServiceModal, setShowServiceModal] = useState(false);
+  const [modalServiceId, setModalServiceId] = useState("");
+  const [modalNameEl, setModalNameEl] = useState("");
+  const [modalNameEn, setModalNameEn] = useState("");
+  const [modalPrice, setModalPrice] = useState(0);
+  const [modalDescEl, setModalDescEl] = useState("");
+  const [modalDescEn, setModalDescEn] = useState("");
+  const [modalType, setModalType] = useState<"base" | "addon">("base");
+
   const [prices, setPrices] = useState({
     landing: 250,
     website: 350,
@@ -1985,6 +2017,20 @@ function SettingsView() {
             setPrices(prev => ({ ...prev, ...data.value }));
           }
         });
+
+      // Load services configuration
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "services_config")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data && Array.isArray(data.value)) {
+            setServices(data.value);
+          } else {
+            setServices(defaultServices);
+          }
+        });
     } else {
       setMaintenanceMode(localStorage.getItem("altus_maintenance") === "true");
       setLoadingMaintenance(false);
@@ -2008,6 +2054,17 @@ function SettingsView() {
           console.error(e);
         }
       }
+
+      const cachedServices = localStorage.getItem("altus_services_config");
+      if (cachedServices) {
+        try {
+          setServices(JSON.parse(cachedServices));
+        } catch (e) {
+          setServices(defaultServices);
+        }
+      } else {
+        setServices(defaultServices);
+      }
     }
   }, []);
 
@@ -2028,6 +2085,12 @@ function SettingsView() {
   };
 
   const save = async () => {
+    // Generate prices mapping from services list
+    const pricesMap: Record<string, number> = {};
+    services.forEach((s) => {
+      pricesMap[s.id] = s.price;
+    });
+
     if (isSupabaseConfigured && supabase) {
       try {
         const { error: contactError } = await supabase
@@ -2038,12 +2101,19 @@ function SettingsView() {
 
         const { error: pricesError } = await supabase
           .from("settings")
-          .upsert({ key: "prices", value: prices });
+          .upsert({ key: "prices", value: pricesMap });
 
         if (pricesError) throw pricesError;
 
+        const { error: servicesError } = await supabase
+          .from("settings")
+          .upsert({ key: "services_config", value: services });
+
+        if (servicesError) throw servicesError;
+
         localStorage.setItem("altus_contact_info", JSON.stringify({ phone: viber, email }));
-        localStorage.setItem("altus_prices", JSON.stringify(prices));
+        localStorage.setItem("altus_prices", JSON.stringify(pricesMap));
+        localStorage.setItem("altus_services_config", JSON.stringify(services));
         window.dispatchEvent(new Event("storage"));
         setSaved(true);
         setTimeout(() => setSaved(false), 2000);
@@ -2053,7 +2123,8 @@ function SettingsView() {
       }
     } else {
       localStorage.setItem("altus_contact_info", JSON.stringify({ phone: viber, email }));
-      localStorage.setItem("altus_prices", JSON.stringify(prices));
+      localStorage.setItem("altus_prices", JSON.stringify(pricesMap));
+      localStorage.setItem("altus_services_config", JSON.stringify(services));
       window.dispatchEvent(new Event("storage"));
       setSaved(true);
       setTimeout(() => setSaved(false), 2000);
@@ -2085,51 +2156,115 @@ function SettingsView() {
           ))}
         </div>
 
-        {/* Τιμοκατάλογος Υπηρεσιών */}
+        {/* Διαχείριση Υπηρεσιών */}
         <div style={{ background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, padding: 28 }}>
-          <h3 style={{ color: "#DFBA73", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", marginBottom: 20 }}>Τιμοκατάλογος Υπηρεσιών</h3>
-          
-          <div style={{ display: "grid", gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr", gap: 20 }}>
-            {/* Packages */}
-            <div>
-              <h4 style={{ color: "#fff", fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Βασικά Πακέτα</h4>
-              {[
-                { label: "Landing Page (€)", key: "landing" },
-                { label: "Corporate Site (€)", key: "website" },
-                { label: "E-Shop (€)", key: "eshop" },
-              ].map((p) => (
-                <div key={p.key} style={{ marginBottom: 14 }}>
-                  <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 5 }}>{p.label}</label>
-                  <input
-                    type="number"
-                    value={prices[p.key as keyof typeof prices]}
-                    onChange={(e) => setPrices({ ...prices, [p.key]: Number(e.target.value) })}
-                    style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
-                  />
-                </div>
-              ))}
-            </div>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+            <h3 style={{ color: "#DFBA73", fontSize: 13, letterSpacing: "0.15em", textTransform: "uppercase", margin: 0 }}>Διαχείριση Υπηρεσιών & Τιμών</h3>
+            <button
+              onClick={() => {
+                setEditingService(null);
+                setModalServiceId("custom_" + Date.now());
+                setModalNameEl("");
+                setModalNameEn("");
+                setModalPrice(0);
+                setModalDescEl("");
+                setModalDescEn("");
+                setModalType("base");
+                setShowServiceModal(true);
+              }}
+              style={{
+                padding: "8px 14px",
+                background: "rgba(223, 186, 115, 0.1)",
+                border: "1px solid rgba(223, 186, 115, 0.3)",
+                borderRadius: 8,
+                color: "#DFBA73",
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: "pointer",
+                transition: "all 0.2s"
+              }}
+            >
+              + Προσθήκη Υπηρεσίας
+            </button>
+          </div>
 
-            {/* Addons */}
-            <div>
-              <h4 style={{ color: "#fff", fontSize: 14, fontWeight: 600, marginBottom: 12 }}>Πρόσθετες Υπηρεσίες</h4>
-              {[
-                { label: "Custom UI/UX Σχεδιασμός (€)", key: "uiux" },
-                { label: "SEO & Google Analytics (€)", key: "seo" },
-                { label: "Πολυγλωσσικότητα (€)", key: "multilang" },
-                { label: "VIP Υποστήριξη /μήνα (€)", key: "support" },
-              ].map((p) => (
-                <div key={p.key} style={{ marginBottom: 14 }}>
-                  <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 5 }}>{p.label}</label>
-                  <input
-                    type="number"
-                    value={prices[p.key as keyof typeof prices]}
-                    onChange={(e) => setPrices({ ...prices, [p.key]: Number(e.target.value) })}
-                    style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 14, outline: "none", boxSizing: "border-box" }}
-                  />
+          <div style={{ display: "grid", gap: 16 }}>
+            {services.map((s) => (
+              <div
+                key={s.id}
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  padding: "16px 20px",
+                  background: "rgba(255,255,255,0.02)",
+                  border: "1px solid rgba(255,255,255,0.06)",
+                  borderRadius: 12,
+                  gap: 12
+                }}
+              >
+                <div>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ color: "#fff", fontWeight: 600, fontSize: 14 }}>{s.nameEl}</span>
+                    <span style={{ fontSize: 10, color: "rgba(255,255,255,0.35)" }}>({s.nameEn})</span>
+                    <span style={{ fontSize: 10, padding: "2px 6px", borderRadius: 4, background: s.type === "base" ? "rgba(59,130,246,0.15)" : "rgba(168,85,247,0.15)", color: s.type === "base" ? "#3b82f6" : "#a855f7" }}>
+                      {s.type === "base" ? "Βασικό" : "Addon"}
+                    </span>
+                  </div>
+                  {s.descEl && <div style={{ color: "rgba(255,255,255,0.45)", fontSize: 12, marginTop: 4 }}>{s.descEl}</div>}
                 </div>
-              ))}
-            </div>
+
+                <div style={{ display: "flex", alignItems: "center", gap: 16 }}>
+                  <span style={{ color: "#DFBA73", fontWeight: 700, fontSize: 16 }}>€{s.price}</span>
+                  
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <button
+                      onClick={() => {
+                        setEditingService(s);
+                        setModalServiceId(s.id);
+                        setModalNameEl(s.nameEl);
+                        setModalNameEn(s.nameEn);
+                        setModalPrice(s.price);
+                        setModalDescEl(s.descEl || "");
+                        setModalDescEn(s.descEn || "");
+                        setModalType(s.type);
+                        setShowServiceModal(true);
+                      }}
+                      style={{
+                        padding: "6px 12px",
+                        background: "rgba(255,255,255,0.05)",
+                        border: "1px solid rgba(255,255,255,0.1)",
+                        borderRadius: 6,
+                        color: "#fff",
+                        fontSize: 12,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Επεξεργασία
+                    </button>
+                    
+                    <button
+                      onClick={() => {
+                        if (confirm(`Είστε σίγουροι ότι θέλετε να διαγράψετε την υπηρεσία "${s.nameEl}";`)) {
+                          setServices(services.filter((item) => item.id !== s.id));
+                        }
+                      }}
+                      style={{
+                        padding: "6px 12px",
+                        background: "rgba(239,68,68,0.1)",
+                        border: "1px solid rgba(239,68,68,0.2)",
+                        borderRadius: 6,
+                        color: "#ef4444",
+                        fontSize: 12,
+                        cursor: "pointer",
+                      }}
+                    >
+                      Διαγραφή
+                    </button>
+                  </div>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
@@ -2211,6 +2346,149 @@ function SettingsView() {
           {saved ? <><CheckCircle size={16} /> Αποθηκεύτηκε!</> : "Αποθήκευση Αλλαγών"}
         </button>
       </div>
+
+      {/* Service Modal */}
+      {showServiceModal && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            background: "rgba(0,0,0,0.75)",
+            backdropFilter: "blur(4px)",
+            zIndex: 99999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20
+          }}
+        >
+          <div
+            style={{
+              background: "#121217",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: 16,
+              width: "100%",
+              maxWidth: 500,
+              padding: 28,
+              boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.5)"
+            }}
+          >
+            <h3 style={{ color: "#DFBA73", fontSize: 18, fontWeight: 700, marginTop: 0, marginBottom: 20 }}>
+              {editingService ? "Επεξεργασία Υπηρεσίας" : "Προσθήκη Νέας Υπηρεσίας"}
+            </h3>
+
+            <div style={{ display: "grid", gap: 16, marginBottom: 24, maxHeight: "60vh", overflowY: "auto", paddingRight: 4 }}>
+              {/* Type Select */}
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Τύπος Υπηρεσίας</label>
+                <select
+                  value={modalType}
+                  onChange={(e) => setModalType(e.target.value as any)}
+                  style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none" }}
+                >
+                  <option value="base">Βασικό Πακέτο</option>
+                  <option value="addon">Πρόσθετη Υπηρεσία (Addon)</option>
+                </select>
+              </div>
+
+              {/* Name EL */}
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Όνομα (Ελληνικά)</label>
+                <input
+                  value={modalNameEl}
+                  onChange={(e) => setModalNameEl(e.target.value)}
+                  placeholder="π.χ. Κατασκευή E-Shop"
+                  style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              {/* Name EN */}
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Όνομα (English)</label>
+                <input
+                  value={modalNameEn}
+                  onChange={(e) => setModalNameEn(e.target.value)}
+                  placeholder="e.g. E-Shop Development"
+                  style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              {/* Price */}
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Τιμή (€)</label>
+                <input
+                  type="number"
+                  value={modalPrice}
+                  onChange={(e) => setModalPrice(Number(e.target.value))}
+                  style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              {/* Desc EL */}
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Περιγραφή (Ελληνικά)</label>
+                <input
+                  value={modalDescEl}
+                  onChange={(e) => setModalDescEl(e.target.value)}
+                  placeholder="π.χ. Ηλεκτρονικό κατάστημα με καλάθι"
+                  style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+
+              {/* Desc EN */}
+              <div>
+                <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Περιγραφή (English)</label>
+                <input
+                  value={modalDescEn}
+                  onChange={(e) => setModalDescEn(e.target.value)}
+                  placeholder="e.g. Full e-commerce system"
+                  style={{ width: "100%", padding: "10px 14px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 10, color: "#fff", fontSize: 13, outline: "none", boxSizing: "border-box" }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "flex", gap: 12, justifyContent: "flex-end" }}>
+              <button
+                onClick={() => setShowServiceModal(false)}
+                style={{ padding: "10px 18px", background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: 8, color: "#fff", fontSize: 13, cursor: "pointer" }}
+              >
+                Ακύρωση
+              </button>
+              <button
+                onClick={() => {
+                  if (!modalNameEl || !modalNameEn) {
+                    alert("Παρακαλώ συμπληρώστε τα ονόματα σε Ελληνικά και Αγγλικά!");
+                    return;
+                  }
+                  
+                  const newItem: ServiceConfigItem = {
+                    id: editingService ? editingService.id : modalServiceId || "custom_" + Date.now(),
+                    nameEl: modalNameEl,
+                    nameEn: modalNameEn,
+                    price: modalPrice,
+                    descEl: modalDescEl,
+                    descEn: modalDescEn,
+                    type: modalType
+                  };
+
+                  if (editingService) {
+                    setServices(services.map(s => s.id === editingService.id ? newItem : s));
+                  } else {
+                    setServices([...services, newItem]);
+                  }
+                  setShowServiceModal(false);
+                }}
+                style={{ padding: "10px 18px", background: "linear-gradient(135deg, #DFBA73, #a8893e)", border: "none", borderRadius: 8, color: "#0D0D11", fontWeight: 700, fontSize: 13, cursor: "pointer" }}
+              >
+                Αποθήκευση
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -2221,6 +2499,38 @@ function CRMView() {
   const isMobile = useIsMobile();
   const [messages, setMessages] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [clientNotes, setClientNotes] = useState<Record<string, { notes: string; status: string }>>({});
+  const [noteText, setNoteText] = useState("");
+  const [statusVal, setStatusVal] = useState("lead");
+  const [savingNotes, setSavingNotes] = useState(false);
+
+  const fetchNotes = () => {
+    if (isSupabaseConfigured && supabase) {
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "client_notes")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data && data.value) {
+            setClientNotes(data.value);
+          }
+        });
+    } else {
+      const cached = localStorage.getItem("altus_client_notes");
+      if (cached) {
+        try {
+          setClientNotes(JSON.parse(cached));
+        } catch (e) {}
+      }
+    }
+  };
+
+  useEffect(() => {
+    fetchNotes();
+    window.addEventListener("storage", fetchNotes);
+    return () => window.removeEventListener("storage", fetchNotes);
+  }, []);
 
   useEffect(() => {
     if (isSupabaseConfigured && supabase) {
@@ -2255,9 +2565,12 @@ function CRMView() {
       if (!emailKey) return;
 
       const existing = map.get(emailKey);
-      let status = "lead";
-      if (m.status === "in-progress") status = "in-progress";
-      else if (m.status === "completed" || m.status === "replied") status = "active";
+      const notesOverride = clientNotes[emailKey];
+      let status = notesOverride?.status || "lead";
+      if (!notesOverride?.status) {
+        if (m.status === "in-progress") status = "in-progress";
+        else if (m.status === "completed" || m.status === "replied") status = "active";
+      }
 
       if (!existing) {
         map.set(emailKey, {
@@ -2280,7 +2593,7 @@ function CRMView() {
       }
     });
     return Array.from(map.values());
-  }, [messages]);
+  }, [messages, clientNotes]);
 
   const [selected, setSelected] = useState<any | null>(null);
   const [filter, setFilter] = useState("all");
@@ -2289,6 +2602,47 @@ function CRMView() {
     active: { label: "Ενεργός", color: "#22c55e" },
     "in-progress": { label: "Σε εξέλιξη", color: "#f59e0b" },
     lead: { label: "Υποψήφιος", color: "#3b82f6" },
+  };
+
+  useEffect(() => {
+    if (selected) {
+      const emailKey = selected.email?.toLowerCase().trim() || "";
+      const info = clientNotes[emailKey] || { notes: "", status: selected.status };
+      setNoteText(info.notes || "");
+      setStatusVal(info.status || selected.status || "lead");
+    }
+  }, [selected, clientNotes]);
+
+  const handleSaveNotes = async () => {
+    if (!selected) return;
+    setSavingNotes(true);
+    const emailKey = selected.email?.toLowerCase().trim() || "";
+    const updated = {
+      ...clientNotes,
+      [emailKey]: {
+        notes: noteText,
+        status: statusVal
+      }
+    };
+    
+    try {
+      if (isSupabaseConfigured && supabase) {
+        const { error } = await supabase
+          .from("settings")
+          .upsert({ key: "client_notes", value: updated });
+        if (error) throw error;
+      }
+      
+      setClientNotes(updated);
+      localStorage.setItem("altus_client_notes", JSON.stringify(updated));
+      window.dispatchEvent(new Event("storage"));
+      alert("Οι σημειώσεις και η κατάσταση αποθηκεύτηκαν επιτυχώς!");
+    } catch (e: any) {
+      console.error("Failed to save client notes:", e);
+      alert("Αποτυχία αποθήκευσης: " + (e.message || JSON.stringify(e)));
+    } finally {
+      setSavingNotes(false);
+    }
   };
 
   const filtered = filter === "all" ? clients : clients.filter((c) => c.status === filter);
@@ -2434,9 +2788,81 @@ function CRMView() {
                   </button>
                 </div>
 
-                <div style={{ marginTop: 20, padding: 16, background: "rgba(255,255,255,0.03)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)" }}>
+                <div style={{ marginTop: 20, padding: 16, background: "rgba(255,255,255,0.03)", borderRadius: 10, border: "1px solid rgba(255,255,255,0.06)", marginBottom: 24 }}>
                   <div style={{ color: "rgba(255,255,255,0.35)", fontSize: 11, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 6 }}>Πελάτης από</div>
                   <div style={{ color: "rgba(255,255,255,0.7)", fontSize: 14 }}>{selected.since}</div>
+                </div>
+
+                {/* CRM Status & Notes Editor */}
+                <div style={{ borderTop: "1px solid rgba(255,255,255,0.08)", paddingTop: 20 }}>
+                  <h4 style={{ color: "#DFBA73", fontSize: 13, letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: 16, fontWeight: 600 }}>Σημειώσεις & Κατάσταση CRM</h4>
+                  
+                  {/* Status Dropdown */}
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Κατάσταση Πελάτη</label>
+                    <select
+                      value={statusVal}
+                      onChange={(e) => setStatusVal(e.target.value)}
+                      style={{
+                        width: "100%",
+                        padding: "10px 14px",
+                        background: "#1c1c24",
+                        border: "1px solid rgba(255,255,255,0.12)",
+                        borderRadius: 10,
+                        color: "#fff",
+                        fontSize: 13,
+                        outline: "none"
+                      }}
+                    >
+                      <option value="lead">Υποψήφιος (Lead)</option>
+                      <option value="in-progress">Σε εξέλιξη (In Progress)</option>
+                      <option value="active">Ενεργός (Active)</option>
+                    </select>
+                  </div>
+
+                  {/* Notes text area */}
+                  <div style={{ marginBottom: 16 }}>
+                    <label style={{ color: "rgba(255,255,255,0.4)", fontSize: 12, display: "block", marginBottom: 6 }}>Σημειώσεις Διαχειριστή</label>
+                    <textarea
+                      value={noteText}
+                      onChange={(e) => setNoteText(e.target.value)}
+                      placeholder="Προσθέστε σημειώσεις για την επικοινωνία με τον πελάτη..."
+                      rows={4}
+                      style={{
+                        width: "100%",
+                        padding: "12px 14px",
+                        background: "#1c1c24",
+                        border: "1px solid rgba(255,255,255,0.12)",
+                        borderRadius: 10,
+                        color: "#fff",
+                        fontSize: 13,
+                        outline: "none",
+                        resize: "vertical",
+                        fontFamily: "inherit",
+                        lineHeight: 1.5
+                      }}
+                    />
+                  </div>
+
+                  <button
+                    onClick={handleSaveNotes}
+                    disabled={savingNotes}
+                    style={{
+                      width: "100%",
+                      padding: "12px",
+                      background: "linear-gradient(135deg, #DFBA73, #a8893e)",
+                      border: "none",
+                      borderRadius: 10,
+                      color: "#0D0D11",
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor: "pointer",
+                      opacity: savingNotes ? 0.6 : 1,
+                      transition: "all 0.2s"
+                    }}
+                  >
+                    {savingNotes ? "Αποθήκευση..." : "Αποθήκευση Αλλαγών"}
+                  </button>
                 </div>
               </div>
             </>
@@ -2538,6 +2964,7 @@ function QuotesView({
     multilang: 100,
     support: 80
   });
+  const [dynamicServices, setDynamicServices] = useState<any[]>([]);
 
   const fetchPrices = () => {
     if (isSupabaseConfigured && supabase) {
@@ -2551,6 +2978,17 @@ function QuotesView({
             setPrices(prev => ({ ...prev, ...data.value }));
           }
         });
+
+      supabase
+        .from("settings")
+        .select("value")
+        .eq("key", "services_config")
+        .maybeSingle()
+        .then(({ data, error }) => {
+          if (!error && data && Array.isArray(data.value)) {
+            setDynamicServices(data.value);
+          }
+        });
     } else {
       const cached = localStorage.getItem("altus_prices");
       if (cached) {
@@ -2560,17 +2998,33 @@ function QuotesView({
           console.error(e);
         }
       }
+      const cachedServices = localStorage.getItem("altus_services_config");
+      if (cachedServices) {
+        try {
+          setDynamicServices(JSON.parse(cachedServices));
+        } catch (e) {
+          console.error(e);
+        }
+      }
     }
   };
 
-  const dynamicServiceOptions = [
-    { name: "Κατασκευή Ιστοσελίδας", price: prices.website },
-    { name: "Ανάπτυξη E-Shop", price: prices.eshop },
-    { name: "Landing Page", price: prices.landing },
-    { name: "Εταιρική Ταυτότητα", price: prices.uiux },
-    { name: "SEO & Στατιστικά", price: prices.seo },
-    { name: "Συνεχής Υποστήριξη (μηνιαία)", price: prices.support },
-  ];
+  const dynamicServiceOptions = useMemo(() => {
+    if (dynamicServices.length > 0) {
+      return dynamicServices.map((s) => ({
+        name: s.nameEl || s.name || s.id,
+        price: s.price
+      }));
+    }
+    return [
+      { name: "Κατασκευή Ιστοσελίδας", price: prices.website },
+      { name: "Ανάπτυξη E-Shop", price: prices.eshop },
+      { name: "Landing Page", price: prices.landing },
+      { name: "Εταιρική Ταυτότητα", price: prices.uiux },
+      { name: "SEO & Στατιστικά", price: prices.seo },
+      { name: "Συνεχής Υποστήριξη (μηνιαία)", price: prices.support },
+    ];
+  }, [dynamicServices, prices]);
 
   useEffect(() => {
     if (prefilledClient) {
