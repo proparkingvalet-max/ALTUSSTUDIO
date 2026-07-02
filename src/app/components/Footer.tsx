@@ -1,5 +1,5 @@
 import { Link } from "react-router";
-import { Instagram, Linkedin, Facebook, Send } from "lucide-react";
+import { Linkedin } from "lucide-react";
 import altusLogo from "@/assets/new_logo.png";
 import logoDark from "@/assets/logo_dark.png";
 import { useLanguage } from "@/app/context/LanguageContext";
@@ -70,16 +70,11 @@ export function Footer() {
             </p>
             <div className="flex gap-4 md:justify-end">
               {[
-                { Icon: Instagram, label: "Instagram", href: "#" },
                 { Icon: Linkedin, label: "LinkedIn", href: "#" },
-                { Icon: Facebook, label: "Facebook", href: "#" },
-                { Icon: Send, label: "Telegram", href: "https://t.me/altus_studio" },
               ].map(({ Icon, label, href }) => (
                 <a
                   key={label}
                   href={href}
-                  target={label === "Telegram" ? "_blank" : undefined}
-                  rel={label === "Telegram" ? "noopener noreferrer" : undefined}
                   aria-label={label}
                   className="w-9 h-9 border border-white/15 flex items-center justify-center text-[#F9FAFB]/50 hover:border-[#DFBA73] hover:text-[#DFBA73] transition-all duration-300"
                 >

@@ -11,6 +11,7 @@ import { ContactPage } from "./pages/ContactPage";
 import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
 import { TermsOfUsePage } from "./pages/TermsOfUsePage";
 import { AdminPage } from "./pages/AdminPage";
+import { BriefPage } from "./pages/BriefPage";
 
 function NotFound() {
   return null;
@@ -33,6 +34,7 @@ export const router = createBrowserRouter([
       { path: "blog", Component: BlogPage },
       { path: "blog/:postId", Component: BlogDetailsPage },
       { path: "contact", Component: ContactPage },
+      { path: "brief", Component: BriefPage },
       { path: "privacy-policy", Component: PrivacyPolicyPage },
       { path: "terms-of-use", Component: TermsOfUsePage },
       { path: "*", Component: NotFound },

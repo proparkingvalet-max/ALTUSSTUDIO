@@ -102,7 +102,7 @@ function HeroSection({ t }: { t: (k: string) => any }) {
               <ArrowUpRight size={15} className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Link>
             <Link
-              to="/contact"
+              to="/brief"
               className="px-8 py-4 bg-[#DFBA73] text-[#0D0D11] text-sm tracking-wider uppercase hover:bg-[#E6CE93] hover:shadow-[0_0_25px_rgba(223, 186, 115,0.4)] transition-all duration-300"
               style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 600, letterSpacing: "0.1em" }}
             >
@@ -1071,7 +1071,7 @@ function CTASection() {
             {t("home.cta.sub")}
           </p>
           <Link
-            to="/contact"
+            to="/brief"
             className="inline-flex items-center gap-3 px-10 py-5 bg-[#0D0D11] text-[#F9FAFB] text-sm tracking-wider uppercase hover:bg-[#1C1C24] transition-colors duration-300 group"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.12em" }}
           >

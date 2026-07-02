@@ -27,7 +27,8 @@ export function Navbar() {
     location.pathname === "/portfolio" ||
     location.pathname === "/about" ||
     location.pathname.startsWith("/blog") ||
-    location.pathname === "/contact";
+    location.pathname === "/contact" ||
+    location.pathname === "/brief";
 
   const isVisualDark = theme === "dark" && isDarkPage;
 
@@ -120,11 +121,11 @@ export function Navbar() {
           </button>
 
           <Link
-            to="/contact"
+            to="/brief"
             className="px-6 py-2.5 bg-[#DFBA73] text-[#0D0D11] text-sm tracking-wider uppercase hover:bg-[#E6CE93] transition-colors duration-300"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500, letterSpacing: "0.1em" }}
           >
-            {t("nav.cta")}
+            {t("nav.ctaMobile")}
           </Link>
         </div>
 
@@ -195,7 +196,7 @@ export function Navbar() {
             </Link>
           ))}
           <Link
-            to="/contact"
+            to="/brief"
             className="mt-2 px-6 py-3 bg-[#DFBA73] text-[#0D0D11] text-sm tracking-wider uppercase text-center hover:bg-[#E6CE93] transition-colors"
             style={{ fontFamily: "'DM Sans', sans-serif", fontWeight: 500 }}
           >
