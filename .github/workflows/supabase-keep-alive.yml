@@ -1,0 +1,36 @@
+name: Supabase Keep-Alive Ping
+
+on:
+  schedule:
+    # Runs at 12:00 UTC every 3 days
+    - cron: '0 12 */3 * *'
+  workflow_dispatch: # Allows manual trigger from GitHub Actions tab
+
+jobs:
+  ping-supabase:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Keep-Alive Ping to Supabase
+        run: |
+          SUPABASE_URL="${{ secrets.SUPABASE_URL }}"
+          SUPABASE_ANON_KEY="${{ secrets.SUPABASE_ANON_KEY }}"
+
+          # Fallback to default Altus Studio credentials if secrets are not set in GitHub
+          if [ -z "$SUPABASE_URL" ]; then
+            SUPABASE_URL="https://nbcbdqbafrstlojkjweh.supabase.co"
+          fi
+
+          if [ -z "$SUPABASE_ANON_KEY" ]; then
+            SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5iY2JkcWJhZnJzdGxvamtqd2VoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODIwNjMyMDQsImV4cCI6MjA5NzYzOTIwNH0.yy3efTJ25I_UguOVIm1t6ttj_aXxo7xBIDVHBV1Wbwg"
+          fi
+
+          echo "Pinging Supabase REST API..."
+          RESPONSE=$(curl -s -o /dev/null -w "%{http_code}" -H "apikey: $SUPABASE_ANON_KEY" -H "Authorization: Bearer $SUPABASE_ANON_KEY" "$SUPABASE_URL/rest/v1/settings?select=key")
+          
+          echo "Response HTTP Status: $RESPONSE"
+          if [ "$RESPONSE" -eq 200 ] || [ "$RESPONSE" -eq 206 ]; then
+            echo "Successfully pinged Supabase! Database is active."
+          else
+            echo "Ping returned status code: $RESPONSE"
+            exit 1
+          fi
