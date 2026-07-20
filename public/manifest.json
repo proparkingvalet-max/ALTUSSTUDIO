@@ -1,0 +1,17 @@
+{
+  "short_name": "Altus Studio",
+  "name": "Altus Studio - Premium Web & Brand Design Studio",
+  "description": "Premium Web Design & Digital Agency στην Ελλάδα.",
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "type": "image/png",
+      "sizes": "512x512"
+    }
+  ],
+  "start_url": "/",
+  "background_color": "#0D0D11",
+  "theme_color": "#DFBA73",
+  "display": "standalone",
+  "orientation": "portrait"
+}
