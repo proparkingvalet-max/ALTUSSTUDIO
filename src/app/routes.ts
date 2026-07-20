@@ -12,10 +12,7 @@ import { PrivacyPolicyPage } from "./pages/PrivacyPolicyPage";
 import { TermsOfUsePage } from "./pages/TermsOfUsePage";
 import { AdminPage } from "./pages/AdminPage";
 import { BriefPage } from "./pages/BriefPage";
-
-function NotFound() {
-  return null;
-}
+import { NotFoundPage } from "./pages/NotFoundPage";
 
 export const router = createBrowserRouter([
   {
@@ -37,7 +34,7 @@ export const router = createBrowserRouter([
       { path: "brief", Component: BriefPage },
       { path: "privacy-policy", Component: PrivacyPolicyPage },
       { path: "terms-of-use", Component: TermsOfUsePage },
-      { path: "*", Component: NotFound },
+      { path: "*", Component: NotFoundPage },
     ],
   },
 ]);

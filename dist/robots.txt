@@ -1,0 +1,6 @@
+# Robots.txt for Altus Studio
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://altusstudio.gr/sitemap.xml
